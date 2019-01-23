@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.shape.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane maxHeight="300" maxWidth="200" minHeight="300" minWidth="200" prefHeight="300.0"
+            prefWidth="200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frontEnd.Router">
+   <children>
+      <Circle fill="#003261" layoutX="100.0" layoutY="193.0" radius="75.0" stroke="WHITE" strokeType="INSIDE" />
+      <Circle fill="#2d383a" layoutX="100.0" layoutY="193.0" radius="50.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" />
+      <Label id="userSpeechDisplay" fx:id="userSpeechDisplay" layoutX="10.0" prefHeight="118.0" prefWidth="181.0" text="This is some example text that is long" textFill="#6f6969" wrapText="true">
+         <font>
+            <Font size="26.0" />
+         </font>
+      </Label>
+      <Button fx:id="menu" onAction="#handleButtonAction" layoutX="-7.0" layoutY="270.0" mnemonicParsing="false" text="Menu" />
+   </children>
+</AnchorPane>
