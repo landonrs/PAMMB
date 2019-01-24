@@ -21,6 +21,9 @@ public class SpeechCommandHandler {
             String speechInput = interpreter.getTextFromSpeech();
 
 
+            if(speechInput != null) {
+                handleCommand(speechInput);
+            }
         }
 
     }
@@ -33,6 +36,10 @@ public class SpeechCommandHandler {
 
         else if(currentState == ACTIVE_STATE.ACTIVATED && speechInput == "stop listening") {
             currentState = ACTIVE_STATE.IDLE;
+        }
+
+        else if(currentState == ACTIVE_STATE.ACTIVATED) {
+            //checkCommandInDB(speechInput);
         }
 
     }
