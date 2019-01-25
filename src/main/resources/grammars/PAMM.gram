@@ -1,0 +1,8 @@
+#JSGF V1.0;
+
+grammar pamm;
+
+public <stop> = stop listening;
+public <activate> = hey pam;
+public <command> = [please] [run command] (test);
+public <continuous> = run continuous mode;

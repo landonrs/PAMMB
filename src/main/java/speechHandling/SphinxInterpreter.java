@@ -17,7 +17,11 @@ public class SphinxInterpreter implements SpeechInterpreter {
 
         configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
         configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
-        configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
+        //configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
+
+        configuration.setGrammarPath("resource:/grammars");
+        configuration.setGrammarName("PAMM");
+        configuration.setUseGrammar(true);
 
         try {
             recognizer = new LiveSpeechRecognizer(configuration);
@@ -36,7 +40,6 @@ public class SphinxInterpreter implements SpeechInterpreter {
 
     public void startListening() {
         recognizer.startRecognition(true);
-
     }
 
     public void pauseListening() {
