@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 public class SpeechCommandHandlerTest {
@@ -22,7 +23,7 @@ public class SpeechCommandHandlerTest {
 
     @Before
     public void setUp() throws Exception {
-        handler = new SpeechCommandHandler(interpreterMock);
+        handler = SpeechCommandHandler.getInstance();
     }
 
 

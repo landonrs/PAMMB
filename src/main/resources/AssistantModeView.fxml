@@ -9,7 +9,7 @@
 
 
 <AnchorPane maxHeight="300" maxWidth="200" minHeight="300" minWidth="200" prefHeight="300.0"
-            prefWidth="200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frontEnd.Router">
+            prefWidth="200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frontEnd.AssistantModeController">
    <children>
       <Circle fill="#003261" layoutX="100.0" layoutY="193.0" radius="75.0" stroke="WHITE" strokeType="INSIDE" />
       <Circle fill="#2d383a" layoutX="100.0" layoutY="193.0" radius="50.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" />

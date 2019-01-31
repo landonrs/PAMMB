@@ -4,15 +4,33 @@ import java.util.concurrent.TimeUnit;
 
 public class SpeechCommandHandler {
 
-    SpeechInterpreter interpreter;
-    private ACTIVE_STATE currentState;
+    private static SpeechInterpreter interpreter;
+    private static ACTIVE_STATE currentState;
     private static volatile boolean runningAssistantMode;
+    //singleton instance to ensure that only one microphone is intitialized
+    private static SpeechCommandHandler instance = null;
 
-    public SpeechCommandHandler(SpeechInterpreter interpreter) {
+    private SpeechCommandHandler(SpeechInterpreter interpreter) {
         this.interpreter = interpreter;
         this.currentState = ACTIVE_STATE.IDLE;
         runningAssistantMode = false;
     }
+
+
+    // For the Sphinx4 library on Windows OS, an error occurs if more than one
+    // recognizer gets instantiated which breaks the program
+    // to prevent this, we use a singleton instance of the SpeechCommandHandler
+    // which ensures that only one instance will ever be initialized
+    public static SpeechCommandHandler getInstance() {
+        if (instance == null) {
+            instance = new SpeechCommandHandler(new SphinxInterpreter());
+            return instance;
+        }
+        else {
+            return instance;
+        }
+    }
+
 
 
 
