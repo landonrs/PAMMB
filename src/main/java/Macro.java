@@ -15,13 +15,13 @@ public class Macro {
     // set true if macro has a variable step
     private boolean varStep;
     // list of actions to perform for macro
-    private List<String> steps;
+    private List<Step> steps;
 
     public Macro() {
 
     }
 
-    public Macro(String name, List<String> steps, boolean varStep) {
+    public Macro(String name, List<Step> steps, boolean varStep) {
         this.name = name;
         this.steps = steps;
         this.varStep = varStep;
@@ -36,13 +36,13 @@ public class Macro {
         this.name = name;
     }
 
-    @ElementCollection
-    @CollectionTable(name="steps", joinColumns=@JoinColumn(name="name"))
-    public List<String> getSteps() {
+    @OneToMany(cascade = {CascadeType.ALL, CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "name")
+    public List<Step> getSteps() {
         return steps;
     }
 
-    public void setSteps(List<String> steps) {
+    public void setSteps(List<Step> steps) {
         this.steps = steps;
     }
 
