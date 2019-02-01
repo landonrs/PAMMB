@@ -1,4 +1,5 @@
-import org.junit.After;
+import Macro.Macro;
+import Macro.Step;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,11 +17,6 @@ public class SqliteDbFacadeTest {
         sqliteDbFacade = new SQLiteDbFacade();
     }
 
-    @After
-    public void tearDown() throws Exception {
-
-
-    }
 
 
     @Test

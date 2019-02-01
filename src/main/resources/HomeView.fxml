@@ -18,8 +18,8 @@
             <Font name="Lucida Bright Regular" size="76.0" />
          </font>
       </Label>
-      <Button fx:id="Createmacro" layoutX="-2.0" layoutY="182.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="208.0" text="Create Macro" />
-      <Button layoutX="198.0" layoutY="182.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="202.0" text="View Macro List" />
+      <Button fx:id="createMacro" onAction="#handleButtonAction" layoutX="-2.0" layoutY="182.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="208.0" text="Create Macro.Macro" />
+      <Button layoutX="198.0" layoutY="182.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="202.0" text="View Macro.Macro List" />
       <Button fx:id="assistantMode" onAction="#handleButtonAction" layoutY="247.0" mnemonicParsing="false" prefHeight="151.0" prefWidth="400.0" text="Activate Assistant Mode" />
    </children>
 </AnchorPane>

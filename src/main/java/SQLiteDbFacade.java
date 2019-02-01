@@ -1,4 +1,4 @@
-import org.hibernate.Query;
+import Macro.Macro;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -6,7 +6,6 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -42,8 +41,10 @@ public class SQLiteDbFacade implements DbFacade {
 
             session = sessionFactory.openSession();
             // Fetching saved data
-            List<Macro> results = session.createQuery("from Macro where name = '" + macroName + "'" ).list();
-            loadedMacro =  results.get(0);
+            List<Macro> results = session.createQuery("from Macro.Macro where name = '" + macroName + "'" ).list();
+            if (results.size() != 0) {
+                loadedMacro = results.get(0);
+            }
 
         } catch (Exception ex) {
             ex.printStackTrace();

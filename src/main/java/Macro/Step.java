@@ -1,3 +1,5 @@
+package Macro;
+
 import javax.persistence.*;
 
 @Entity
