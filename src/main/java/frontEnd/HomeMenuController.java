@@ -1,7 +1,7 @@
 package frontEnd;
 
-import EventHandling.EventRecorder;
-import Macro.Macro;
+import eventHandling.EventRecorder;
+import macro.Macro;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,11 +40,12 @@ public class HomeMenuController {
     }
 
     private void recordUserEvents(Stage stage) {
+        stage.setIconified(true);
         // set up speech command handling on separate thread
-//        CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
-//            speechCommandHandler.runCreateMode();
-//        });
-        stage.hide();
+        CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
+            speechCommandHandler.runCreateMode();
+        });
         Macro createdMacro = recorder.recordUserMacro();
+        stage.setIconified(false);
     }
 }

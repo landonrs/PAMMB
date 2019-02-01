@@ -1,4 +1,4 @@
-package Macro;
+package macro;
 
 import javax.persistence.*;
 

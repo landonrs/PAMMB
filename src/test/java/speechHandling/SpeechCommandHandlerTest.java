@@ -8,8 +8,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 public class SpeechCommandHandlerTest {
 
@@ -30,7 +28,7 @@ public class SpeechCommandHandlerTest {
 
     @Test
     public void shouldSetStateToActivated() {
-        handler.handleCommand("hey pam");
+        handler.handleAssistantCommand("hey pam");
 
         assertEquals(SpeechCommandHandler.ACTIVE_STATE.ACTIVATED, handler.getCurrentState());
     }
@@ -38,10 +36,10 @@ public class SpeechCommandHandlerTest {
     @Test
     public void shouldSetStateToIdleAfterActivation() {
         // first set to activated
-        handler.handleCommand("hey pam");
+        handler.handleAssistantCommand("hey pam");
         assertEquals(SpeechCommandHandler.ACTIVE_STATE.ACTIVATED, handler.getCurrentState());
         // now set to idle
-        handler.handleCommand("stop listening");
+        handler.handleAssistantCommand("stop listening");
         assertEquals(SpeechCommandHandler.ACTIVE_STATE.IDLE, handler.getCurrentState());
     }
 

@@ -1,13 +1,12 @@
-package EventHandling;
+package eventHandling;
 
-import Macro.Macro;
+import macro.Macro;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
-import org.jnativehook.mouse.SwingMouseAdapter;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,6 +63,16 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
 
         return userMacro;
 
+    }
+
+    public static void stopRecording() {
+        System.out.println("Stopping recording");
+        recordingMacro = false;
+    }
+
+    public static void createVariableStep() {
+        System.out.println("Creating variable step");
+        gettingVariableStep = true;
     }
 
     @Override

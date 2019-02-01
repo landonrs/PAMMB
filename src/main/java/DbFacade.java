@@ -1,4 +1,4 @@
-import Macro.Macro;
+import macro.Macro;
 
 public interface DbFacade {
 

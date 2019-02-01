@@ -1,5 +1,5 @@
-import Macro.Macro;
-import Macro.Step;
+import macro.Macro;
+import macro.Step;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,7 +13,7 @@ public class SqliteDbFacadeTest {
     private SQLiteDbFacade sqliteDbFacade;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         sqliteDbFacade = new SQLiteDbFacade();
     }
 

@@ -1,5 +1,7 @@
 package speechHandling;
 
+import eventHandling.EventRecorder;
+
 import java.util.concurrent.TimeUnit;
 
 public class SpeechCommandHandler {
@@ -7,13 +9,15 @@ public class SpeechCommandHandler {
     private static SpeechInterpreter interpreter;
     private static ACTIVE_STATE currentState;
     private static volatile boolean runningAssistantMode;
+    private static volatile boolean runningCreateMode;
     //singleton instance to ensure that only one microphone is intitialized
     private static SpeechCommandHandler instance = null;
 
     private SpeechCommandHandler(SpeechInterpreter interpreter) {
-        this.interpreter = interpreter;
-        this.currentState = ACTIVE_STATE.IDLE;
+        interpreter = interpreter;
+        currentState = ACTIVE_STATE.IDLE;
         runningAssistantMode = false;
+        runningCreateMode = false;
     }
 
 
@@ -31,9 +35,6 @@ public class SpeechCommandHandler {
         }
     }
 
-
-
-
     public void runAssistantMode() {
         runningAssistantMode = true;
         interpreter.startListening();
@@ -45,7 +46,7 @@ public class SpeechCommandHandler {
 
             if(speechInput != null) {
                 System.out.println("result: " + speechInput + " running assistant " + runningAssistantMode);
-                handleCommand(speechInput);
+                handleAssistantCommand(speechInput);
             }
 
             try {
@@ -61,9 +62,9 @@ public class SpeechCommandHandler {
 
     }
 
-    public void handleCommand(String speechInput) {
+    public void handleAssistantCommand(String speechInput) {
         // activate PAMM
-        if(currentState == ACTIVE_STATE.IDLE && speechInput == "hey pam") {
+        if(currentState == ACTIVE_STATE.IDLE && speechInput == "listen up pam") {
             currentState = ACTIVE_STATE.ACTIVATED;
         }
 
@@ -79,6 +80,40 @@ public class SpeechCommandHandler {
 
     public void stopAssistantMode() {
         runningAssistantMode = false;
+    }
+
+    public void runCreateMode() {
+        runningCreateMode = true;
+        interpreter.startListening();
+        System.out.println("starting macro create mode");
+        while(runningCreateMode) {
+            String speechInput = interpreter.getTextFromSpeech();
+            interpreter.pauseListening();
+
+            if(speechInput != null) {
+                System.out.println("result: " + speechInput);
+                handleCreateCommand(speechInput);
+                if(!runningCreateMode) {
+                    System.out.println("Stopping create mode");
+                    return;
+                }
+            }
+
+            interpreter.resumeListening();
+        }
+
+        System.out.println("Stopping create mode");
+        interpreter.pauseListening();
+    }
+
+    private void handleCreateCommand(String command) {
+        if(command.equals("stop recording") ){
+            EventRecorder.stopRecording();
+            runningCreateMode = false;
+        }
+        else if(command.equals("create variable step")) {
+            EventRecorder.createVariableStep();
+        }
     }
 
 

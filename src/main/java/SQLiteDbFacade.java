@@ -1,4 +1,4 @@
-import Macro.Macro;
+import macro.Macro;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -41,7 +41,7 @@ public class SQLiteDbFacade implements DbFacade {
 
             session = sessionFactory.openSession();
             // Fetching saved data
-            List<Macro> results = session.createQuery("from Macro.Macro where name = '" + macroName + "'" ).list();
+            List<Macro> results = session.createQuery("from macro.macro where name = '" + macroName + "'" ).list();
             if (results.size() != 0) {
                 loadedMacro = results.get(0);
             }

@@ -15,7 +15,7 @@
         <!--____IMPORTANT___change this to update before release to production-->
         <property name="hibernate.hbm2ddl.auto">create-drop</property>
 
-        <mapping class="Macro.Macro"/>
-        <mapping class="Macro.Step" />
+        <mapping class="macro.Macro"/>
+        <mapping class="macro.Step" />
     </session-factory>
 </hibernate-configuration>
