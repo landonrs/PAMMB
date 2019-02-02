@@ -13,8 +13,8 @@ public class SpeechCommandHandler {
     //singleton instance to ensure that only one microphone is intitialized
     private static SpeechCommandHandler instance = null;
 
-    private SpeechCommandHandler(SpeechInterpreter interpreter) {
-        interpreter = interpreter;
+    private SpeechCommandHandler(SpeechInterpreter someInterpreter) {
+        interpreter = someInterpreter;
         currentState = ACTIVE_STATE.IDLE;
         runningAssistantMode = false;
         runningCreateMode = false;

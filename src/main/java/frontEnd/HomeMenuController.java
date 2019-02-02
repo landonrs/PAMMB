@@ -46,6 +46,7 @@ public class HomeMenuController {
             speechCommandHandler.runCreateMode();
         });
         Macro createdMacro = recorder.recordUserMacro();
+        System.out.println("Finished recording macro");
         stage.setIconified(false);
     }
 }
