@@ -1,5 +1,6 @@
 package eventHandling;
 
+import frontEnd.HomeMenuController;
 import macro.Macro;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
@@ -50,7 +51,8 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
 
         while(recordingMacro) {
             if(gettingVariableStep){
-                System.out.println("getting var step");
+                String varStepName = HomeMenuController.getVariableStepValue();
+                System.out.println("getting var step: " + varStepName);
                 gettingVariableStep = false;
             }
         }
