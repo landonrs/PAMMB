@@ -42,9 +42,10 @@ public class HomeMenuController {
     private void recordUserEvents(Stage stage) {
         stage.hide();
         // set up speech command handling on separate thread
-        CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
-            speechCommandHandler.runCreateMode();
-        });
+        // TODO uncomment after completing event handling implementation
+//        CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
+//            speechCommandHandler.runCreateMode();
+//        });
         Macro createdMacro = recorder.recordUserMacro();
         System.out.println("Finished recording macro");
         //stage.setIconified(false);
