@@ -99,12 +99,16 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
         if(((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0) &&
                 ((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0)) {
             System.out.println("Ctrl + Shift + __" + NativeKeyEvent.getKeyText(e.getKeyCode()) + "__");
+            Step userStep = new Step("CTRL SHIFT TYPE", e.getKeyCode());
+            currentUserMacro.getSteps().add(userStep);
             usingCombinationCommand = true;
         }
         // ctrl + alt command
         else if(((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0) &&
                 ((e.getModifiers() & NativeKeyEvent.ALT_MASK) != 0)) {
             System.out.println("Ctrl + Alt + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+            Step userStep = new Step("CTRL ALT TYPE", e.getKeyCode());
+            currentUserMacro.getSteps().add(userStep);
             usingCombinationCommand = true;
 
         }
@@ -112,6 +116,8 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
         else if(((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0) &&
                 ((e.getModifiers() & NativeKeyEvent.META_MASK) != 0)) {
             System.out.println("Ctrl + Alt + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+            Step userStep = new Step("CTRL META TYPE", e.getKeyCode());
+            currentUserMacro.getSteps().add(userStep);
             usingCombinationCommand = true;
 
         }
@@ -119,6 +125,8 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
         else if(((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0) &&
                 ((e.getModifiers() & NativeKeyEvent.ALT_MASK) != 0)) {
             System.out.println("Shift + Alt + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+            Step userStep = new Step("SHIFT ALT TYPE", e.getKeyCode());
+            currentUserMacro.getSteps().add(userStep);
             usingCombinationCommand = true;
 
         }
@@ -126,6 +134,8 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
         else if(((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0) &&
                 ((e.getModifiers() & NativeKeyEvent.META_MASK) != 0)) {
             System.out.println("Shift + Alt + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+            Step userStep = new Step("SHIFT META TYPE", e.getKeyCode());
+            currentUserMacro.getSteps().add(userStep);
             usingCombinationCommand = true;
 
         }
@@ -133,21 +143,29 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
         else if (((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0) && e.getKeyCode() != NativeKeyEvent.VC_SHIFT
                 && e.getKeyCode() != NativeKeyEvent.VC_ALT && e.getKeyCode() != NativeKeyEvent.VC_META) {
             System.out.println("Ctrl + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+            Step userStep = new Step("CTRL TYPE", e.getKeyCode());
+            currentUserMacro.getSteps().add(userStep);
         }
         // shift + key
         else if(((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0) && e.getKeyCode() != NativeKeyEvent.VC_ALT
                 && e.getKeyCode() != NativeKeyEvent.VC_META && e.getKeyCode() != NativeKeyEvent.VC_CONTROL) {
             System.out.println("Shift + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+            Step userStep = new Step("SHIFT TYPE", e.getKeyCode());
+            currentUserMacro.getSteps().add(userStep);
         }
         // alt + key
         else if(((e.getModifiers() & NativeKeyEvent.ALT_MASK) != 0) &&
                 e.getKeyCode() != NativeKeyEvent.VC_CONTROL && e.getKeyCode() != NativeKeyEvent.VC_SHIFT) {
             System.out.println("Alt + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+            Step userStep = new Step("ALT TYPE", e.getKeyCode());
+            currentUserMacro.getSteps().add(userStep);
             usingCombinationCommand = true;
         }
         // meta + key
         else if((((e.getModifiers() & NativeKeyEvent.META_MASK) != 0))) {
             System.out.println("Meta + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+            Step userStep = new Step("META TYPE", e.getKeyCode());
+            currentUserMacro.getSteps().add(userStep);
             usingCombinationCommand = true;
         }
         // key typed without modifiers
@@ -160,6 +178,8 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
             }
             else{
                 System.out.println("User typed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+                Step userStep = new Step("TYPE", e.getKeyCode());
+                currentUserMacro.getSteps().add(userStep);
             }
 
         }
