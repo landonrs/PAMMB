@@ -1,3 +1,5 @@
+package db;
+
 import macro.Macro;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -13,9 +15,18 @@ public class SQLiteDbFacade implements DbFacade {
 
     private static SessionFactory sessionFactory = null;
     private static ServiceRegistry serviceRegistry = null;
+    private static SQLiteDbFacade instance = null;
 
-    public SQLiteDbFacade() {
+    private SQLiteDbFacade() {
         configureSessionFactory();
+    }
+
+    public static SQLiteDbFacade getInstance() {
+        if(instance == null) {
+            instance = new SQLiteDbFacade();
+        }
+
+        return instance;
     }
 
 

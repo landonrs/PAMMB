@@ -1,3 +1,4 @@
+import db.SQLiteDbFacade;
 import macro.Macro;
 import macro.Step;
 import org.junit.Before;
@@ -14,7 +15,7 @@ public class SqliteDbFacadeTest {
 
     @Before
     public void setUp() {
-        sqliteDbFacade = new SQLiteDbFacade();
+        sqliteDbFacade = SQLiteDbFacade.getInstance();
     }
 
 
@@ -34,6 +35,7 @@ public class SqliteDbFacadeTest {
 
         assertNotNull(loadedMacro);
         assertEquals(loadedMacro.getSteps().size(), 1);
+        assertEquals(loadedMacro.getName(), "test");
     }
 
 }

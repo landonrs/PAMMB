@@ -10,7 +10,7 @@ public class SpeechCommandHandler {
     private static ACTIVE_STATE currentState;
     private static volatile boolean runningAssistantMode;
     private static volatile boolean runningCreateMode;
-    //singleton instance to ensure that only one microphone is intitialized
+    // singleton instance to ensure that only one microphone is intitialized
     private static SpeechCommandHandler instance = null;
 
     private SpeechCommandHandler(SpeechInterpreter someInterpreter) {

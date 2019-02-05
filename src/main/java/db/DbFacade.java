@@ -1,3 +1,5 @@
+package db;
+
 import macro.Macro;
 
 public interface DbFacade {
