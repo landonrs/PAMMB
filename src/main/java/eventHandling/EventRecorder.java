@@ -177,6 +177,12 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 usingCombinationCommand = false;
             }
             else{
+                // TODO remove following line after testing
+                if(NativeKeyEvent.getKeyText(e.getKeyCode()) == "9") {
+                    System.out.println("pressed 9, stopping recording");
+                    stopRecording();
+                    return;
+                }
                 System.out.println("User typed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
                 Step userStep = new Step("TYPE", e.getKeyCode());
                 currentUserMacro.getSteps().add(userStep);
