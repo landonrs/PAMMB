@@ -9,7 +9,6 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -192,6 +191,12 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
 
     }
 
+    /**
+     * Records user click events and stores them in macro. Currently, BOTH MIDDLE BUTTON CLICKS AND RIGHT BUTTON CLICKS
+     * REGISTER AS RIGHT BUTTON CLICKS to avoid issues with different systems mapping right mouse buttons with
+     * different masks
+     * @param e - the event that was fired
+     */
     @Override
     public void nativeMouseClicked(NativeMouseEvent e) {
         // ctrl + shift left click
@@ -211,14 +216,15 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
         }
         // ctrl + shift right click
         else if((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0 && (e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0 &&
-                (e.getButton() == NativeMouseEvent.BUTTON3)) {
+                (e.getButton() == NativeMouseEvent.BUTTON3 || e.getButton() == NativeMouseEvent.BUTTON2)) {
             System.out.println("CTRL + SHIFT + RIGHT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
             Step userStep = new Step("CTRL SHIFT RIGHT", e.getX(), e.getY());
             currentUserMacro.getSteps().add(userStep);
         }
         // ctrl + alt right click
         else if((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0 &&
-                ((e.getModifiers() & NativeKeyEvent.ALT_MASK) != 0) && (e.getButton() == NativeMouseEvent.BUTTON3)) {
+                ((e.getModifiers() & NativeKeyEvent.ALT_MASK) != 0)
+                && (e.getButton() == NativeMouseEvent.BUTTON3 || e.getButton() == NativeMouseEvent.BUTTON2)) {
             System.out.println("CTRL + ALT + RIGHT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
             Step userStep = new Step("CTRL ALT RIGHT", e.getX(), e.getY());
             currentUserMacro.getSteps().add(userStep);
@@ -237,13 +243,15 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
             currentUserMacro.getSteps().add(userStep);
         }
         // ctrl + right click
-        else if((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0 && (e.getButton() == NativeMouseEvent.BUTTON3)) {
+        else if((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0
+                && (e.getButton() == NativeMouseEvent.BUTTON3 || e.getButton() == NativeMouseEvent.BUTTON2)) {
             System.out.println("CTRL + RIGHT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
             Step userStep = new Step("CTRL RIGHT", e.getX(), e.getY());
             currentUserMacro.getSteps().add(userStep);
         }
         // shift + right click
-        else if((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0 && (e.getButton() == NativeMouseEvent.BUTTON3)) {
+        else if((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0
+                && (e.getButton() == NativeMouseEvent.BUTTON3 || e.getButton() == NativeMouseEvent.BUTTON2)) {
             System.out.println("SHIFT + RIGHT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
             Step userStep = new Step("SHIFT RIGHT", e.getX(), e.getY());
             currentUserMacro.getSteps().add(userStep);
@@ -256,7 +264,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
 
         }
         // right click
-        else if(e.getButton() == NativeMouseEvent.BUTTON3) {
+        else if(e.getButton() == NativeMouseEvent.BUTTON3 || e.getButton() == NativeMouseEvent.BUTTON2) {
             System.out.println("MOUSE RIGHT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
             Step userStep = new Step("RIGHT", e.getX(), e.getY());
             currentUserMacro.getSteps().add(userStep);
