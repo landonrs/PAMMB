@@ -1,6 +1,7 @@
 package macro;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,6 +21,7 @@ public class Macro {
     private List<Step> steps;
 
     public Macro() {
+        steps = new ArrayList<>();
 
     }
 

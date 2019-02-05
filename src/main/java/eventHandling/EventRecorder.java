@@ -2,6 +2,7 @@ package eventHandling;
 
 import frontEnd.HomeMenuController;
 import macro.Macro;
+import macro.Step;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
@@ -16,8 +17,11 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
 
     private static volatile boolean recordingMacro;
     private static volatile boolean gettingVariableStep;
+    // this is set to true whenever the user makes a command that uses the meta or alt key with another action
     private static boolean usingCombinationCommand;
     private static EventRecorder instance = null;
+    // this is where we store the user actions each time they record a new macro
+    private static Macro currentUserMacro = null;
 
     private EventRecorder(){
         recordingMacro = false;
@@ -29,7 +33,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
         // Get the logger for "org.jnativehook" and set the level to warning.
         Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
         logger.setLevel(Level.SEVERE);
-        // Don't forget to disable the parent handlers.
+        // disable the parent handlers.
         logger.setUseParentHandlers(false);
     }
 
@@ -44,7 +48,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
 
     public Macro recordUserMacro() {
         recordingMacro = true;
-        Macro userMacro = null;
+        currentUserMacro = new Macro();
         try {
             registerNativeHook();
         } catch (NativeHookException e) {
@@ -66,7 +70,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
             e.printStackTrace();
         }
 
-        return userMacro;
+        return currentUserMacro;
 
     }
 
@@ -132,7 +136,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
         }
         // shift + key
         else if(((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0) && e.getKeyCode() != NativeKeyEvent.VC_ALT
-                && e.getKeyCode() != NativeKeyEvent.VC_META) {
+                && e.getKeyCode() != NativeKeyEvent.VC_META && e.getKeyCode() != NativeKeyEvent.VC_CONTROL) {
             System.out.println("Shift + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
         }
         // alt + key
@@ -168,36 +172,68 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
         if((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0 && (e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0 &&
                 (e.getButton() == NativeMouseEvent.BUTTON1)) {
             System.out.println("CTRL + SHIFT + LEFT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
+            Step userStep = new Step("CTRL SHIFT LEFT", e.getX(), e.getY());
+            currentUserMacro.getSteps().add(userStep);
         }
         // ctrl + alt left click
         else if((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0 &&
                 ((e.getModifiers() & NativeKeyEvent.ALT_MASK) != 0) && (e.getButton() == NativeMouseEvent.BUTTON1)) {
             System.out.println("CTRL + ALT + LEFT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
+            Step userStep = new Step("CTRL ALT LEFT", e.getX(), e.getY());
+            currentUserMacro.getSteps().add(userStep);
+            usingCombinationCommand = true;
+        }
+        // ctrl + shift right click
+        else if((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0 && (e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0 &&
+                (e.getButton() == NativeMouseEvent.BUTTON3)) {
+            System.out.println("CTRL + SHIFT + RIGHT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
+            Step userStep = new Step("CTRL SHIFT RIGHT", e.getX(), e.getY());
+            currentUserMacro.getSteps().add(userStep);
+        }
+        // ctrl + alt right click
+        else if((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0 &&
+                ((e.getModifiers() & NativeKeyEvent.ALT_MASK) != 0) && (e.getButton() == NativeMouseEvent.BUTTON3)) {
+            System.out.println("CTRL + ALT + RIGHT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
+            Step userStep = new Step("CTRL ALT RIGHT", e.getX(), e.getY());
+            currentUserMacro.getSteps().add(userStep);
             usingCombinationCommand = true;
         }
         // ctrl + left click
         else if((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0 && (e.getButton() == NativeMouseEvent.BUTTON1)) {
             System.out.println("CTRL + LEFT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
+            Step userStep = new Step("CTRL LEFT", e.getX(), e.getY());
+            currentUserMacro.getSteps().add(userStep);
         }
         // shift + left click
         else if((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0 && (e.getButton() == NativeMouseEvent.BUTTON1)) {
             System.out.println("SHIFT + LEFT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
+            Step userStep = new Step("SHIFT LEFT", e.getX(), e.getY());
+            currentUserMacro.getSteps().add(userStep);
         }
         // ctrl + right click
         else if((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0 && (e.getButton() == NativeMouseEvent.BUTTON3)) {
             System.out.println("CTRL + RIGHT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
+            Step userStep = new Step("CTRL RIGHT", e.getX(), e.getY());
+            currentUserMacro.getSteps().add(userStep);
         }
         // shift + right click
         else if((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0 && (e.getButton() == NativeMouseEvent.BUTTON3)) {
             System.out.println("SHIFT + RIGHT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
+            Step userStep = new Step("SHIFT RIGHT", e.getX(), e.getY());
+            currentUserMacro.getSteps().add(userStep);
         }
         // left click
         else if(e.getButton() == NativeMouseEvent.BUTTON1) {
             System.out.println("MOUSE LEFT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
+            Step userStep = new Step("LEFT", e.getX(), e.getY());
+            currentUserMacro.getSteps().add(userStep);
+
         }
         // right click
         else if(e.getButton() == NativeMouseEvent.BUTTON3) {
             System.out.println("MOUSE RIGHT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
+            Step userStep = new Step("RIGHT", e.getX(), e.getY());
+            currentUserMacro.getSteps().add(userStep);
         }
 
 

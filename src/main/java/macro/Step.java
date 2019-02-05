@@ -26,21 +26,41 @@ public class Step {
 
     public Step(){}
 
+    // constructor for key typing events
     public Step (String type, int keyCode){
         this.type = type;
         this.keyCode = keyCode;
+
+        // key steps do not use click coordinates
+        this.clickX = 0;
+        this.clickY = 0;
+        this.variableStepName = "";
+        this.variableStepValue = "";
     }
 
+    // constructor for clicking events
     public Step(String type, int clickX, int clickY) {
         this.type = type;
         this.clickX = clickX;
         this.clickY = clickY;
+
+        // click steps do not have a key code
+        this.keyCode = 0;
+        this.variableStepName = "";
+        this.variableStepValue = "";
     }
 
-    public Step(String variableStepName, String variableStepValue) {
+    // constructor for variable steps
+    public Step(String variableStepName) {
         this.type = "VAR_STEP";
         this.variableStepName = variableStepName;
-        this.variableStepValue = variableStepValue;
+        // this will be set to a different value each time the user runs the macro
+        this.variableStepValue = "";
+
+        // var step do not use coordinates or key codes
+        this.clickX = 0;
+        this.clickY = 0;
+        this.keyCode = 0;
     }
 
     public int getKeyCode() {

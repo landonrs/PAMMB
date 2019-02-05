@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import macro.Step;
 import speechHandling.SpeechCommandHandler;
 
 import java.util.concurrent.CompletableFuture;
@@ -47,7 +48,10 @@ public class HomeMenuController {
 //            speechCommandHandler.runCreateMode();
 //        });
         Macro createdMacro = recorder.recordUserMacro();
-        System.out.println("Finished recording macro");
+        System.out.println("Finished recording macro with steps: ");
+        for(Step step: createdMacro.getSteps()) {
+            System.out.println(step.getType());
+        }
         //stage.setIconified(false);
         stage.show();
         stage.toFront();
