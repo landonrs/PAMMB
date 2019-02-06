@@ -1,7 +1,6 @@
 package frontEnd;
 
 import eventHandling.EventRecorder;
-import macro.Macro;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,10 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
-import macro.Step;
 import speechHandling.SpeechCommandHandler;
-
-import java.util.concurrent.CompletableFuture;
 
 public class HomeMenuController {
 
@@ -27,7 +23,14 @@ public class HomeMenuController {
 
         if(event.getSource() == createMacro) {
             stage = (Stage) createMacro.getScene().getWindow();
-            recordUserEvents(stage);
+            stage.hide();
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("macroNameSetterView.fxml"));
+            root = loader.load();
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getClassLoader().getResource("PammStyle.css").toExternalForm());
+            stage.setScene(scene);
+            MacroSetterController macroSetterController = loader.getController();
+            macroSetterController.recordUserEvents(stage);
         }
         if(event.getSource() == assistantMode){
             stage = (Stage) assistantMode.getScene().getWindow();
@@ -40,22 +43,6 @@ public class HomeMenuController {
 
     }
 
-    private void recordUserEvents(Stage stage) {
-        stage.hide();
-        // set up speech command handling on separate thread
-        // TODO uncomment after completing event handling implementation
-//        CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
-//            speechCommandHandler.runCreateMode();
-//        });
-        Macro createdMacro = recorder.recordUserMacro();
-        System.out.println("Finished recording macro with steps: ");
-        for(Step step: createdMacro.getSteps()) {
-            System.out.println(step.getType());
-        }
-        //stage.setIconified(false);
-        stage.show();
-        stage.toFront();
-    }
 
     public static String getVariableStepValue(){
 

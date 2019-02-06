@@ -6,7 +6,7 @@
    -fx-background-color: #003261;
    -fx-text-fill: white;	
    -fx-border-color: white;
-   -fx-border-width: 5pt;
+   -fx-border-width: 1pt;
    -fx-border-radius: 0;
 }
 
@@ -18,4 +18,8 @@
 #userSpeechDisplay {
     -fx-text-fill: gray;
     -fx-font-size: 20pt;
+}
+
+#warningLabel {
+    -fx-text-fill: red;
 }

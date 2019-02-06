@@ -100,4 +100,18 @@ public class SQLiteDbFacade implements DbFacade {
             }
         }
     }
+
+    /**
+     * Verifies that a user entered macro name does not already exist in DB
+     * @param macroName - the name entered by the user for the newly created macro
+     * @return true if macroName does not already exist in db
+     */
+    public boolean uniqueMacroName(String macroName) {
+        Macro userMacro = loadMacro(macroName);
+        if(userMacro != null) {
+            return false;
+        }
+
+        return true;
+    }
 }

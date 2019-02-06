@@ -1,0 +1,101 @@
+package frontEnd;
+
+import db.SQLiteDbFacade;
+import eventHandling.EventRecorder;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.paint.Paint;
+import javafx.stage.Stage;
+import macro.Macro;
+import macro.MacroSettings;
+import macro.Step;
+
+
+public class MacroSetterController {
+
+    public Label warningLabel;
+    public TextField macroName;
+    public Slider secondSlider;
+    public CheckBox mouseVisibleBox;
+
+    private SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
+
+    public void recordUserEvents(Stage stage) {
+        EventRecorder recorder = EventRecorder.getInstance();
+
+        // set up speech command handling on separate thread
+        // TODO uncomment after completing event handling implementation
+//        CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
+//            speechCommandHandler.runCreateMode();
+//        });
+        //Macro createdMacro = recorder.recordUserMacro();
+//        System.out.println("Finished recording macro with steps: ");
+//        for(Step step: createdMacro.getSteps()) {
+//            System.out.println(step.getType());
+//        }
+        stage.show();
+        stage.toFront();
+    }
+
+
+    @FXML
+    public void checkMacroName(ActionEvent actionEvent) throws Exception{
+        if(dbFacade.uniqueMacroName(macroName.getText())) {
+            System.out.println("Name is unique: " + macroName.getText());
+            MacroSettings.setMacroName(macroName.getText());
+            Stage stage = (Stage) macroName.getScene().getWindow();
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("macroSettingView.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getClassLoader().getResource("PammStyle.css").toExternalForm());
+            stage.setScene(scene);
+            stage.show();
+        }
+        else{
+            warningLabel.setVisible(true);
+        }
+
+    }
+
+    @FXML
+    public void saveMacro(ActionEvent actionEvent) throws Exception{
+        int secondDelay = (int) secondSlider.getValue();
+        MacroSettings.setSecondDelay(secondDelay);
+        boolean checked = mouseVisibleBox.isSelected();
+        MacroSettings.setMouseIsVisible(!checked);
+        // for testing on Ubuntu
+        MacroSettings.currentMacro = new Macro();
+        Macro userMacro = MacroSettings.configureMacroSettings();
+        boolean saved = dbFacade.saveMacro(userMacro);
+        if(saved) {
+            System.out.println("Saved macro with " + secondDelay + " second delay and visible set to " + !checked);
+            MacroSettings.resetValues();
+        }
+        Stage stage = (Stage) secondSlider.getScene().getWindow();
+        displayHomeView(stage);
+
+    }
+
+    @FXML
+    public void cancelSave(ActionEvent actionEvent) throws Exception{
+        Stage stage = (Stage) secondSlider.getScene().getWindow();
+        displayHomeView(stage);
+
+    }
+
+    private void displayHomeView(Stage stage) throws Exception{
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HomeView.fxml"));
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(getClass().getClassLoader().getResource("PammStyle.css").toExternalForm());
+        stage.setScene(scene);
+        stage.show();
+    }
+}
