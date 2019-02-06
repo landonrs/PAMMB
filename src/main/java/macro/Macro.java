@@ -20,6 +20,9 @@ public class Macro {
     // list of actions to perform for macro
     private List<Step> steps;
 
+    private int secondDelay;
+    private boolean mouseIsVisible;
+
     public Macro() {
         steps = new ArrayList<>();
 
@@ -29,6 +32,10 @@ public class Macro {
         this.name = name;
         this.steps = steps;
         this.varStep = varStep;
+
+        // default values
+        this.secondDelay = 1;
+        this.mouseIsVisible = true;
     }
 
     @Id
@@ -56,5 +63,21 @@ public class Macro {
 
     public void setVarStep(boolean varStep) {
         this.varStep = varStep;
+    }
+
+    public int getSecondDelay() {
+        return secondDelay;
+    }
+
+    public void setSecondDelay(int secondDelay) {
+        this.secondDelay = secondDelay;
+    }
+
+    public boolean isMouseIsVisible() {
+        return mouseIsVisible;
+    }
+
+    public void setMouseIsVisible(boolean mouseIsVisible) {
+        this.mouseIsVisible = mouseIsVisible;
     }
 }
