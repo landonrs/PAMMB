@@ -27,16 +27,9 @@ public class AssistantModeController {
         if (event.getSource() == menu) {
             System.out.println("turning off assistant mode");
             speechCommandHandler.stopAssistantMode();
-            setUpMenuScene();
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HomeView.fxml"));
+            ViewLoader.loadPage(loader);
         }
 
-    }
-
-    private void setUpMenuScene() throws Exception{
-        Stage stage = (Stage) menu.getScene().getWindow();
-        Scene scene = new Scene(FXMLLoader.load(getClass().getClassLoader().getResource("HomeView.fxml")));
-        scene.getStylesheets().add(getClass().getClassLoader().getResource("PammStyle.css").toExternalForm());
-        stage.setScene(scene);
-        stage.show();
     }
 }

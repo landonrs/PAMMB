@@ -1,8 +1,7 @@
 import db.SQLiteDbFacade;
+import frontEnd.ViewLoader;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -11,12 +10,11 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         //initialize db
         SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("HomeView.fxml"));
+        // set stage for Viewloader to load pages
+        ViewLoader.setPrimaryStage(primaryStage);
         primaryStage.setTitle("PAMM");
-        Scene scene = new Scene(root, 400, 400);
-        scene.getStylesheets().add(getClass().getClassLoader().getResource("PammStyle.css").toExternalForm());
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HomeView.fxml"));
+        ViewLoader.loadPage(loader);
     }
 
 
