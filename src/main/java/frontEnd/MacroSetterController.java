@@ -16,6 +16,9 @@ import javafx.stage.Stage;
 import macro.Macro;
 import macro.MacroSettings;
 import macro.Step;
+import speechHandling.SpeechCommandHandler;
+
+import java.util.concurrent.CompletableFuture;
 
 
 public class MacroSetterController {
@@ -29,17 +32,17 @@ public class MacroSetterController {
 
     public void recordUserEvents(Stage stage) {
         EventRecorder recorder = EventRecorder.getInstance();
-
+        SpeechCommandHandler speechCommandHandler = SpeechCommandHandler.getInstance();
         // set up speech command handling on separate thread
         // TODO uncomment after completing event handling implementation
-//        CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
-//            speechCommandHandler.runCreateMode();
-//        });
-        //Macro createdMacro = recorder.recordUserMacro();
-//        System.out.println("Finished recording macro with steps: ");
-//        for(Step step: createdMacro.getSteps()) {
-//            System.out.println(step.getType());
-//        }
+        CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
+            speechCommandHandler.runCreateMode();
+        });
+        MacroSettings.currentMacro = recorder.recordUserMacro();
+        System.out.println("Finished recording macro with steps: ");
+        for(Step step: MacroSettings.currentMacro.getSteps()) {
+            System.out.println(step.getType());
+        }
         stage.show();
         stage.toFront();
     }
@@ -71,11 +74,11 @@ public class MacroSetterController {
         boolean checked = mouseVisibleBox.isSelected();
         MacroSettings.setMouseIsVisible(!checked);
         // for testing on Ubuntu
-        MacroSettings.currentMacro = new Macro();
+        //MacroSettings.currentMacro = new Macro();
         Macro userMacro = MacroSettings.configureMacroSettings();
         boolean saved = dbFacade.saveMacro(userMacro);
         if(saved) {
-            System.out.println("Saved macro with " + secondDelay + " second delay and visible set to " + !checked);
+            System.out.println("Saved macro " + userMacro.getName() + " with " + secondDelay + " second delay and visible set to " + !checked);
             MacroSettings.resetValues();
         }
         Stage stage = (Stage) secondSlider.getScene().getWindow();
