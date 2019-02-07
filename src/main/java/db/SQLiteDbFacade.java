@@ -5,6 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.Projections;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
@@ -40,6 +41,29 @@ public class SQLiteDbFacade implements DbFacade {
         sessionFactory = hibConfig.buildSessionFactory(serviceRegistry);
 
         return sessionFactory;
+    }
+
+    public static List<String> getMacroNames(){
+
+        Session session = null;
+        List<String> macroNames = null;
+
+        try {
+
+            session = sessionFactory.openSession();
+            // get all macro names
+            macroNames = session.createCriteria(Macro.class)
+                    .setProjection(Projections.property("name")).list();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally{
+            if(session != null) {
+                session.close();
+            }
+        }
+
+        return macroNames;
     }
 
     @Override

@@ -12,7 +12,7 @@ import speechHandling.SpeechCommandHandler;
 
 public class HomeMenuController {
 
-    public Button createMacro, assistantMode;
+    public Button createMacro, viewList, assistantMode;
     SpeechCommandHandler speechCommandHandler = SpeechCommandHandler.getInstance();
     EventRecorder recorder = EventRecorder.getInstance();
 
@@ -32,17 +32,27 @@ public class HomeMenuController {
             MacroSetterController macroSetterController = loader.getController();
             macroSetterController.recordUserEvents(stage);
         }
+        if(event.getSource() == viewList){
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("macroListView.fxml"));
+            loadPage(loader);
+        }
         if(event.getSource() == assistantMode){
-            stage = (Stage) assistantMode.getScene().getWindow();
-            root = FXMLLoader.load(getClass().getClassLoader().getResource("AssistantModeView.fxml"));
-            Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getClassLoader().getResource("PammStyle.css").toExternalForm());
-            stage.setScene(scene);
-            stage.show();
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("AssistantModeView.fxml"));
+            loadPage(loader);
         }
 
     }
 
+
+    private void loadPage(FXMLLoader loader) throws Exception{
+        Stage stage = (Stage) createMacro.getScene().getWindow();
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(getClass().getClassLoader().getResource("PammStyle.css").toExternalForm());
+        stage.setScene(scene);
+        stage.show();
+
+    }
 
     public static String getVariableStepValue(){
 
