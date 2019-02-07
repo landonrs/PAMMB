@@ -1,6 +1,7 @@
 package db;
 
 import macro.Macro;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -43,10 +44,10 @@ public class SQLiteDbFacade implements DbFacade {
         return sessionFactory;
     }
 
-    public static List<String> getMacroNames(){
+    public static List getMacroNames(){
 
         Session session = null;
-        List<String> macroNames = null;
+        List macroNames = null;
 
         try {
 
@@ -64,6 +65,36 @@ public class SQLiteDbFacade implements DbFacade {
         }
 
         return macroNames;
+    }
+
+    public static void deleteMacro(String macroName) {
+
+        Session session = null;
+        Transaction tx = null;
+
+        try {
+
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+
+            // delete selected macro
+            Query query = session.createQuery("delete Macro where name = :NAME");
+            query.setParameter("NAME", macroName);
+
+            int result = query.executeUpdate();
+            System.out.println("Deleted with result: " + result);
+
+            // Committing the change in the database.
+            session.flush();
+            tx.commit();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally{
+            if(session != null) {
+                session.close();
+            }
+        }
     }
 
     @Override
