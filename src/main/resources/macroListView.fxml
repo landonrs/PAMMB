@@ -2,7 +2,6 @@
 
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
 
@@ -17,7 +16,7 @@ fx:controller="frontEnd.MacroListController">
       </Label>
       <ListView fx:id="macroList" layoutX="41.0" layoutY="85.0" prefHeight="238.0" prefWidth="318.0" />
       <Button fx:id="runMacro" onAction="#runSelectedMacro" layoutX="41.0" layoutY="322.0" mnemonicParsing="false" prefHeight="71.0" prefWidth="106.0" text="Run Macro" />
-      <Button fx:id="deleteMacro" onAction="#deleteSelectedMacro" layoutX="147.0" layoutY="322.0" mnemonicParsing="false" prefHeight="71.0" prefWidth="106.0" text="Delete Macro" />
+      <Button fx:id="deleteMacro" onAction="#deleteSelectedMacro" layoutX="147.0" layoutY="322.0" mnemonicParsing="false" prefHeight="71.0" prefWidth="106.0" text="Delete Macro" wrapText="true"/>
       <Button fx:id="homeMenu" onAction="#displayHomeMenu" layoutX="253.0" layoutY="322.0" mnemonicParsing="false" prefHeight="71.0" prefWidth="106.0" text="Home Menu" />
    </children>
 </AnchorPane>

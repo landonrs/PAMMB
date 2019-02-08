@@ -46,13 +46,8 @@ public class MacroListController implements Initializable {
     }
 
     public void displayHomeMenu(ActionEvent actionEvent) throws Exception{
-        Stage stage = (Stage) macroList.getScene().getWindow();
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HomeView.fxml"));
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add(getClass().getClassLoader().getResource("PammStyle.css").toExternalForm());
-        stage.setScene(scene);
-        stage.show();
+        ViewLoader.loadPage(loader);
     }
 
     public void updateList(){

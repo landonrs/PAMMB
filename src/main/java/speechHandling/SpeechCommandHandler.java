@@ -64,11 +64,11 @@ public class SpeechCommandHandler {
 
     public void handleAssistantCommand(String speechInput) {
         // activate PAMM
-        if(currentState == ACTIVE_STATE.IDLE && speechInput == "listen up pam") {
+        if(currentState == ACTIVE_STATE.IDLE && speechInput.equals("listen up pam")) {
             currentState = ACTIVE_STATE.ACTIVATED;
         }
 
-        else if(currentState == ACTIVE_STATE.ACTIVATED && speechInput == "stop listening") {
+        else if(currentState == ACTIVE_STATE.ACTIVATED && speechInput.equals("stop listening")) {
             currentState = ACTIVE_STATE.IDLE;
         }
 
@@ -123,11 +123,8 @@ public class SpeechCommandHandler {
         RUNNING_MACRO
     }
 
-    public ACTIVE_STATE getCurrentState() {
+    ACTIVE_STATE getCurrentState() {
         return currentState;
     }
 
-    public void setRunningAssistantMode(boolean runningAssistantMode) {
-        SpeechCommandHandler.runningAssistantMode = runningAssistantMode;
-    }
 }
