@@ -1,7 +1,10 @@
 package speechHandling;
 
 import db.SQLiteDbFacade;
+import eventHandling.EventPerformer;
 import eventHandling.EventRecorder;
+import frontEnd.AssistantModeController;
+import macro.Macro;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +54,7 @@ public class SpeechCommandHandler {
         }
     }
 
-    public void runAssistantMode() {
+    public void runAssistantMode(AssistantModeController controller) {
         runningAssistantMode = true;
         interpreter.startListening();
         System.out.println("starting assistant mode");
@@ -62,7 +65,7 @@ public class SpeechCommandHandler {
 
             if(speechInput != null) {
                 System.out.println("result: " + speechInput + " running assistant " + runningAssistantMode);
-                handleAssistantCommand(speechInput);
+                handleAssistantCommand(speechInput, controller);
             }
 
             try {
@@ -78,18 +81,46 @@ public class SpeechCommandHandler {
 
     }
 
-    public void handleAssistantCommand(String speechInput) {
+    public void handleAssistantCommand(String speechInput, AssistantModeController controller) {
         // activate PAMM
         if(currentState == ACTIVE_STATE.IDLE && speechInput.equals("listen up pam")) {
             currentState = ACTIVE_STATE.ACTIVATED;
+            controller.playActiviationAnimation();
         }
 
         else if(currentState == ACTIVE_STATE.ACTIVATED && speechInput.equals("stop listening")) {
             currentState = ACTIVE_STATE.IDLE;
+            controller.dimCircle();
         }
 
         else if(currentState == ACTIVE_STATE.ACTIVATED) {
-            //checkCommandInDB(speechInput);
+            if(speechInput.equals("run continuous mode")) {
+                currentState = ACTIVE_STATE.CONTINUOUS_MODE;
+                controller.lightUpCircle();
+            }
+            else {
+                String macroName = getCommandFromSpeech(speechInput);
+                Macro userMacro = SQLiteDbFacade.getInstance().loadMacro(macroName);
+                if(userMacro != null) {
+                    EventPerformer.performMacro(userMacro);
+                    // After macro has been performed, return to idle state
+                    currentState = ACTIVE_STATE.IDLE;
+                }
+
+            }
+        }
+
+        else if(currentState == ACTIVE_STATE.CONTINUOUS_MODE && speechInput.equals("stop listening")) {
+            currentState = ACTIVE_STATE.IDLE;
+            controller.dimCircle();
+        }
+
+        else if(currentState == ACTIVE_STATE.CONTINUOUS_MODE) {
+            String macroName = getCommandFromSpeech(speechInput);
+            Macro userMacro = SQLiteDbFacade.getInstance().loadMacro(macroName);
+            if(userMacro != null) {
+                EventPerformer.performMacro(userMacro);
+            }
         }
 
     }
@@ -136,11 +167,24 @@ public class SpeechCommandHandler {
     public enum ACTIVE_STATE {
         IDLE,
         ACTIVATED,
+        CONTINUOUS_MODE,
         RUNNING_MACRO
     }
 
     ACTIVE_STATE getCurrentState() {
         return currentState;
+    }
+
+    String getCommandFromSpeech(String speechInput) {
+        String command = "";
+        if(speechInput.indexOf(COMMANDPHRASE) != -1) {
+            // the macro name starts after the substr "run command "
+            command = speechInput.substring(speechInput.indexOf(COMMANDPHRASE) + COMMANDPHRASE.length() + 1);
+            return command;
+        }
+        else
+            // command phrase not included, return entire speech input
+            return speechInput;
     }
 
     public static void updateGrammar() throws IOException {

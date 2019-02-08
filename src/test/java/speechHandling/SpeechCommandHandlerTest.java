@@ -1,5 +1,6 @@
 package speechHandling;
 
+import frontEnd.AssistantModeController;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,6 +14,9 @@ public class SpeechCommandHandlerTest {
 
     @Mock
     private SpeechInterpreter interpreterMock;
+
+    @Mock
+    AssistantModeController mockController;
 
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();
@@ -28,7 +32,7 @@ public class SpeechCommandHandlerTest {
 
     @Test
     public void shouldSetStateToActivated() {
-        handler.handleAssistantCommand("hey pam");
+        handler.handleAssistantCommand("listen up pam", mockController);
 
         assertEquals(SpeechCommandHandler.ACTIVE_STATE.ACTIVATED, handler.getCurrentState());
     }
@@ -36,12 +40,21 @@ public class SpeechCommandHandlerTest {
     @Test
     public void shouldSetStateToIdleAfterActivation() {
         // first set to activated
-        handler.handleAssistantCommand("hey pam");
+        handler.handleAssistantCommand("listen up pam", mockController);
         assertEquals(SpeechCommandHandler.ACTIVE_STATE.ACTIVATED, handler.getCurrentState());
         // now set to idle
-        handler.handleAssistantCommand("stop listening");
+        handler.handleAssistantCommand("stop listening", mockController);
         assertEquals(SpeechCommandHandler.ACTIVE_STATE.IDLE, handler.getCurrentState());
     }
+
+
+    @Test
+    public void shouldTrimCommandFromInput() {
+        String command = handler.getCommandFromSpeech("please run command hello world");
+
+        assertEquals("hello world", command);
+    }
+
 
 
 }

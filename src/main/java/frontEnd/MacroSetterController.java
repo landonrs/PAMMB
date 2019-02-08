@@ -52,7 +52,8 @@ public class MacroSetterController {
     public void checkMacroName(ActionEvent actionEvent) throws Exception{
         if(dbFacade.uniqueMacroName(macroName.getText())) {
             System.out.println("Name is unique: " + macroName.getText());
-            MacroSettings.setMacroName(macroName.getText());
+            // trim off any extra whitespace from name
+            MacroSettings.setMacroName(macroName.getText().trim());
             Stage stage = (Stage) macroName.getScene().getWindow();
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("macroSettingView.fxml"));
             ViewLoader.loadPage(loader);
