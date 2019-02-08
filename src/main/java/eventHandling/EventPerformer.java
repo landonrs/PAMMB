@@ -5,6 +5,7 @@ import macro.Step;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Performs the steps of a macro using Java's Robot class
@@ -24,12 +25,13 @@ public class EventPerformer {
         }
     }
 
-    public static boolean performMacro(Macro userMacro) {
+    public static boolean performMacro(Macro userMacro) throws InterruptedException {
 
         for(Step macroStep: userMacro.getSteps()) {
             switch (macroStep.getType()) {
                 case EventTypes.LEFT_CLICK:
                     leftClick(macroStep.getClickX(), macroStep.getClickY());
+                    TimeUnit.SECONDS.sleep(userMacro.getSecondDelay());
                     break;
                 case EventTypes.RIGHT_CLICK:
                     rightClick(macroStep.getClickX(), macroStep.getClickY());

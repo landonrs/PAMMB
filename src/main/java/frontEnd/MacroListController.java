@@ -1,6 +1,7 @@
 package frontEnd;
 
 import db.SQLiteDbFacade;
+import eventHandling.EventPerformer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -8,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
+import macro.Macro;
 
 import java.net.URL;
 import java.util.List;
@@ -24,6 +26,15 @@ public class MacroListController implements Initializable {
     }
 
     public void runSelectedMacro(ActionEvent actionEvent) {
+        String selectedMacro = (String) macroList.getSelectionModel().getSelectedItem();
+        System.out.println("Running macro " + selectedMacro);
+        Macro userMacro = SQLiteDbFacade.getInstance().loadMacro(selectedMacro);
+
+        try {
+            EventPerformer.performMacro(userMacro);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

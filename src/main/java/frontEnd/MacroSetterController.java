@@ -35,9 +35,9 @@ public class MacroSetterController {
         SpeechCommandHandler speechCommandHandler = SpeechCommandHandler.getInstance();
         // set up speech command handling on separate thread
         // TODO uncomment after completing event handling implementation
-        CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
-            speechCommandHandler.runCreateMode();
-        });
+//        CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
+//            speechCommandHandler.runCreateMode();
+//        });
         MacroSettings.currentMacro = recorder.recordUserMacro();
         System.out.println("Finished recording macro with steps: ");
         for(Step step: MacroSettings.currentMacro.getSteps()) {
