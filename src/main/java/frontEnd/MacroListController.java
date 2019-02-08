@@ -30,12 +30,7 @@ public class MacroListController implements Initializable {
         System.out.println("Running macro " + selectedMacro);
         Macro userMacro = SQLiteDbFacade.getInstance().loadMacro(selectedMacro);
 
-        try {
             EventPerformer.performMacro(userMacro);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
     public void deleteSelectedMacro(ActionEvent actionEvent) {
