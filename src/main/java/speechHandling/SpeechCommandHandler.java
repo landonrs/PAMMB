@@ -1,7 +1,13 @@
 package speechHandling;
 
+import db.SQLiteDbFacade;
 import eventHandling.EventRecorder;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class SpeechCommandHandler {
@@ -13,11 +19,21 @@ public class SpeechCommandHandler {
     // singleton instance to ensure that only one microphone is intitialized
     private static SpeechCommandHandler instance = null;
 
+    private static File grammarFile;
+
+    private static final String COMMANDLINE = "public <command> = [please] (run command) (";
+    private static final String COMMANDPHRASE = "run command";
+
     private SpeechCommandHandler(SpeechInterpreter someInterpreter) {
         interpreter = someInterpreter;
         currentState = ACTIVE_STATE.IDLE;
         runningAssistantMode = false;
         runningCreateMode = false;
+        try {
+            grammarFile = new File(getClass().getClassLoader().getResource("grammars/PAMM.gram").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -125,6 +141,37 @@ public class SpeechCommandHandler {
 
     ACTIVE_STATE getCurrentState() {
         return currentState;
+    }
+
+    public static void updateGrammar() throws IOException {
+        List<String> commandNames = SQLiteDbFacade.getMacroNames();
+        String newCommandGrammarList = COMMANDLINE;
+        if(commandNames.isEmpty()){
+            newCommandGrammarList += "<VOID> );";
+        }
+        else {
+            for (int i = 0; i < commandNames.size(); i++) {
+                if (i != commandNames.size() - 1) {
+                    newCommandGrammarList += commandNames.get(i).toLowerCase() + " | ";
+                } else {
+                    newCommandGrammarList += commandNames.get(i).toLowerCase() + ");";
+                }
+            }
+        }
+        // read through the file until we get to the command line
+        int position = 0;
+        List<String> lines = Files.readAllLines(grammarFile.toPath());
+        for(String line: lines){
+            // System.out.println(position + " " + line);
+            if(line.toLowerCase().indexOf(COMMANDPHRASE.toLowerCase()) != -1){
+                break;
+            }
+            position++;
+        }
+        // overwrite commands with updated list
+        lines.set(position, newCommandGrammarList);
+        // update the grammar file
+        Files.write(grammarFile.toPath(), lines);
     }
 
 }

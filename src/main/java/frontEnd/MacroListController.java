@@ -10,7 +10,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import macro.Macro;
+import speechHandling.SpeechCommandHandler;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -42,6 +44,12 @@ public class MacroListController implements Initializable {
         System.out.println("Deleting " + selectedMacro);
         SQLiteDbFacade.deleteMacro(selectedMacro);
         updateList();
+        // remove the command from the grammar file for speech recognition
+        try {
+            SpeechCommandHandler.updateGrammar();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 

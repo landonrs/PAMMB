@@ -4,7 +4,11 @@ grammar pamm;
 
 public <stop_listening> = stop listening;
 public <activate> = listen up pam;
-public <command> = [please] (run command) (test);
 public <continuous> = run continuous mode;
 public <stop_recording> = stop recording;
 public <variable> = create variable step;
+
+/**
+* this rule must remain at the bottom of the file
+*/
+public <command> = [please] (run command) (test);

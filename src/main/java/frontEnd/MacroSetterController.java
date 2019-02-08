@@ -55,11 +55,7 @@ public class MacroSetterController {
             MacroSettings.setMacroName(macroName.getText());
             Stage stage = (Stage) macroName.getScene().getWindow();
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("macroSettingView.fxml"));
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getClassLoader().getResource("PammStyle.css").toExternalForm());
-            stage.setScene(scene);
-            stage.show();
+            ViewLoader.loadPage(loader);
         }
         else{
             warningLabel.setVisible(true);
@@ -80,25 +76,21 @@ public class MacroSetterController {
         if(saved) {
             System.out.println("Saved macro " + userMacro.getName() + " with " + secondDelay + " second delay and visible set to " + !checked);
             MacroSettings.resetValues();
+            // update the grammar file with the new command
+            SpeechCommandHandler.updateGrammar();
         }
-        Stage stage = (Stage) secondSlider.getScene().getWindow();
-        displayHomeView(stage);
+        displayHomeView();
 
     }
 
     @FXML
     public void cancelSave(ActionEvent actionEvent) throws Exception{
-        Stage stage = (Stage) secondSlider.getScene().getWindow();
-        displayHomeView(stage);
+        displayHomeView();
 
     }
 
-    private void displayHomeView(Stage stage) throws Exception{
+    private void displayHomeView() throws Exception{
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HomeView.fxml"));
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add(getClass().getClassLoader().getResource("PammStyle.css").toExternalForm());
-        stage.setScene(scene);
-        stage.show();
+        ViewLoader.loadPage(loader);
     }
 }

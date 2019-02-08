@@ -3,6 +3,7 @@ import frontEnd.ViewLoader;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
+import speechHandling.SpeechCommandHandler;
 
 public class Main extends Application {
 
@@ -10,6 +11,9 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         //initialize db
         SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
+        // update grammar file for speech recognition
+        SpeechCommandHandler speechCommandHandler = SpeechCommandHandler.getInstance();
+        SpeechCommandHandler.updateGrammar();
         // set stage for Viewloader to load pages
         ViewLoader.setPrimaryStage(primaryStage);
         primaryStage.setTitle("PAMM");
