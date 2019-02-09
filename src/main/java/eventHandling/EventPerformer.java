@@ -6,6 +6,7 @@ import macro.Step;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Performs the steps of a macro using Java's Robot class
@@ -16,6 +17,13 @@ public class EventPerformer {
     private static final int KEYPRESS_DELAY = 50;
     private static final int KEY_MODIFIER_DELAY = 150;
     private static final int CLICK_MODIFIER_DELAY = 100;
+    // determines how quickly the mouse moves from one point to the next
+    private static final double MOUSE_MOVE_STEPS = 1000;
+    private static Point previousPoint;
+    // determines if we show the mouse moving when performing macro
+    private static boolean macroMouseVisible;
+    // sets delay between clicking events
+    private static int macroSecondDelay;
 
     private static Robot robot;
 
@@ -28,6 +36,10 @@ public class EventPerformer {
     }
 
     public static boolean performMacro(Macro userMacro) {
+        macroMouseVisible = userMacro.isMouseIsVisible();
+        macroSecondDelay = userMacro.getSecondDelay();
+        //start previousPoint at current location
+        previousPoint = new Point(MouseInfo.getPointerInfo().getLocation());
 
         for(Step macroStep: userMacro.getSteps()) {
             switch (macroStep.getType()) {
@@ -142,6 +154,18 @@ public class EventPerformer {
 
 
     private static void leftClick(int clickX, int clickY, int... modifiers) {
+       // wait for set delay time
+        try {
+            TimeUnit.SECONDS.sleep(macroSecondDelay);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //if mouse is visible, first glide the mouse over to the position
+        if(macroMouseVisible){
+            glideMouse(clickX, clickY);
+        }
+
         robot.mouseMove(clickX, clickY);
         for(int modifier: modifiers) {
             robot.keyPress(modifier);
@@ -156,6 +180,18 @@ public class EventPerformer {
     }
 
     private static void rightClick(int clickX, int clickY, int... modifiers) {
+        // wait for set delay time
+        try {
+            TimeUnit.SECONDS.sleep(macroSecondDelay);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //if mouse is visible, first glide the mouse over to the position
+        if(macroMouseVisible){
+            glideMouse(clickX, clickY);
+        }
+
         robot.mouseMove(clickX, clickY);
         for(int modifier: modifiers) {
             robot.keyPress(modifier);
@@ -167,6 +203,19 @@ public class EventPerformer {
         for(int modifier: modifiers) {
             robot.keyRelease(modifier);
         }
+    }
+
+    private static void glideMouse(int clickX, int clickY) {
+        double dx = (clickX - previousPoint.getX()) / MOUSE_MOVE_STEPS;
+        double dy = (clickY - previousPoint.getY()) / MOUSE_MOVE_STEPS;
+        // smoothly move the mouse from current position to position where click event happens
+        for (int step = 1; step <= MOUSE_MOVE_STEPS; step++) {
+            robot.mouseMove((int) (previousPoint.getX() + dx * step),
+                    (int) (previousPoint.getY() + dy * step));
+        }
+
+        // now set previousPoint to currentLocation
+        previousPoint = new Point(clickX, clickY);
     }
 
 }

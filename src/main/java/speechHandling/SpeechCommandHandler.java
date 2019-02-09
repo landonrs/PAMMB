@@ -110,6 +110,7 @@ public class SpeechCommandHandler {
                     EventPerformer.performMacro(userMacro);
                     // After macro has been performed, return to idle state
                     currentState = ACTIVE_STATE.IDLE;
+                    controller.dimCircle();
                 }
                 else
                     controller.displaySpeech(UNKNOWNREPSONSE);
