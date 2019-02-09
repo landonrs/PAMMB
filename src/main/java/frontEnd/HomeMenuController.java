@@ -38,7 +38,7 @@ public class HomeMenuController {
         }
         if(event.getSource() == assistantMode){
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("AssistantModeView.fxml"));
-            ViewLoader.loadPage(loader);
+            ViewLoader.loadAssistantMode(loader);
         }
 
     }

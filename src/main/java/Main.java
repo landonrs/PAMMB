@@ -19,6 +19,8 @@ public class Main extends Application {
         primaryStage.setTitle("PAMM");
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HomeView.fxml"));
         ViewLoader.loadPage(loader);
+        ViewLoader.setHomeCoordinates();
+        ViewLoader.setInitialized(true);
     }
 
 
