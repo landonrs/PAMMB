@@ -2,12 +2,14 @@ package frontEnd;
 
 import javafx.animation.Animation;
 import javafx.animation.FillTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -21,6 +23,7 @@ public class AssistantModeController {
 
     public Button menu;
     public Circle pammCircle;
+    public Label userSpeechDisplay;
     private FillTransition ACTIVATED_TRANSITION;
     private final String ACTIVATED_COLOR = "#44a4ff";
     private final String IDLE_COLOR = "#003261";
@@ -69,5 +72,14 @@ public class AssistantModeController {
         FillTransition IDLE_TRANSITION = new FillTransition(Duration.millis(1000), pammCircle,
                 Color.valueOf(ACTIVATED_COLOR), Color.valueOf(IDLE_COLOR));
         IDLE_TRANSITION.play();
+    }
+
+    public void displaySpeech(String speechInput) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                userSpeechDisplay.setText(speechInput);
+            }
+        });
     }
 }

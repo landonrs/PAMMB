@@ -26,6 +26,7 @@ public class SpeechCommandHandler {
 
     private static final String COMMANDLINE = "public <command> = [please] (run command) (";
     private static final String COMMANDPHRASE = "run command";
+    private static final String UNKNOWNREPSONSE = "Command not recognized";
 
     private SpeechCommandHandler(SpeechInterpreter someInterpreter) {
         interpreter = someInterpreter;
@@ -68,11 +69,11 @@ public class SpeechCommandHandler {
                 handleAssistantCommand(speechInput, controller);
             }
 
-            try {
-                TimeUnit.SECONDS.sleep(2);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                TimeUnit.SECONDS.sleep(2);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
             interpreter.resumeListening();
         }
 
@@ -85,33 +86,40 @@ public class SpeechCommandHandler {
         // activate PAMM
         if(currentState == ACTIVE_STATE.IDLE && speechInput.equals("listen up pam")) {
             currentState = ACTIVE_STATE.ACTIVATED;
+            controller.displaySpeech(speechInput);
             controller.playActiviationAnimation();
         }
 
         else if(currentState == ACTIVE_STATE.ACTIVATED && speechInput.equals("stop listening")) {
             currentState = ACTIVE_STATE.IDLE;
+            controller.displaySpeech(speechInput);
             controller.dimCircle();
         }
 
         else if(currentState == ACTIVE_STATE.ACTIVATED) {
             if(speechInput.equals("run continuous mode")) {
                 currentState = ACTIVE_STATE.CONTINUOUS_MODE;
+                controller.displaySpeech(speechInput);
                 controller.lightUpCircle();
             }
             else {
                 String macroName = getCommandFromSpeech(speechInput);
                 Macro userMacro = SQLiteDbFacade.getInstance().loadMacro(macroName);
                 if(userMacro != null) {
+                    controller.displaySpeech(speechInput);
                     EventPerformer.performMacro(userMacro);
                     // After macro has been performed, return to idle state
                     currentState = ACTIVE_STATE.IDLE;
                 }
+                else
+                    controller.displaySpeech(UNKNOWNREPSONSE);
 
             }
         }
 
         else if(currentState == ACTIVE_STATE.CONTINUOUS_MODE && speechInput.equals("stop listening")) {
             currentState = ACTIVE_STATE.IDLE;
+            controller.displaySpeech(speechInput);
             controller.dimCircle();
         }
 
@@ -119,8 +127,11 @@ public class SpeechCommandHandler {
             String macroName = getCommandFromSpeech(speechInput);
             Macro userMacro = SQLiteDbFacade.getInstance().loadMacro(macroName);
             if(userMacro != null) {
+                controller.displaySpeech(speechInput);
                 EventPerformer.performMacro(userMacro);
             }
+            else
+                controller.displaySpeech(UNKNOWNREPSONSE);
         }
 
     }
