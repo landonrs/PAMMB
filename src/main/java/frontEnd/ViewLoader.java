@@ -59,4 +59,9 @@ public class ViewLoader {
         HOME_MENU_X = stage.getX();
         HOME_MENU_Y = stage.getY();
     }
+
+    public static void showPrimaryStage() {
+        stage.toFront();
+        stage.show();
+    }
 }

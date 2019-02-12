@@ -2,23 +2,21 @@ package frontEnd;
 
 import db.SQLiteDbFacade;
 import eventHandling.EventRecorder;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
-import javafx.scene.paint.Paint;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import macro.Macro;
 import macro.MacroSettings;
 import macro.Step;
 import speechHandling.SpeechCommandHandler;
 
-import java.util.concurrent.CompletableFuture;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 
 public class MacroSetterController {
@@ -26,25 +24,60 @@ public class MacroSetterController {
     public Label warningLabel;
     public TextField macroName;
     public Slider secondSlider;
+    public TextField varStepNameField;
     public CheckBox mouseVisibleBox;
+    public Button varStepNameCancel;
 
     private SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
 
     public void recordUserEvents(Stage stage) {
-        EventRecorder recorder = EventRecorder.getInstance();
         SpeechCommandHandler speechCommandHandler = SpeechCommandHandler.getInstance();
         // set up speech command handling on separate thread
         // TODO uncomment after completing event handling implementation
 //        CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
 //            speechCommandHandler.runCreateMode();
 //        });
-        MacroSettings.currentMacro = recorder.recordUserMacro();
+        // this prevents the JavaFX platform thread from terminating
+        Platform.setImplicitExit( false );
+        EventRecorder.startRecordingUserMacro(this);
+
+    }
+
+    public void finishRecording() {
+        MacroSettings.currentMacro = EventRecorder.finishRecordingUserMacro();
         System.out.println("Finished recording macro with steps: ");
         for(Step step: MacroSettings.currentMacro.getSteps()) {
             System.out.println(step.getType());
         }
-        stage.show();
-        stage.toFront();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                ViewLoader.showPrimaryStage();
+            }
+        });
+
+    }
+
+    public void getVariableStep() {
+        EventRecorder.pauseRecording();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Stage stage = new Stage();
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("VarStepNameView.fxml"));
+                Parent root = null;
+                try {
+                    root = loader.load();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Scene scene = new Scene(root);
+                scene.getStylesheets().add(ViewLoader.class.getClassLoader().getResource("PammStyle.css").toExternalForm());
+                stage.setScene(scene);
+                stage.show();
+                stage.toFront();
+            }
+        });
     }
 
 
@@ -75,7 +108,8 @@ public class MacroSetterController {
         Macro userMacro = MacroSettings.configureMacroSettings();
         boolean saved = dbFacade.saveMacro(userMacro);
         if(saved) {
-            System.out.println("Saved macro " + userMacro.getName() + " with " + secondDelay + " second delay and visible set to " + !checked);
+            System.out.println("Saved macro " + userMacro.getName() + " with " +
+                    secondDelay + " second delay and visible set to " + !checked);
             MacroSettings.resetValues();
             // update the grammar file with the new command
             SpeechCommandHandler.updateGrammar();
@@ -93,5 +127,23 @@ public class MacroSetterController {
     private void displayHomeView() throws Exception{
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HomeView.fxml"));
         ViewLoader.loadPage(loader);
+    }
+
+    @FXML
+    public void setVarStepName(ActionEvent actionEvent) throws InterruptedException {
+        String varStepName = varStepNameField.getText();
+        Stage stage = (Stage) varStepNameCancel.getScene().getWindow();
+        stage.close();
+        TimeUnit.MILLISECONDS.sleep(250);
+        EventRecorder.createVariableStep(varStepName);
+        EventRecorder.resumeRecording();
+    }
+
+    @FXML
+    public void cancelVarStep(ActionEvent actionEvent) throws InterruptedException {
+        TimeUnit.MILLISECONDS.sleep(250);
+        Stage stage = (Stage) varStepNameCancel.getScene().getWindow();
+        stage.hide();
+        EventRecorder.resumeRecording();
     }
 }

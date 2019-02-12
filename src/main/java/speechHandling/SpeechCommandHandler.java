@@ -4,6 +4,7 @@ import db.SQLiteDbFacade;
 import eventHandling.EventPerformer;
 import eventHandling.EventRecorder;
 import frontEnd.AssistantModeController;
+import frontEnd.MacroSetterController;
 import macro.Macro;
 
 import java.io.File;
@@ -141,7 +142,7 @@ public class SpeechCommandHandler {
         runningAssistantMode = false;
     }
 
-    public void runCreateMode() {
+    public void runCreateMode(MacroSetterController controller) {
         runningCreateMode = true;
         interpreter.startListening();
         System.out.println("starting macro create mode");
@@ -151,7 +152,7 @@ public class SpeechCommandHandler {
 
             if(speechInput != null) {
                 System.out.println("result: " + speechInput);
-                handleCreateCommand(speechInput);
+                handleCreateCommand(speechInput, controller);
                 if(!runningCreateMode) {
                     System.out.println("Stopping create mode");
                     return;
@@ -165,13 +166,13 @@ public class SpeechCommandHandler {
         interpreter.pauseListening();
     }
 
-    private void handleCreateCommand(String command) {
+    private void handleCreateCommand(String command, MacroSetterController controller) {
         if(command.equals("stop recording") ){
             EventRecorder.stopRecording();
             runningCreateMode = false;
         }
         else if(command.equals("create variable step")) {
-            EventRecorder.createVariableStep();
+            controller.getVariableStep();
         }
     }
 

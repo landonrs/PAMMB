@@ -13,7 +13,7 @@ fx:controller="frontEnd.MacroSetterController">
    <children>
       <Button fx:id="varStepNameSetter"  onAction="#setVarStepName" layoutX="63.0" layoutY="157.0" mnemonicParsing="false" text="set step name" />
       <Button fx:id="varStepNameCancel" onAction="#cancelVarStep" layoutX="240.0" layoutY="157.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="cancel" />
-      <TextField fx:id="varStepName" layoutX="67.0" layoutY="100.0" prefHeight="25.0" prefWidth="288.0" />
+      <TextField fx:id="varStepNameField" layoutX="67.0" layoutY="100.0" prefHeight="25.0" prefWidth="288.0" />
       <Label alignment="CENTER" contentDisplay="CENTER" layoutX="63.0" prefHeight="108.0" prefWidth="296.0" text="Enter a name for this variable step:" wrapText="true">
          <cursor>
             <Cursor fx:constant="DEFAULT" />
