@@ -170,7 +170,10 @@ public class SpeechCommandHandler {
             EventRecorder.stopRecording();
             runningCreateMode = false;
         }
-        else if(command.equals("create variable step")) {
+        else if(command.equals("start variable step")){
+            EventRecorder.ignoreInput();
+        }
+        else if(command.equals("finish variable step")) {
             controller.getVariableStepName();
         }
     }

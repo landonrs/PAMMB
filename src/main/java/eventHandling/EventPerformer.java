@@ -5,6 +5,9 @@ import macro.Macro;
 import macro.Step;
 
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -131,11 +134,31 @@ public class EventPerformer {
                     typeKeyWithModifiers(macroStep.getKeyCode(), KeyEvent.VK_SHIFT, KeyEvent.VK_META);
                     break;
 
+                case EventTypes.VAR_STEP:
+                    insertVarStepValue(macroStep.getVariableStepValue());
+
             }
         }
 
         return true;
 
+    }
+
+    private static void insertVarStepValue(String variableStepValue) {
+        //store previous clipboard contents
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Transferable previousContents = clipboard.getContents(null);
+        StringSelection stringSelection = new StringSelection(variableStepValue);
+
+        clipboard.setContents(stringSelection, stringSelection);
+
+        robot.keyPress(KeyEvent.VK_CONTROL);
+        robot.keyPress(KeyEvent.VK_V);
+        robot.keyRelease(KeyEvent.VK_V);
+        robot.keyRelease(KeyEvent.VK_CONTROL);
+
+        // now reset clipboard contents to previous value
+        clipboard.setContents(previousContents, stringSelection);
     }
 
     private static void setVarStepValues(Macro userMacro) {

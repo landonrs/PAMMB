@@ -1,10 +1,12 @@
 package frontEnd;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -22,7 +24,12 @@ public class ViewLoader {
     private static boolean initialized = false;
 
     public static void setPrimaryStage(Stage stage) {
+
         ViewLoader.stage = stage;
+        Platform.setImplicitExit(false);
+        ViewLoader.stage.setOnCloseRequest(event -> {
+            Platform.exit();
+        });
     }
 
     public static void loadPage(FXMLLoader loader) throws Exception{
@@ -74,6 +81,10 @@ public class ViewLoader {
         Scene scene = new Scene(loader.load());
         scene.getStylesheets().add(ViewLoader.class.getClassLoader().getResource("PammStyle.css").toExternalForm());
         stage.setScene(scene);
+        // set focus on textField
+        TextField varValueField = (TextField) scene.lookup("#varStepValueField");
+        varValueField.requestFocus();
+        // insert var step name into label
         Label varNameLabel = (Label) scene.lookup("#varStepName");
         varNameLabel.setText("Enter the value for the " + varStepName);
         stage.showAndWait();

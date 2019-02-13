@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 public class EventRecorder extends GlobalScreen implements NativeKeyListener, NativeMouseInputListener {
 
     private static volatile boolean recordingMacro;
+    private static volatile boolean gettingVarStep;
     // this is set to true whenever the user makes a command that uses the meta or alt key with another action
     private static boolean usingCombinationCommand;
     private static EventRecorder instance = null;
@@ -27,6 +28,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
 
     private EventRecorder(){
         recordingMacro = false;
+        gettingVarStep = false;
         usingCombinationCommand = false;
         addNativeKeyListener(this);
         addNativeMouseListener(this);
@@ -98,6 +100,17 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
         currentUserMacro.getSteps().add(userStep);
         // the macro has at least one var step
         currentUserMacro.setVarStep(true);
+        // we are no longer getting a variable step from the user
+        gettingVarStep = false;
+    }
+
+    /**
+     * called when user is creating variable step, we ignore
+     * user input until they finish creating the step
+     */
+    public static void ignoreInput(){
+        recordingMacro = false;
+        gettingVarStep = true;
     }
 
     @Override
@@ -110,6 +123,12 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
 
     @Override
     public void nativeKeyReleased(NativeKeyEvent e) {
+        //TODO remove check when finished manual testing
+        if(gettingVarStep && NativeKeyEvent.getKeyText(e.getKeyCode()) == "8") {
+            macroController.getVariableStepName();
+            return;
+        }
+
         if(recordingMacro) {
             // ctrl + shift command
             if (((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0) &&
@@ -200,7 +219,13 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                     }
                     if (NativeKeyEvent.getKeyText(e.getKeyCode()) == "8") {
                         System.out.println("pressed 8, creating var step");
-                        macroController.getVariableStepName();
+                        //start getting var step
+                        if(!gettingVarStep) {
+                            ignoreInput();
+                        }
+                        else {
+                            macroController.getVariableStepName();
+                        }
                         return;
                     }
                     System.out.println("User typed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
