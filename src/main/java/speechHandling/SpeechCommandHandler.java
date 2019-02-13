@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class SpeechCommandHandler {
 
@@ -172,7 +171,7 @@ public class SpeechCommandHandler {
             runningCreateMode = false;
         }
         else if(command.equals("create variable step")) {
-            controller.getVariableStep();
+            controller.getVariableStepName();
         }
     }
 

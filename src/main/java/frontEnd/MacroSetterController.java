@@ -58,7 +58,7 @@ public class MacroSetterController {
 
     }
 
-    public void getVariableStep() {
+    public void getVariableStepName() {
         EventRecorder.pauseRecording();
         Platform.runLater(new Runnable() {
             @Override

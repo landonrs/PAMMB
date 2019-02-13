@@ -1,6 +1,5 @@
 package eventHandling;
 
-import frontEnd.HomeMenuController;
 import frontEnd.MacroSetterController;
 import macro.Macro;
 import macro.Step;
@@ -97,6 +96,8 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
         System.out.println("Creating variable step: " + varStepName);
         Step userStep = new Step(varStepName);
         currentUserMacro.getSteps().add(userStep);
+        // the macro has at least one var step
+        currentUserMacro.setVarStep(true);
     }
 
     @Override
@@ -199,7 +200,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                     }
                     if (NativeKeyEvent.getKeyText(e.getKeyCode()) == "8") {
                         System.out.println("pressed 8, creating var step");
-                        macroController.getVariableStep();
+                        macroController.getVariableStepName();
                         return;
                     }
                     System.out.println("User typed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));

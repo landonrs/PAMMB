@@ -4,8 +4,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 /**
  * util class for loading the different views of the app
@@ -63,5 +66,18 @@ public class ViewLoader {
     public static void showPrimaryStage() {
         stage.toFront();
         stage.show();
+    }
+
+    public static String displayVarStepValueView(String varStepName) throws IOException {
+        FXMLLoader loader = new FXMLLoader(ViewLoader.class.getClassLoader().getResource("VarStepValueView.fxml"));
+        Stage stage = new Stage();
+        Scene scene = new Scene(loader.load());
+        scene.getStylesheets().add(ViewLoader.class.getClassLoader().getResource("PammStyle.css").toExternalForm());
+        stage.setScene(scene);
+        Label varNameLabel = (Label) scene.lookup("#varStepName");
+        varNameLabel.setText("Enter the value for the " + varStepName);
+        stage.showAndWait();
+        System.out.println("Returned from show and wait...");
+        return VarStepController.varStepValue;
     }
 }
