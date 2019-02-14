@@ -7,7 +7,8 @@ public <activate> = hey there pam;
 public <continuous> = turn on continuous mode;
 public <return> = return to menu;
 public <stop_recording> = stop recording;
-public <variable> = create variable step;
+public <start_variable> = start variable step;
+public <finish_variable> = finish variable step;
 
 /**
 * this rule must remain at the bottom of the file

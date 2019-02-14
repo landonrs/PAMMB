@@ -1,11 +1,13 @@
 package frontEnd;
 
+import Audio.MediaPlayerUtil;
 import db.SQLiteDbFacade;
 import eventHandling.EventRecorder;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -16,10 +18,13 @@ import macro.Step;
 import speechHandling.SpeechCommandHandler;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 
-public class MacroSetterController {
+public class MacroSetterController implements Initializable {
 
     public Label warningLabel;
     public TextField macroName;
@@ -28,17 +33,15 @@ public class MacroSetterController {
     public CheckBox mouseVisibleBox;
     public Button varStepNameCancel;
 
+
     private SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
 
     public void recordUserEvents(Stage stage) {
         SpeechCommandHandler speechCommandHandler = SpeechCommandHandler.getInstance();
         // set up speech command handling on separate thread
-        // TODO uncomment after completing event handling implementation
-//        CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
-//            speechCommandHandler.runCreateMode();
-//        });
-        // this prevents the JavaFX platform thread from terminating
-        Platform.setImplicitExit( false );
+        CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
+            speechCommandHandler.runCreateMode(this);
+        });
         EventRecorder.startRecordingUserMacro(this);
 
     }
@@ -59,7 +62,7 @@ public class MacroSetterController {
     }
 
     public void getVariableStepName() {
-        EventRecorder.pauseRecording();
+        // EventRecorder.stopRecording();
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -139,11 +142,17 @@ public class MacroSetterController {
         EventRecorder.resumeRecording();
     }
 
+
     @FXML
     public void cancelVarStep(ActionEvent actionEvent) throws InterruptedException {
         TimeUnit.MILLISECONDS.sleep(250);
         Stage stage = (Stage) varStepNameCancel.getScene().getWindow();
         stage.hide();
         EventRecorder.resumeRecording();
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        MediaPlayerUtil.playSound();
     }
 }

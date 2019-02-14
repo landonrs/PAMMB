@@ -1,5 +1,6 @@
 package speechHandling;
 
+import Audio.MediaPlayerUtil;
 import db.SQLiteDbFacade;
 import eventHandling.EventPerformer;
 import eventHandling.EventRecorder;
@@ -37,7 +38,7 @@ public class SpeechCommandHandler {
     private static final String RETURN_PHRASE = "return to menu";
     // commands used when creating macros
     private static final String STOP_RECORDING_PHRASE = "stop recording";
-    private static final String START_VAR_STEP_PHRASE = "create variable step";
+    private static final String START_VAR_STEP_PHRASE = "start variable step";
     private static final String FINISH_VAR_STEP_PHRASE = "finish variable step";
 
     private SpeechCommandHandler(SpeechInterpreter someInterpreter) {
@@ -204,14 +205,16 @@ public class SpeechCommandHandler {
     }
 
     private void handleCreateCommand(String command, MacroSetterController controller) {
-        if(command.equals("stop recording") ){
-            EventRecorder.stopRecording();
+        if(command.equals(STOP_RECORDING_PHRASE) ){
+            //EventRecorder.stopRecording();
+            controller.finishRecording();
             runningCreateMode = false;
         }
-        else if(command.equals("start variable step")){
+        else if(command.equals(START_VAR_STEP_PHRASE)){
+            MediaPlayerUtil.playSound();
             EventRecorder.ignoreInput();
         }
-        else if(command.equals("finish variable step")) {
+        else if(command.equals(FINISH_VAR_STEP_PHRASE)) {
             controller.getVariableStepName();
         }
     }

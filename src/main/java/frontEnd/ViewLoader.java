@@ -26,7 +26,9 @@ public class ViewLoader {
     public static void setPrimaryStage(Stage stage) {
 
         ViewLoader.stage = stage;
+        // this prevents the JavaFX platform thread from terminating when stage is hidden
         Platform.setImplicitExit(false);
+        // explicitly end program when user closes primary stage
         ViewLoader.stage.setOnCloseRequest(event -> {
             Platform.exit();
         });
