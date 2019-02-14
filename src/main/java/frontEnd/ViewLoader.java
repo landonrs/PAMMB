@@ -76,6 +76,7 @@ public class ViewLoader {
     }
 
     public static String displayVarStepValueView(String varStepName) throws IOException {
+
         FXMLLoader loader = new FXMLLoader(ViewLoader.class.getClassLoader().getResource("VarStepValueView.fxml"));
         Stage stage = new Stage();
         Scene scene = new Scene(loader.load());
@@ -87,6 +88,7 @@ public class ViewLoader {
         // insert var step name into label
         Label varNameLabel = (Label) scene.lookup("#varStepName");
         varNameLabel.setText("Enter the value for the " + varStepName);
+        stage.toFront();
         stage.showAndWait();
         System.out.println("Returned from show and wait...");
         return VarStepController.varStepValue;

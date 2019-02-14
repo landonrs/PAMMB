@@ -3,48 +3,28 @@ package frontEnd;
 import javafx.animation.Animation;
 import javafx.animation.FillTransition;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 import speechHandling.SpeechCommandHandler;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
-public class AssistantModeController {
+public class AssistantModeController implements Initializable {
 
-    public Button menu;
     public Circle pammCircle;
     public Label userSpeechDisplay;
     private FillTransition ACTIVATED_TRANSITION;
     private final String ACTIVATED_COLOR = "#44a4ff";
     private final String IDLE_COLOR = "#003261";
     SpeechCommandHandler speechCommandHandler = SpeechCommandHandler.getInstance();
-    CompletableFuture audioCommands = CompletableFuture.runAsync(() -> {
-        speechCommandHandler.runAssistantMode(this);
-    });
+    CompletableFuture audioCommands;
 
-    @FXML
-    private void handleButtonAction (ActionEvent event) throws Exception {
-        Stage stage = null;
-        Parent root = null;
-
-        if (event.getSource() == menu) {
-            System.out.println("turning off assistant mode");
-            speechCommandHandler.stopAssistantMode();
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HomeView.fxml"));
-            ViewLoader.loadPage(loader);
-        }
-
-    }
 
     public void playActiviationAnimation(){
         ACTIVATED_TRANSITION = new FillTransition(Duration.millis(1000), pammCircle,
@@ -79,6 +59,38 @@ public class AssistantModeController {
             @Override
             public void run() {
                 userSpeechDisplay.setText(speechInput);
+            }
+        });
+    }
+
+    public void clearViewText() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                userSpeechDisplay.setText("");
+            }
+        });
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        audioCommands = CompletableFuture.runAsync(() -> {
+            speechCommandHandler.runAssistantMode(this);
+        });
+    }
+
+    public void loadHomeView() {
+        System.out.println("turning off assistant mode");
+        displaySpeech("Closing assistant mode");
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HomeView.fxml"));
+                try {
+                    ViewLoader.loadPage(loader);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

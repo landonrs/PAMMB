@@ -5,6 +5,7 @@ import eventHandling.EventPerformer;
 import eventHandling.EventRecorder;
 import frontEnd.AssistantModeController;
 import frontEnd.MacroSetterController;
+import javafx.application.Platform;
 import macro.Macro;
 
 import java.io.File;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class SpeechCommandHandler {
 
@@ -27,6 +29,16 @@ public class SpeechCommandHandler {
     private static final String COMMANDLINE = "public <command> = [please] (run command) (";
     private static final String COMMANDPHRASE = "run command";
     private static final String UNKNOWNREPSONSE = "Command not recognized";
+
+    // commands used in assistant mode
+    private static final String ACTIVATE_PHRASE = "hey there pam";
+    private static final String DEACTIVATE_PHRASE = "stop listening";
+    private static final String CONTINUOUS_PHRASE = "turn on continuous mode";
+    private static final String RETURN_PHRASE = "return to menu";
+    // commands used when creating macros
+    private static final String STOP_RECORDING_PHRASE = "stop recording";
+    private static final String START_VAR_STEP_PHRASE = "create variable step";
+    private static final String FINISH_VAR_STEP_PHRASE = "finish variable step";
 
     private SpeechCommandHandler(SpeechInterpreter someInterpreter) {
         interpreter = someInterpreter;
@@ -56,6 +68,8 @@ public class SpeechCommandHandler {
     }
 
     public void runAssistantMode(AssistantModeController controller) {
+        // reset our state from last time
+        currentState = ACTIVE_STATE.IDLE;
         runningAssistantMode = true;
         interpreter.startListening();
         System.out.println("starting assistant mode");
@@ -65,7 +79,7 @@ public class SpeechCommandHandler {
 
 
             if(speechInput != null) {
-                System.out.println("result: " + speechInput + " running assistant " + runningAssistantMode);
+                System.out.println("result: " + speechInput + " current state " + currentState);
                 handleAssistantCommand(speechInput, controller);
             }
 
@@ -83,62 +97,86 @@ public class SpeechCommandHandler {
     }
 
     public void handleAssistantCommand(String speechInput, AssistantModeController controller) {
-        // activate PAMM
-        if(currentState == ACTIVE_STATE.IDLE && speechInput.equals("listen up pam")) {
-            currentState = ACTIVE_STATE.ACTIVATED;
-            controller.displaySpeech(speechInput);
-            controller.playActiviationAnimation();
+
+        if(speechInput.equals(RETURN_PHRASE)){
+            runningAssistantMode = false;
+            controller.loadHomeView();
+            return;
         }
 
-        else if(currentState == ACTIVE_STATE.ACTIVATED && speechInput.equals("stop listening")) {
+        // activate PAMM
+        if(currentState == ACTIVE_STATE.IDLE && speechInput.equals(ACTIVATE_PHRASE)) {
+            currentState = ACTIVE_STATE.ACTIVATED;
+            controller.playActiviationAnimation();
+            setAndClearDisplayText(speechInput, controller);
+
+        }
+
+        else if(currentState == ACTIVE_STATE.ACTIVATED && speechInput.equals(DEACTIVATE_PHRASE)) {
             currentState = ACTIVE_STATE.IDLE;
-            controller.displaySpeech(speechInput);
             controller.dimCircle();
+            setAndClearDisplayText(speechInput, controller);
+
         }
 
         else if(currentState == ACTIVE_STATE.ACTIVATED) {
-            if(speechInput.equals("run continuous mode")) {
+            if(speechInput.equals(CONTINUOUS_PHRASE)) {
                 currentState = ACTIVE_STATE.CONTINUOUS_MODE;
-                controller.displaySpeech(speechInput);
                 controller.lightUpCircle();
+                setAndClearDisplayText(speechInput, controller);
+
             }
             else {
                 String macroName = getCommandFromSpeech(speechInput);
                 Macro userMacro = SQLiteDbFacade.getInstance().loadMacro(macroName);
                 if(userMacro != null) {
-                    controller.displaySpeech(speechInput);
-                    EventPerformer.performMacro(userMacro);
+                    setAndClearDisplayText(speechInput, controller);
+                    Platform.runLater(() -> EventPerformer.performMacro(userMacro));
                     // After macro has been performed, return to idle state
                     currentState = ACTIVE_STATE.IDLE;
                     controller.dimCircle();
                 }
                 else
-                    controller.displaySpeech(UNKNOWNREPSONSE);
+                    setAndClearDisplayText(UNKNOWNREPSONSE, controller);
 
             }
         }
 
-        else if(currentState == ACTIVE_STATE.CONTINUOUS_MODE && speechInput.equals("stop listening")) {
+        else if(currentState == ACTIVE_STATE.CONTINUOUS_MODE && speechInput.equals(DEACTIVATE_PHRASE)) {
             currentState = ACTIVE_STATE.IDLE;
-            controller.displaySpeech(speechInput);
             controller.dimCircle();
+            setAndClearDisplayText(speechInput, controller);
+
         }
 
         else if(currentState == ACTIVE_STATE.CONTINUOUS_MODE) {
             String macroName = getCommandFromSpeech(speechInput);
             Macro userMacro = SQLiteDbFacade.getInstance().loadMacro(macroName);
             if(userMacro != null) {
-                controller.displaySpeech(speechInput);
-                EventPerformer.performMacro(userMacro);
+                setAndClearDisplayText(speechInput, controller);
+                Platform.runLater(() -> EventPerformer.performMacro(userMacro));
             }
             else
-                controller.displaySpeech(UNKNOWNREPSONSE);
+                setAndClearDisplayText(UNKNOWNREPSONSE, controller);
         }
 
     }
 
     public void stopAssistantMode() {
         runningAssistantMode = false;
+    }
+
+    public void setAndClearDisplayText(String speechInput, AssistantModeController controller){
+        controller.displaySpeech(speechInput);
+        // wait 2 seconds then clear screen
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        controller.clearViewText();
+
     }
 
     public void runCreateMode(MacroSetterController controller) {
