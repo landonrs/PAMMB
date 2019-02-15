@@ -2,6 +2,7 @@ package frontEnd;
 
 import Audio.MediaPlayerUtil;
 import db.SQLiteDbFacade;
+import eventHandling.EventPerformer;
 import eventHandling.EventRecorder;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -35,6 +36,11 @@ public class MacroSetterController implements Initializable {
 
 
     private SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        MediaPlayerUtil.playSound();
+    }
 
     public void recordUserEvents(Stage stage) {
         SpeechCommandHandler speechCommandHandler = SpeechCommandHandler.getInstance();
@@ -102,17 +108,9 @@ public class MacroSetterController implements Initializable {
 
     @FXML
     public void saveMacro(ActionEvent actionEvent) throws Exception{
-        int secondDelay = (int) secondSlider.getValue();
-        MacroSettings.setSecondDelay(secondDelay);
-        boolean checked = mouseVisibleBox.isSelected();
-        MacroSettings.setMouseIsVisible(!checked);
-        // for testing on Ubuntu
-        //MacroSettings.currentMacro = new Macro();
-        Macro userMacro = MacroSettings.configureMacroSettings();
+        Macro userMacro = createMacroWithCurrentSettings();
         boolean saved = dbFacade.saveMacro(userMacro);
         if(saved) {
-            System.out.println("Saved macro " + userMacro.getName() + " with " +
-                    secondDelay + " second delay and visible set to " + !checked);
             MacroSettings.resetValues();
             // update the grammar file with the new command
             SpeechCommandHandler.updateGrammar();
@@ -151,8 +149,26 @@ public class MacroSetterController implements Initializable {
         EventRecorder.resumeRecording();
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        MediaPlayerUtil.playSound();
+    @FXML
+    public void testMacro(ActionEvent actionEvent) {
+        Macro testMacro = createMacroWithCurrentSettings();
+        ViewLoader.hidePrimaryStage();
+        EventPerformer.performMacro(testMacro);
+        ViewLoader.showPrimaryStage();
     }
+
+    private Macro createMacroWithCurrentSettings(){
+        int secondDelay = (int) secondSlider.getValue();
+        MacroSettings.setSecondDelay(secondDelay);
+        boolean checked = mouseVisibleBox.isSelected();
+        MacroSettings.setMouseIsVisible(!checked);
+        Macro macro = MacroSettings.configureMacroSettings();
+        System.out.println("created macro " + macro.getName() + " with " +
+        secondDelay + " second delay and visible set to " + !checked);
+
+        return macro;
+
+    }
+
+
 }

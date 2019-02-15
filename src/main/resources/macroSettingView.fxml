@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0"
-            prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="frontEnd.MacroSetterController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frontEnd.MacroSetterController">
    <children>
       <Slider fx:id="secondSlider" blockIncrement="1.0" layoutX="40.0" layoutY="53.0" majorTickUnit="1.0" max="8.0" minorTickCount="0" prefHeight="38.0" prefWidth="321.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
-      <CheckBox fx:id="mouseVisibleBox" layoutX="40.0" layoutY="136.0" mnemonicParsing="false" text="Make Mouse Invisible?">
+      <CheckBox fx:id="mouseVisibleBox" layoutX="40.0" layoutY="116.0" mnemonicParsing="false" text="Make Mouse Invisible?" textFill="WHITE">
          <tooltip>
             <Tooltip text="If selected, the mouse will not be displayed when this macro is running" />
          </tooltip>
       </CheckBox>
-      <Label layoutX="50.0" layoutY="14.0" prefHeight="28.0" prefWidth="321.0" text="Select the delay in seconds between actions" />
-      <Button onAction="#saveMacro" layoutX="267.0" layoutY="124.0" mnemonicParsing="false" text="Save Macro" />
-      <Button onAction="#cancelSave" layoutX="267.0" layoutY="161.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="94.0" text="Cancel" />
-      <Label layoutX="36.0" layoutY="93.0" text="Fast" />
-      <Label layoutX="337.0" layoutY="93.0" text="Slow" />
+      <Label layoutX="50.0" layoutY="14.0" prefHeight="28.0" prefWidth="321.0" text="Select the delay in seconds between actions" textFill="WHITE" />
+      <Button layoutX="267.0" layoutY="124.0" mnemonicParsing="false" onAction="#saveMacro" prefHeight="29.0" prefWidth="94.0" text="Save Macro" />
+      <Button layoutX="267.0" layoutY="161.0" mnemonicParsing="false" onAction="#cancelSave" prefHeight="28.0" prefWidth="94.0" text="Cancel" />
+      <Label layoutX="36.0" layoutY="93.0" text="Fast" textFill="WHITE" />
+      <Label layoutX="337.0" layoutY="93.0" text="Slow" textFill="WHITE" />
+      <Button onAction="#testMacro" layoutX="40.0" layoutY="149.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="149.0" text="Test Macro with settings" />
    </children>
 </AnchorPane>

@@ -29,9 +29,7 @@ public class ViewLoader {
         // this prevents the JavaFX platform thread from terminating when stage is hidden
         Platform.setImplicitExit(false);
         // explicitly end program when user closes primary stage
-        ViewLoader.stage.setOnCloseRequest(event -> {
-            Platform.exit();
-        });
+        ViewLoader.stage.setOnCloseRequest(event -> Platform.exit());
     }
 
     public static void loadPage(FXMLLoader loader) throws Exception{
@@ -73,8 +71,13 @@ public class ViewLoader {
     }
 
     public static void showPrimaryStage() {
-        stage.toFront();
         stage.show();
+        stage.toFront();
+    }
+
+    public static void hidePrimaryStage() {
+        stage.toBack();
+        stage.hide();
     }
 
     public static String displayVarStepValueView(String varStepName) throws IOException {
@@ -95,4 +98,5 @@ public class ViewLoader {
         System.out.println("Returned from show and wait...");
         return VarStepController.varStepValue;
     }
+
 }
