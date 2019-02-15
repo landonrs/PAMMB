@@ -99,4 +99,21 @@ public class ViewLoader {
         return VarStepController.varStepValue;
     }
 
+    public static void displayCommandList() {
+        //load list view
+        FXMLLoader listLoader = new FXMLLoader(ViewLoader.class.getClassLoader().getResource("showCommandsView.fxml"));
+        Parent root = null;
+        try {
+            root = listLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Stage listStage = new Stage();
+
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(ViewLoader.class.getClassLoader().getResource("PammStyle.css").toExternalForm());
+        listStage.setScene(scene);
+        listStage.show();
+
+    }
 }

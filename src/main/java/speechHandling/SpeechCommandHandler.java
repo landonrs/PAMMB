@@ -6,6 +6,7 @@ import eventHandling.EventPerformer;
 import eventHandling.EventRecorder;
 import frontEnd.AssistantModeController;
 import frontEnd.MacroSetterController;
+import frontEnd.ViewLoader;
 import javafx.application.Platform;
 import macro.Macro;
 
@@ -35,6 +36,7 @@ public class SpeechCommandHandler {
 
     // commands used in assistant mode
     private static final String ACTIVATE_PHRASE = "hey there pam";
+    private static final String SHOW_COMMANDS_PHRASE = "show my commands";
     private static final String STOP_LISTENING = "stop listening";
     private static final String NEVER_MIND_PHRASE = "never mind";
     private static final String CONTINUOUS_PHRASE = "turn on continuous mode";
@@ -117,6 +119,17 @@ public class SpeechCommandHandler {
             controller.playActiviationAnimation();
             setAndClearDisplayText(speechInput, controller);
 
+        }
+
+        // show command list
+        else if((currentState == ACTIVE_STATE.ACTIVATED || currentState == ACTIVE_STATE.CONTINUOUS_MODE)
+        && speechInput.equals(SHOW_COMMANDS_PHRASE)) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    ViewLoader.displayCommandList();
+                }
+            });
         }
 
         else if((currentState == ACTIVE_STATE.ACTIVATED || currentState == ACTIVE_STATE.CONTINUOUS_MODE)
