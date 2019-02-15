@@ -21,8 +21,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
     private static EventRecorder instance = null;
     // this is where we store the user actions each time they record a new macro
     private static Macro currentUserMacro = null;
-    // controller instance that initiated recording
-    private static MacroSetterController macroController;
+
     private static JavaKeyCodeAdapter keyCodeAdapter;
 
     private EventRecorder(){
@@ -49,9 +48,8 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
             return instance;
     }
 
-    public static void startRecordingUserMacro(MacroSetterController controller) {
+    public static void startRecordingUserMacro() {
         recordingMacro = true;
-        macroController = controller;
         currentUserMacro = new Macro();
 
         if(!isNativeHookRegistered()) {

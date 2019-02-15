@@ -42,7 +42,7 @@ public class MacroSetterController implements Initializable {
         CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
             speechCommandHandler.runCreateMode(this);
         });
-        EventRecorder.startRecordingUserMacro(this);
+        EventRecorder.startRecordingUserMacro();
 
     }
 
