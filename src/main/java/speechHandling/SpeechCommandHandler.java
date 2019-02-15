@@ -22,22 +22,26 @@ public class SpeechCommandHandler {
     private static ACTIVE_STATE currentState;
     private static volatile boolean runningAssistantMode;
     private static volatile boolean runningCreateMode;
+    private static volatile boolean startedVariableStep;
     // singleton instance to ensure that only one microphone is intitialized
     private static SpeechCommandHandler instance = null;
 
     private static File grammarFile;
 
-    private static final String COMMANDLINE = "public <command> = [please] (run command) (";
+    private static final String COMMANDLINE = "public <command> = [(please | run command)] (";
     private static final String COMMANDPHRASE = "run command";
+    private static final String POLITEPHRASE = "please";
     private static final String UNKNOWNREPSONSE = "Command not recognized";
 
     // commands used in assistant mode
     private static final String ACTIVATE_PHRASE = "hey there pam";
-    private static final String DEACTIVATE_PHRASE = "stop listening";
+    private static final String STOP_LISTENING = "stop listening";
+    private static final String NEVER_MIND_PHRASE = "never mind";
     private static final String CONTINUOUS_PHRASE = "turn on continuous mode";
     private static final String RETURN_PHRASE = "return to menu";
+
     // commands used when creating macros
-    private static final String STOP_RECORDING_PHRASE = "stop recording";
+    private static final String STOP_RECORDING_PHRASE = "finish recording";
     private static final String START_VAR_STEP_PHRASE = "start variable step";
     private static final String FINISH_VAR_STEP_PHRASE = "finish variable step";
 
@@ -46,6 +50,7 @@ public class SpeechCommandHandler {
         currentState = ACTIVE_STATE.IDLE;
         runningAssistantMode = false;
         runningCreateMode = false;
+        startedVariableStep = false;
         try {
             grammarFile = new File(getClass().getClassLoader().getResource("grammars/PAMM.gram").toURI());
         } catch (URISyntaxException e) {
@@ -108,12 +113,14 @@ public class SpeechCommandHandler {
         // activate PAMM
         if(currentState == ACTIVE_STATE.IDLE && speechInput.equals(ACTIVATE_PHRASE)) {
             currentState = ACTIVE_STATE.ACTIVATED;
+            MediaPlayerUtil.playSound();
             controller.playActiviationAnimation();
             setAndClearDisplayText(speechInput, controller);
 
         }
 
-        else if(currentState == ACTIVE_STATE.ACTIVATED && speechInput.equals(DEACTIVATE_PHRASE)) {
+        else if((currentState == ACTIVE_STATE.ACTIVATED || currentState == ACTIVE_STATE.CONTINUOUS_MODE)
+                && (speechInput.equals(STOP_LISTENING) || speechInput.equals(NEVER_MIND_PHRASE))) {
             currentState = ACTIVE_STATE.IDLE;
             controller.dimCircle();
             setAndClearDisplayText(speechInput, controller);
@@ -141,13 +148,6 @@ public class SpeechCommandHandler {
                     setAndClearDisplayText(UNKNOWNREPSONSE, controller);
 
             }
-        }
-
-        else if(currentState == ACTIVE_STATE.CONTINUOUS_MODE && speechInput.equals(DEACTIVATE_PHRASE)) {
-            currentState = ACTIVE_STATE.IDLE;
-            controller.dimCircle();
-            setAndClearDisplayText(speechInput, controller);
-
         }
 
         else if(currentState == ACTIVE_STATE.CONTINUOUS_MODE) {
@@ -206,16 +206,23 @@ public class SpeechCommandHandler {
 
     private void handleCreateCommand(String command, MacroSetterController controller) {
         if(command.equals(STOP_RECORDING_PHRASE) ){
-            //EventRecorder.stopRecording();
-            controller.finishRecording();
-            runningCreateMode = false;
+            if(!startedVariableStep) {
+                controller.finishRecording();
+                runningCreateMode = false;
+            }
         }
         else if(command.equals(START_VAR_STEP_PHRASE)){
-            MediaPlayerUtil.playSound();
-            EventRecorder.ignoreInput();
+            if(!startedVariableStep) {
+                MediaPlayerUtil.playSound();
+                EventRecorder.ignoreInput();
+                startedVariableStep = true;
+            }
         }
         else if(command.equals(FINISH_VAR_STEP_PHRASE)) {
-            controller.getVariableStepName();
+            if(startedVariableStep) {
+                startedVariableStep = false;
+                controller.getVariableStepName();
+            }
         }
     }
 
@@ -236,6 +243,11 @@ public class SpeechCommandHandler {
         if(speechInput.indexOf(COMMANDPHRASE) != -1) {
             // the macro name starts after the substr "run command "
             command = speechInput.substring(speechInput.indexOf(COMMANDPHRASE) + COMMANDPHRASE.length() + 1);
+            return command;
+        }
+        else if(speechInput.indexOf(POLITEPHRASE) != -1) {
+            // the macro name starts after the substr "please "
+            command = speechInput.substring(speechInput.indexOf(POLITEPHRASE) + POLITEPHRASE.length() + 1);
             return command;
         }
         else

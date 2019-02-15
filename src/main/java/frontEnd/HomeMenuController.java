@@ -23,6 +23,7 @@ public class HomeMenuController {
 
         if(event.getSource() == createMacro) {
             stage = (Stage) createMacro.getScene().getWindow();
+            stage.toBack();
             stage.hide();
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("macroNameSetterView.fxml"));
             root = loader.load();
