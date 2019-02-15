@@ -57,7 +57,7 @@ public class Macro {
         this.steps = steps;
     }
 
-    public boolean hasVarStep() {
+    public boolean getVarStep() {
         return varStep;
     }
 

@@ -1,9 +1,12 @@
 package speechHandling;
 
+import Audio.MediaPlayerUtil;
 import db.SQLiteDbFacade;
 import eventHandling.EventPerformer;
 import eventHandling.EventRecorder;
 import frontEnd.AssistantModeController;
+import frontEnd.MacroSetterController;
+import javafx.application.Platform;
 import macro.Macro;
 
 import java.io.File;
@@ -19,20 +22,35 @@ public class SpeechCommandHandler {
     private static ACTIVE_STATE currentState;
     private static volatile boolean runningAssistantMode;
     private static volatile boolean runningCreateMode;
+    private static volatile boolean startedVariableStep;
     // singleton instance to ensure that only one microphone is intitialized
     private static SpeechCommandHandler instance = null;
 
     private static File grammarFile;
 
-    private static final String COMMANDLINE = "public <command> = [please] (run command) (";
+    private static final String COMMANDLINE = "public <command> = [(please | run command)] (";
     private static final String COMMANDPHRASE = "run command";
+    private static final String POLITEPHRASE = "please";
     private static final String UNKNOWNREPSONSE = "Command not recognized";
+
+    // commands used in assistant mode
+    private static final String ACTIVATE_PHRASE = "hey there pam";
+    private static final String STOP_LISTENING = "stop listening";
+    private static final String NEVER_MIND_PHRASE = "never mind";
+    private static final String CONTINUOUS_PHRASE = "turn on continuous mode";
+    private static final String RETURN_PHRASE = "return to menu";
+
+    // commands used when creating macros
+    private static final String STOP_RECORDING_PHRASE = "finish recording";
+    private static final String START_VAR_STEP_PHRASE = "start variable step";
+    private static final String FINISH_VAR_STEP_PHRASE = "finish variable step";
 
     private SpeechCommandHandler(SpeechInterpreter someInterpreter) {
         interpreter = someInterpreter;
         currentState = ACTIVE_STATE.IDLE;
         runningAssistantMode = false;
         runningCreateMode = false;
+        startedVariableStep = false;
         try {
             grammarFile = new File(getClass().getClassLoader().getResource("grammars/PAMM.gram").toURI());
         } catch (URISyntaxException e) {
@@ -56,6 +74,8 @@ public class SpeechCommandHandler {
     }
 
     public void runAssistantMode(AssistantModeController controller) {
+        // reset our state from last time
+        currentState = ACTIVE_STATE.IDLE;
         runningAssistantMode = true;
         interpreter.startListening();
         System.out.println("starting assistant mode");
@@ -65,7 +85,7 @@ public class SpeechCommandHandler {
 
 
             if(speechInput != null) {
-                System.out.println("result: " + speechInput + " running assistant " + runningAssistantMode);
+                System.out.println("result: " + speechInput + " current state " + currentState);
                 handleAssistantCommand(speechInput, controller);
             }
 
@@ -83,56 +103,62 @@ public class SpeechCommandHandler {
     }
 
     public void handleAssistantCommand(String speechInput, AssistantModeController controller) {
-        // activate PAMM
-        if(currentState == ACTIVE_STATE.IDLE && speechInput.equals("listen up pam")) {
-            currentState = ACTIVE_STATE.ACTIVATED;
-            controller.displaySpeech(speechInput);
-            controller.playActiviationAnimation();
+
+        if(speechInput.equals(RETURN_PHRASE)){
+            runningAssistantMode = false;
+            controller.loadHomeView();
+            return;
         }
 
-        else if(currentState == ACTIVE_STATE.ACTIVATED && speechInput.equals("stop listening")) {
+        // activate PAMM
+        if(currentState == ACTIVE_STATE.IDLE && speechInput.equals(ACTIVATE_PHRASE)) {
+            currentState = ACTIVE_STATE.ACTIVATED;
+            MediaPlayerUtil.playSound();
+            controller.playActiviationAnimation();
+            setAndClearDisplayText(speechInput, controller);
+
+        }
+
+        else if((currentState == ACTIVE_STATE.ACTIVATED || currentState == ACTIVE_STATE.CONTINUOUS_MODE)
+                && (speechInput.equals(STOP_LISTENING) || speechInput.equals(NEVER_MIND_PHRASE))) {
             currentState = ACTIVE_STATE.IDLE;
-            controller.displaySpeech(speechInput);
             controller.dimCircle();
+            setAndClearDisplayText(speechInput, controller);
+
         }
 
         else if(currentState == ACTIVE_STATE.ACTIVATED) {
-            if(speechInput.equals("run continuous mode")) {
+            if(speechInput.equals(CONTINUOUS_PHRASE)) {
                 currentState = ACTIVE_STATE.CONTINUOUS_MODE;
-                controller.displaySpeech(speechInput);
                 controller.lightUpCircle();
+                setAndClearDisplayText(speechInput, controller);
+
             }
             else {
                 String macroName = getCommandFromSpeech(speechInput);
                 Macro userMacro = SQLiteDbFacade.getInstance().loadMacro(macroName);
                 if(userMacro != null) {
-                    controller.displaySpeech(speechInput);
-                    EventPerformer.performMacro(userMacro);
+                    setAndClearDisplayText(speechInput, controller);
+                    Platform.runLater(() -> EventPerformer.performMacro(userMacro));
                     // After macro has been performed, return to idle state
                     currentState = ACTIVE_STATE.IDLE;
                     controller.dimCircle();
                 }
                 else
-                    controller.displaySpeech(UNKNOWNREPSONSE);
+                    setAndClearDisplayText(UNKNOWNREPSONSE, controller);
 
             }
-        }
-
-        else if(currentState == ACTIVE_STATE.CONTINUOUS_MODE && speechInput.equals("stop listening")) {
-            currentState = ACTIVE_STATE.IDLE;
-            controller.displaySpeech(speechInput);
-            controller.dimCircle();
         }
 
         else if(currentState == ACTIVE_STATE.CONTINUOUS_MODE) {
             String macroName = getCommandFromSpeech(speechInput);
             Macro userMacro = SQLiteDbFacade.getInstance().loadMacro(macroName);
             if(userMacro != null) {
-                controller.displaySpeech(speechInput);
-                EventPerformer.performMacro(userMacro);
+                setAndClearDisplayText(speechInput, controller);
+                Platform.runLater(() -> EventPerformer.performMacro(userMacro));
             }
             else
-                controller.displaySpeech(UNKNOWNREPSONSE);
+                setAndClearDisplayText(UNKNOWNREPSONSE, controller);
         }
 
     }
@@ -141,7 +167,20 @@ public class SpeechCommandHandler {
         runningAssistantMode = false;
     }
 
-    public void runCreateMode() {
+    public void setAndClearDisplayText(String speechInput, AssistantModeController controller){
+        controller.displaySpeech(speechInput);
+        // wait 2 seconds then clear screen
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        controller.clearViewText();
+
+    }
+
+    public void runCreateMode(MacroSetterController controller) {
         runningCreateMode = true;
         interpreter.startListening();
         System.out.println("starting macro create mode");
@@ -151,7 +190,7 @@ public class SpeechCommandHandler {
 
             if(speechInput != null) {
                 System.out.println("result: " + speechInput);
-                handleCreateCommand(speechInput);
+                handleCreateCommand(speechInput, controller);
                 if(!runningCreateMode) {
                     System.out.println("Stopping create mode");
                     return;
@@ -165,13 +204,25 @@ public class SpeechCommandHandler {
         interpreter.pauseListening();
     }
 
-    private void handleCreateCommand(String command) {
-        if(command.equals("stop recording") ){
-            EventRecorder.stopRecording();
-            runningCreateMode = false;
+    private void handleCreateCommand(String command, MacroSetterController controller) {
+        if(command.equals(STOP_RECORDING_PHRASE) ){
+            if(!startedVariableStep) {
+                controller.finishRecording();
+                runningCreateMode = false;
+            }
         }
-        else if(command.equals("create variable step")) {
-            EventRecorder.createVariableStep();
+        else if(command.equals(START_VAR_STEP_PHRASE)){
+            if(!startedVariableStep) {
+                MediaPlayerUtil.playSound();
+                EventRecorder.ignoreInput();
+                startedVariableStep = true;
+            }
+        }
+        else if(command.equals(FINISH_VAR_STEP_PHRASE)) {
+            if(startedVariableStep) {
+                startedVariableStep = false;
+                controller.getVariableStepName();
+            }
         }
     }
 
@@ -192,6 +243,11 @@ public class SpeechCommandHandler {
         if(speechInput.indexOf(COMMANDPHRASE) != -1) {
             // the macro name starts after the substr "run command "
             command = speechInput.substring(speechInput.indexOf(COMMANDPHRASE) + COMMANDPHRASE.length() + 1);
+            return command;
+        }
+        else if(speechInput.indexOf(POLITEPHRASE) != -1) {
+            // the macro name starts after the substr "please "
+            command = speechInput.substring(speechInput.indexOf(POLITEPHRASE) + POLITEPHRASE.length() + 1);
             return command;
         }
         else

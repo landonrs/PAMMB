@@ -11,11 +11,10 @@
    <children>
       <Circle fx:id="pammCircle" fill="#003261" layoutX="100.0" layoutY="193.0" radius="75.0" stroke="WHITE" strokeType="INSIDE" />
       <Circle fill="#2d383a" layoutX="100.0" layoutY="193.0" radius="50.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" />
-      <Label fx:id="userSpeechDisplay" layoutX="10.0" prefHeight="118.0" prefWidth="181.0" text="This is some example text that is long" textFill="#6f6969" wrapText="true">
+      <Label fx:id="userSpeechDisplay" layoutX="10.0" prefHeight="118.0" prefWidth="181.0" text="Activate me with 'hey there pamm'" textFill="#6f6969" wrapText="true">
          <font>
             <Font size="26.0" />
          </font>
       </Label>
-      <Button fx:id="menu" onAction="#handleButtonAction" layoutX="-7.0" layoutY="270.0" mnemonicParsing="false" text="Menu" />
    </children>
 </AnchorPane>

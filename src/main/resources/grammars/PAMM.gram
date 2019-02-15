@@ -2,13 +2,18 @@
 
 grammar pamm;
 
-public <stop_listening> = stop listening;
-public <activate> = listen up pam;
-public <continuous> = run continuous mode;
-public <stop_recording> = stop recording;
-public <variable> = create variable step;
+public <stop_listening> = stop listening | never mind;
+public <activate> = hey there pam;
+public <continuous> = (turn on continuous mode);
+public <return> = (return to menu);
+public <stop_recording> = finish recording;
+public <start_variable> = start variable step;
+public <finish_variable> = finish variable step;
+
+public <create_mode> = <start_variable> | <finish_variable> | <stop_recording>;
+public <assistant_mode> = <activate> | <continuous> | <stop_listening> | <return>;
 
 /**
 * this rule must remain at the bottom of the file
 */
-public <command> = [please] (run command) (test);
+public <command> = [(please | run command)] (test);

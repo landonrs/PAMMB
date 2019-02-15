@@ -1,3 +1,4 @@
+import Audio.MediaPlayerUtil;
 import db.SQLiteDbFacade;
 import frontEnd.ViewLoader;
 import javafx.application.Application;
@@ -11,9 +12,11 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         //initialize db
         SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
-        // update grammar file for speech recognition
+        // initialize speech recognition instance and update grammar file for speech recognition
         SpeechCommandHandler speechCommandHandler = SpeechCommandHandler.getInstance();
         SpeechCommandHandler.updateGrammar();
+        //initialize mediaPlayers
+        MediaPlayerUtil.initializeMediaFiles();
         // set stage for Viewloader to load pages
         ViewLoader.setPrimaryStage(primaryStage);
         primaryStage.setTitle("PAMM");

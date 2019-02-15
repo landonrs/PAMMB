@@ -1,6 +1,6 @@
 package eventHandling;
 
-import frontEnd.HomeMenuController;
+import frontEnd.MacroSetterController;
 import macro.Macro;
 import macro.Step;
 import org.jnativehook.GlobalScreen;
@@ -16,17 +16,16 @@ import java.util.logging.Logger;
 public class EventRecorder extends GlobalScreen implements NativeKeyListener, NativeMouseInputListener {
 
     private static volatile boolean recordingMacro;
-    private static volatile boolean gettingVariableStep;
     // this is set to true whenever the user makes a command that uses the meta or alt key with another action
     private static boolean usingCombinationCommand;
     private static EventRecorder instance = null;
     // this is where we store the user actions each time they record a new macro
     private static Macro currentUserMacro = null;
+
     private static JavaKeyCodeAdapter keyCodeAdapter;
 
     private EventRecorder(){
         recordingMacro = false;
-        gettingVariableStep = false;
         usingCombinationCommand = false;
         addNativeKeyListener(this);
         addNativeMouseListener(this);
@@ -49,9 +48,10 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
             return instance;
     }
 
-    public Macro recordUserMacro() {
+    public static void startRecordingUserMacro() {
         recordingMacro = true;
         currentUserMacro = new Macro();
+
         if(!isNativeHookRegistered()) {
             try {
                 registerNativeHook();
@@ -60,15 +60,9 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
             }
         }
 
+    }
 
-        while(recordingMacro) {
-            if(gettingVariableStep){
-                String varStepName = HomeMenuController.getVariableStepValue();
-                System.out.println("getting var step: " + varStepName);
-                gettingVariableStep = false;
-            }
-        }
-
+    public static Macro finishRecordingUserMacro(){
         // TODO remove check after testing on Ubuntu
         if(!System.getProperty("os.name").equals("Linux")) {
             try {
@@ -79,17 +73,27 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
         }
 
         return currentUserMacro;
-
     }
 
-    public static void stopRecording() {
-        System.out.println("Stopping recording");
+    public static void resumeRecording() {
+        recordingMacro = true;
+    }
+
+
+    public static void createVariableStep(String varStepName) {
+        System.out.println("Creating variable step: " + varStepName);
+        Step userStep = new Step(varStepName);
+        currentUserMacro.getSteps().add(userStep);
+        // the macro has at least one var step
+        currentUserMacro.setVarStep(true);
+    }
+
+    /**
+     * called when user is creating variable step, we ignore
+     * user input until they finish creating the step
+     */
+    public static void ignoreInput(){
         recordingMacro = false;
-    }
-
-    public static void createVariableStep() {
-        System.out.println("Creating variable step");
-        gettingVariableStep = true;
     }
 
     @Override
@@ -102,6 +106,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
 
     @Override
     public void nativeKeyReleased(NativeKeyEvent e) {
+
         if(recordingMacro) {
             // ctrl + shift command
             if (((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0) &&
@@ -184,12 +189,6 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 if (usingCombinationCommand) {
                     usingCombinationCommand = false;
                 } else {
-                    // TODO remove following line after testing
-                    if (NativeKeyEvent.getKeyText(e.getKeyCode()) == "9") {
-                        System.out.println("pressed 9, stopping recording");
-                        stopRecording();
-                        return;
-                    }
                     System.out.println("User typed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
                     Step userStep = new Step(EventTypes.TYPE, keyCodeAdapter.getJavaKeyCode(e));
                     currentUserMacro.getSteps().add(userStep);

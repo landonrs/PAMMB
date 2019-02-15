@@ -1,11 +1,16 @@
 package eventHandling;
 
+import frontEnd.ViewLoader;
 import macro.Macro;
 import macro.Step;
 
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -38,6 +43,11 @@ public class EventPerformer {
     public static boolean performMacro(Macro userMacro) {
         macroMouseVisible = userMacro.isMouseIsVisible();
         macroSecondDelay = userMacro.getSecondDelay();
+
+        //if the macro has any variable steps, get the values for those steps
+        if (userMacro.getVarStep()) {
+            setVarStepValues(userMacro);
+        }
         //start previousPoint at current location
         previousPoint = new Point(MouseInfo.getPointerInfo().getLocation());
 
@@ -124,11 +134,44 @@ public class EventPerformer {
                     typeKeyWithModifiers(macroStep.getKeyCode(), KeyEvent.VK_SHIFT, KeyEvent.VK_META);
                     break;
 
+                case EventTypes.VAR_STEP:
+                    insertVarStepValue(macroStep.getVariableStepValue());
+
             }
         }
 
         return true;
 
+    }
+
+    private static void insertVarStepValue(String variableStepValue) {
+        //store previous clipboard contents
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Transferable previousContents = clipboard.getContents(null);
+        StringSelection stringSelection = new StringSelection(variableStepValue);
+
+        clipboard.setContents(stringSelection, stringSelection);
+
+        robot.keyPress(KeyEvent.VK_CONTROL);
+        robot.keyPress(KeyEvent.VK_V);
+        robot.keyRelease(KeyEvent.VK_V);
+        robot.keyRelease(KeyEvent.VK_CONTROL);
+
+        // now reset clipboard contents to previous value
+        clipboard.setContents(previousContents, stringSelection);
+    }
+
+    private static void setVarStepValues(Macro userMacro) {
+        for (Step userStep: userMacro.getSteps()) {
+            if (userStep.getType().equals(EventTypes.VAR_STEP)) {
+                try {
+                    userStep.setVariableStepValue(ViewLoader.displayVarStepValueView(userStep.getVariableStepName()));
+                    System.out.println("set value to " + userStep.getVariableStepValue());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private static void typeKeyWithModifiers(int keyCode, int... modifiers) {
