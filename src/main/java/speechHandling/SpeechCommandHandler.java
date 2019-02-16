@@ -91,11 +91,6 @@ public class SpeechCommandHandler {
                 handleAssistantCommand(speechInput, controller);
             }
 
-//            try {
-//                TimeUnit.SECONDS.sleep(2);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
             interpreter.resumeListening();
         }
 
@@ -152,9 +147,19 @@ public class SpeechCommandHandler {
                 Macro userMacro = SQLiteDbFacade.getInstance().loadMacro(macroName);
                 if(userMacro != null) {
                     setAndClearDisplayText(speechInput, controller);
-                    Platform.runLater(() -> EventPerformer.performMacro(userMacro));
+                    currentState = ACTIVE_STATE.RUNNING_MACRO;
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            ViewLoader.hideCommandList();
+                            ViewLoader.hidePrimaryStage();
+                            EventPerformer.performMacro(userMacro);
+                            currentState = ACTIVE_STATE.IDLE;
+                            ViewLoader.showPrimaryStage();
+                        }
+
+                    });
                     // After macro has been performed, return to idle state
-                    currentState = ACTIVE_STATE.IDLE;
                     controller.dimCircle();
                 }
                 else
@@ -168,7 +173,19 @@ public class SpeechCommandHandler {
             Macro userMacro = SQLiteDbFacade.getInstance().loadMacro(macroName);
             if(userMacro != null) {
                 setAndClearDisplayText(speechInput, controller);
-                Platform.runLater(() -> EventPerformer.performMacro(userMacro));
+                currentState = ACTIVE_STATE.RUNNING_MACRO;
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        ViewLoader.hideCommandList();
+                        ViewLoader.hidePrimaryStage();
+                        EventPerformer.performMacro(userMacro);
+                        currentState = ACTIVE_STATE.CONTINUOUS_MODE;
+                        ViewLoader.showPrimaryStage();
+                        ViewLoader.displayCommandList();
+                    }
+
+                });
             }
             else
                 setAndClearDisplayText(UNKNOWNREPSONSE, controller);
@@ -176,11 +193,8 @@ public class SpeechCommandHandler {
 
     }
 
-    public void stopAssistantMode() {
-        runningAssistantMode = false;
-    }
 
-    public void setAndClearDisplayText(String speechInput, AssistantModeController controller){
+    private void setAndClearDisplayText(String speechInput, AssistantModeController controller){
         controller.displaySpeech(speechInput);
         // wait 2 seconds then clear screen
         try {
@@ -218,24 +232,26 @@ public class SpeechCommandHandler {
     }
 
     private void handleCreateCommand(String command, MacroSetterController controller) {
-        if(command.equals(STOP_RECORDING_PHRASE) ){
-            if(!startedVariableStep) {
-                controller.finishRecording();
-                runningCreateMode = false;
-            }
-        }
-        else if(command.equals(START_VAR_STEP_PHRASE)){
-            if(!startedVariableStep) {
-                MediaPlayerUtil.playSound();
-                EventRecorder.ignoreInput();
-                startedVariableStep = true;
-            }
-        }
-        else if(command.equals(FINISH_VAR_STEP_PHRASE)) {
-            if(startedVariableStep) {
-                startedVariableStep = false;
-                controller.getVariableStepName();
-            }
+        switch (command) {
+            case STOP_RECORDING_PHRASE:
+                if (!startedVariableStep) {
+                    controller.finishRecording();
+                    runningCreateMode = false;
+                }
+                break;
+            case START_VAR_STEP_PHRASE:
+                if (!startedVariableStep) {
+                    MediaPlayerUtil.playSound();
+                    EventRecorder.ignoreInput();
+                    startedVariableStep = true;
+                }
+                break;
+            case FINISH_VAR_STEP_PHRASE:
+                if (startedVariableStep) {
+                    startedVariableStep = false;
+                    controller.getVariableStepName();
+                }
+                break;
         }
     }
 
@@ -253,12 +269,12 @@ public class SpeechCommandHandler {
 
     String getCommandFromSpeech(String speechInput) {
         String command = "";
-        if(speechInput.indexOf(COMMANDPHRASE) != -1) {
+        if(speechInput.contains(COMMANDPHRASE)) {
             // the macro name starts after the substr "run command "
             command = speechInput.substring(speechInput.indexOf(COMMANDPHRASE) + COMMANDPHRASE.length() + 1);
             return command;
         }
-        else if(speechInput.indexOf(POLITEPHRASE) != -1) {
+        else if(speechInput.contains(POLITEPHRASE)) {
             // the macro name starts after the substr "please "
             command = speechInput.substring(speechInput.indexOf(POLITEPHRASE) + POLITEPHRASE.length() + 1);
             return command;
