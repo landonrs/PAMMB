@@ -5,9 +5,7 @@ import macro.Macro;
 import macro.Step;
 
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -148,15 +146,24 @@ public class EventPerformer {
         //store previous clipboard contents
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable previousContents = clipboard.getContents(null);
-        StringSelection stringSelection = new StringSelection(variableStepValue);
 
-        clipboard.setContents(stringSelection, stringSelection);
+        StringSelection variableStepSelection = new StringSelection(variableStepValue);
+
+        clipboard.setContents(variableStepSelection, variableStepSelection);
 
         robot.keyPress(KeyEvent.VK_CONTROL);
         robot.keyPress(KeyEvent.VK_V);
         robot.keyRelease(KeyEvent.VK_V);
         robot.keyRelease(KeyEvent.VK_CONTROL);
 
+        StringSelection stringSelection = null;
+        try {
+            stringSelection = new StringSelection((String) previousContents.getTransferData(new DataFlavor()));
+        } catch (UnsupportedFlavorException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // now reset clipboard contents to previous value
         clipboard.setContents(previousContents, stringSelection);
     }
