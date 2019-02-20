@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class EventPerformer {
 
     private static final int KEYPRESS_DELAY = 50;
-    private static final int KEY_MODIFIER_DELAY = 150;
+    private static final int KEY_MODIFIER_DELAY = 200;
     private static final int CLICK_MODIFIER_DELAY = 100;
     // determines how quickly the mouse moves from one point to the next
     private static final double MOUSE_MOVE_STEPS = 1000;
@@ -89,7 +89,7 @@ public class EventPerformer {
                     break;
 
                 case EventTypes.META_TYPE:
-                    typeKeyWithModifiers(macroStep.getKeyCode(), KeyEvent.VK_META);
+                    typeKeyWithModifiers(macroStep.getKeyCode(), KeyEvent.VK_WINDOWS);
                     break;
 
                 case EventTypes.CTRL_SHIFT_TYPE:
@@ -121,7 +121,7 @@ public class EventPerformer {
                     break;
 
                 case EventTypes.CTRL_META_TYPE:
-                    typeKeyWithModifiers(macroStep.getKeyCode(), KeyEvent.VK_CONTROL, KeyEvent.VK_META);
+                    typeKeyWithModifiers(macroStep.getKeyCode(), KeyEvent.VK_CONTROL, KeyEvent.VK_WINDOWS);
                     break;
 
                 case EventTypes.SHIFT_ALT_TYPE:
@@ -129,7 +129,7 @@ public class EventPerformer {
                     break;
 
                 case EventTypes.SHIFT_META_TYPE:
-                    typeKeyWithModifiers(macroStep.getKeyCode(), KeyEvent.VK_SHIFT, KeyEvent.VK_META);
+                    typeKeyWithModifiers(macroStep.getKeyCode(), KeyEvent.VK_SHIFT, KeyEvent.VK_WINDOWS);
                     break;
 
                 case EventTypes.VAR_STEP:
@@ -156,14 +156,7 @@ public class EventPerformer {
         robot.keyRelease(KeyEvent.VK_V);
         robot.keyRelease(KeyEvent.VK_CONTROL);
 
-        StringSelection stringSelection = null;
-        try {
-            stringSelection = new StringSelection((String) previousContents.getTransferData(new DataFlavor()));
-        } catch (UnsupportedFlavorException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        StringSelection stringSelection = new StringSelection(variableStepValue);
         // now reset clipboard contents to previous value
         clipboard.setContents(previousContents, stringSelection);
     }
