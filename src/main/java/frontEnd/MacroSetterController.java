@@ -27,12 +27,17 @@ import java.util.concurrent.TimeUnit;
 
 public class MacroSetterController implements Initializable {
 
+    // controls for nameSetter View
     public Label warningLabel;
     public TextField macroName;
-    public Slider secondSlider;
-    public TextField varStepNameField;
+    //controls for settings view
     public CheckBox mouseVisibleBox;
+    public Slider secondSlider;
+    // controls for varStepNameSetter view
+    public TextField varStepNameField;
     public Button varStepNameCancel;
+    // controls for editMacro view
+    public TextField editNameField;
 
 
     private SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
@@ -92,7 +97,7 @@ public class MacroSetterController implements Initializable {
 
     @FXML
     public void checkMacroName(ActionEvent actionEvent) throws Exception{
-        if(dbFacade.uniqueMacroName(macroName.getText())) {
+        if(dbFacade.uniqueMacroName(macroName.getText().trim())) {
             System.out.println("Name is unique: " + macroName.getText());
             // trim off any extra whitespace from name
             MacroSettings.setMacroName(macroName.getText().trim());
@@ -171,4 +176,49 @@ public class MacroSetterController implements Initializable {
     }
 
 
+    /**
+     * This is called when a user has selected to update the settings of a
+     * previously created macro.
+     * @param actionEvent
+     */
+    public void updateMacro(ActionEvent actionEvent) throws IOException {
+        // if name is valid or is same delete old macro and save new one
+        if(dbFacade.uniqueMacroName(editNameField.getText().trim()) ||
+                editNameField.getText().trim().equals(MacroSettings.getMacroName())) {
+
+            SQLiteDbFacade.deleteMacro(MacroSettings.getMacroName());
+            MacroSettings.setMacroName(editNameField.getText().trim());
+            Macro updatedMacro = createMacroWithCurrentSettings();
+            boolean saved = dbFacade.saveMacro(updatedMacro);
+            if(saved) {
+                MacroSettings.resetValues();
+                // update the grammar file with the new command
+                SpeechCommandHandler.updateGrammar();
+            }
+            // now remove the dialog from view
+            Stage stage = (Stage) editNameField.getScene().getWindow();
+            stage.close();
+            // show macro list view
+            ViewLoader.showPrimaryStage();
+        }
+        else {
+            warningLabel.setVisible(true);
+        }
+
+    }
+
+    public void testEditedMacro(ActionEvent actionEvent) {
+        Macro testMacro = createMacroWithCurrentSettings();
+        Stage dialogStage = (Stage) editNameField.getScene().getWindow();
+        dialogStage.hide();
+        EventPerformer.performMacro(testMacro);
+        dialogStage.show();
+        dialogStage.toFront();
+    }
+
+    public void cancelEdit(ActionEvent actionEvent) {
+        Stage dialogStage = (Stage) editNameField.getScene().getWindow();
+        dialogStage.close();
+        ViewLoader.showPrimaryStage();
+    }
 }

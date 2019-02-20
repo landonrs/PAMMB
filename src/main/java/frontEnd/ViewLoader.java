@@ -139,6 +139,28 @@ public class ViewLoader {
 
     }
 
+    /**
+     * generate a dialog stage window with the view loaded and returns the stage
+     * @param dialogFileName
+     * @return
+     */
+    public static Stage generateDialog(String dialogFileName) {
+        Stage dialogWindow = new Stage();
+        FXMLLoader loader = new FXMLLoader(ViewLoader.class.getClassLoader().getResource(dialogFileName));
+        Scene scene = null;
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        scene.getStylesheets().add(ViewLoader.class.getClassLoader().getResource("PammStyle.css").toExternalForm());
+        dialogWindow.setScene(scene);
+
+        return dialogWindow;
+
+    }
+
     public static void hideCommandList(){
         if(listStageOpen) {
             listStage.hide();
