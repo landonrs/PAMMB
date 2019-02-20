@@ -10,10 +10,9 @@ import frontEnd.ViewLoader;
 import javafx.application.Platform;
 import macro.Macro;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
+import java.io.*;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +26,8 @@ public class SpeechCommandHandler {
     // singleton instance to ensure that only one microphone is intitialized
     private static SpeechCommandHandler instance = null;
 
-    private static File grammarFile;
+    private static final String GRAMMAR_PATH = SpeechCommandHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "data/PAMM.gram";
+
 
     private static final String COMMANDLINE = "public <command> = [(please | run command)] (";
     private static final String COMMANDPHRASE = "run command";
@@ -53,11 +53,6 @@ public class SpeechCommandHandler {
         runningAssistantMode = false;
         runningCreateMode = false;
         startedVariableStep = false;
-        try {
-            grammarFile = new File(getClass().getClassLoader().getResource("grammars/PAMM.gram").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
     }
 
 
@@ -286,6 +281,11 @@ public class SpeechCommandHandler {
 
     public static void updateGrammar() throws IOException {
         List<String> commandNames = SQLiteDbFacade.getMacroNames();
+
+        //create reader for grammar file
+        BufferedReader grammarReader = new BufferedReader(new InputStreamReader(SpeechCommandHandler.class
+                .getClassLoader().getResourceAsStream("grammars/PAMM.gram")));
+        List<String> lines = new ArrayList<>();
         String newCommandGrammarList = COMMANDLINE;
         if(commandNames.isEmpty()){
             newCommandGrammarList += "<VOID> );";
@@ -301,18 +301,26 @@ public class SpeechCommandHandler {
         }
         // read through the file until we get to the command line
         int position = 0;
-        List<String> lines = Files.readAllLines(grammarFile.toPath());
-        for(String line: lines){
-            // System.out.println(position + " " + line);
-            if(line.toLowerCase().indexOf(COMMANDPHRASE.toLowerCase()) != -1){
+        while(grammarReader.ready()) {
+            String line = grammarReader.readLine();
+            if(line.contains(COMMANDPHRASE)){
+                System.out.println("found command phrase");
+                lines.add(line);
                 break;
             }
+            lines.add(line);
             position++;
         }
         // overwrite commands with updated list
         lines.set(position, newCommandGrammarList);
         // update the grammar file
-        Files.write(grammarFile.toPath(), lines);
+        System.out.println(URLDecoder.decode(GRAMMAR_PATH, "UTF-8"));
+        PrintWriter out = new PrintWriter(URLDecoder.decode(GRAMMAR_PATH, "UTF-8"));
+        for (String line: lines){
+            out.println(line);
+        }
+        out.close();
     }
+
 
 }

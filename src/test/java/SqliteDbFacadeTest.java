@@ -20,22 +20,22 @@ public class SqliteDbFacadeTest {
 
 
 
-    @Test
-    public void shouldSaveAndLoadTestMacro() {
-        Step testStep = new Step("letter", 56);
-        ArrayList<Step> expectedSteps = new ArrayList<Step>(Arrays.asList(testStep));
-        Macro testMacro = new Macro("test", expectedSteps, false);
-        boolean result = sqliteDbFacade.saveMacro(testMacro);
-
-        assertTrue(result);
-
-        // now load macro
-        Macro loadedMacro = sqliteDbFacade.loadMacro("test");
-
-
-        assertNotNull(loadedMacro);
-        assertEquals(loadedMacro.getSteps().size(), 1);
-        assertEquals(loadedMacro.getName(), "test");
-    }
+//    @Test
+//    public void shouldSaveAndLoadTestMacro() {
+//        Step testStep = new Step("letter", 56);
+//        ArrayList<Step> expectedSteps = new ArrayList<Step>(Arrays.asList(testStep));
+//        Macro testMacro = new Macro("test", expectedSteps, false);
+//        boolean result = sqliteDbFacade.saveMacro(testMacro);
+//
+//        assertTrue(result);
+//
+//        // now load macro
+//        Macro loadedMacro = sqliteDbFacade.loadMacro("test");
+//
+//
+//        assertNotNull(loadedMacro);
+//        assertEquals(loadedMacro.getSteps().size(), 1);
+//        assertEquals(loadedMacro.getName(), "test");
+//    }
 
 }

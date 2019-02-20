@@ -5,12 +5,17 @@ import edu.cmu.sphinx.api.LiveSpeechRecognizer;
 import edu.cmu.sphinx.api.SpeechResult;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 public class SphinxInterpreter implements SpeechInterpreter {
 
 
     Configuration configuration;
     LiveSpeechRecognizer recognizer;
+    private final String GRAMMAR_PATH = "file:"
+            + SpeechCommandHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath()
+            + "data";
 
     public SphinxInterpreter() {
         configuration = new Configuration();
@@ -19,7 +24,11 @@ public class SphinxInterpreter implements SpeechInterpreter {
         configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
         //configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
 
-        configuration.setGrammarPath("resource:/grammars");
+        try {
+            configuration.setGrammarPath(URLDecoder.decode(GRAMMAR_PATH,"UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         configuration.setGrammarName("PAMM");
         configuration.setUseGrammar(true);
 
