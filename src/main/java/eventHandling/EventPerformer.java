@@ -175,6 +175,11 @@ public class EventPerformer {
                 try {
                     userStep.setVariableStepValue(ViewLoader.displayVarStepValueView(userStep.getVariableStepName()));
                     System.out.println("set value to " + userStep.getVariableStepValue());
+                    // check if user cancelled macro
+                    if(macroCancelled) {
+                        // exit so calling function will also exit without performing macro
+                        return;
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

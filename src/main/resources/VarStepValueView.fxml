@@ -18,6 +18,6 @@
             <Font size="16.0" />
          </font>
       </Label>
-      <Button layoutX="249.0" layoutY="157.0" mnemonicParsing="false" onAction="#setValue" text="cancel command" />
+      <Button layoutX="249.0" layoutY="157.0" mnemonicParsing="false" onAction="#cancelCommand" text="cancel command" />
    </children>
 </AnchorPane>
