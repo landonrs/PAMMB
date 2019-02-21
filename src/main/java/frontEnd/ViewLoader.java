@@ -80,6 +80,11 @@ public class ViewLoader {
     public static void showPrimaryStage() {
         primaryStage.show();
         primaryStage.toFront();
+        primaryStage.setIconified(false);
+    }
+
+    public static void minimizePrimaryStage() {
+        primaryStage.setIconified(true);
     }
 
     public static void hidePrimaryStage() {

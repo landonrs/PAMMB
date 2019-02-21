@@ -125,7 +125,7 @@ public class SpeechCommandHandler {
 
     private void handleAssistantCommand(String speechInput, AssistantModeController controller) {
 
-        if(speechInput.equals(RETURN_PHRASE) && currentState != ACTIVE_STATE.RUNNING_MACRO){
+        if(speechInput.equals(RETURN_PHRASE) && currentState == ACTIVE_STATE.ACTIVATED){
             runningAssistantMode = false;
             controller.loadHomeView();
             return;
@@ -141,6 +141,7 @@ public class SpeechCommandHandler {
             currentState = ACTIVE_STATE.ACTIVATED;
             MediaPlayerUtil.playSound();
             controller.playActiviationAnimation();
+            Platform.runLater(() -> ViewLoader.showPrimaryStage());
             setAndClearDisplayText(speechInput, controller);
 
         }
@@ -156,6 +157,7 @@ public class SpeechCommandHandler {
             currentState = ACTIVE_STATE.IDLE;
             controller.dimCircle();
             setAndClearDisplayText(speechInput, controller);
+            Platform.runLater(() -> ViewLoader.minimizePrimaryStage());
 
         }
 
@@ -178,10 +180,12 @@ public class SpeechCommandHandler {
                         }
                         ViewLoader.hidePrimaryStage();
                         EventPerformer.performMacro(userMacro);
+                        // After macro has been performed, return to idle state and wait
                         currentState = ACTIVE_STATE.IDLE;
                         ViewLoader.showPrimaryStage();
+                        ViewLoader.minimizePrimaryStage();
                     });
-                    // After macro has been performed, return to idle state
+
                     controller.dimCircle();
                 }
                 else
