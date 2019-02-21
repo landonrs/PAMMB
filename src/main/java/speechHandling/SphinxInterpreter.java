@@ -25,7 +25,7 @@ public class SphinxInterpreter implements SpeechInterpreter {
         //configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
 
         try {
-            configuration.setGrammarPath(URLDecoder.decode(GRAMMAR_PATH,"UTF-8"));
+            configuration.setGrammarPath(URLDecoder.decode("file:" + SpeechCommandHandler.GRAMMAR_DIR,"UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

@@ -12,6 +12,9 @@ import macro.Macro;
 
 import java.io.*;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +29,10 @@ public class SpeechCommandHandler {
     // singleton instance to ensure that only one microphone is intitialized
     private static SpeechCommandHandler instance = null;
 
-    private static final String GRAMMAR_PATH = SpeechCommandHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "data/PAMM.gram";
+
+    private static final String GRAMMAR_PATH = System.getenv("LOCALAPPDATA") + "\\PAMM\\data\\PAMM.gram";
+    // used to locate grammar file used by sphinx interpreter
+    public static final String GRAMMAR_DIR = System.getenv("LOCALAPPDATA") + "\\PAMM\\data";
 
 
     private static final String COMMANDLINE = "public <command> = [(please | run command)] (";
@@ -48,6 +54,28 @@ public class SpeechCommandHandler {
     private static final String FINISH_VAR_STEP_PHRASE = "finish variable step";
 
     private SpeechCommandHandler(SpeechInterpreter someInterpreter) {
+
+        // make sure directory exists for storing app data
+        Path path = Paths.get(GRAMMAR_DIR);
+        //if directory exists?
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch (IOException e) {
+                //fail to create directory
+                e.printStackTrace();
+            }
+        }
+        //create grammar file if it does not exist
+        File gramFile = new File(GRAMMAR_PATH);
+        try {
+            if(gramFile.createNewFile()){
+                System.out.println("created new grammar file");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         interpreter = someInterpreter;
         currentState = ACTIVE_STATE.IDLE;
         runningAssistantMode = false;
@@ -281,7 +309,6 @@ public class SpeechCommandHandler {
 
     public static void updateGrammar() throws IOException {
         List<String> commandNames = SQLiteDbFacade.getMacroNames();
-
         //create reader for grammar file
         BufferedReader grammarReader = new BufferedReader(new InputStreamReader(SpeechCommandHandler.class
                 .getClassLoader().getResourceAsStream("grammars/PAMM.gram")));
