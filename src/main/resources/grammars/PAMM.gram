@@ -2,16 +2,16 @@
 
 grammar pamm;
 
-public <stop_listening> = stop listening | never mind;
-public <activate> = hey there pam;
-public <show_commands> = show my commands;
+public <stop_listening> = (stop listening) | (never mind);
+public <activate> = (hey there pam);
+public <show_commands> = (show my commands);
 public <continuous> = (turn on continuous mode);
 public <return> = (return to menu);
 public <cancel> = (cancel command);
 
-public <stop_recording> = finish recording;
-public <start_variable> = start variable step;
-public <finish_variable> = finish variable step;
+public <stop_recording> = (finish recording);
+public <start_variable> = (start variable step);
+public <finish_variable> = (finish variable step);
 
 public <create_mode> = <start_variable> | <finish_variable> | <stop_recording>;
 public <assistant_mode> = <activate> | <continuous> | <stop_listening> | <return> | <show_commands> | <cancel>;

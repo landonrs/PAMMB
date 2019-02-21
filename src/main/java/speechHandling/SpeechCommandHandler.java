@@ -123,7 +123,7 @@ public class SpeechCommandHandler {
 
     }
 
-    public void handleAssistantCommand(String speechInput, AssistantModeController controller) {
+    private void handleAssistantCommand(String speechInput, AssistantModeController controller) {
 
         if(speechInput.equals(RETURN_PHRASE) && currentState != ACTIVE_STATE.RUNNING_MACRO){
             runningAssistantMode = false;
@@ -148,12 +148,7 @@ public class SpeechCommandHandler {
         // show command list
         else if((currentState == ACTIVE_STATE.ACTIVATED || currentState == ACTIVE_STATE.CONTINUOUS_MODE)
         && speechInput.equals(SHOW_COMMANDS_PHRASE)) {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    ViewLoader.displayCommandList();
-                }
-            });
+            Platform.runLater(() -> ViewLoader.displayCommandList());
         }
 
         else if((currentState == ACTIVE_STATE.ACTIVATED || currentState == ACTIVE_STATE.CONTINUOUS_MODE)
@@ -177,16 +172,14 @@ public class SpeechCommandHandler {
                 if(userMacro != null) {
                     setAndClearDisplayText(speechInput, controller);
                     currentState = ACTIVE_STATE.RUNNING_MACRO;
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
+                    Platform.runLater(() -> {
+                        if(ViewLoader.listStageOpen) {
                             ViewLoader.hideCommandList();
-                            ViewLoader.hidePrimaryStage();
-                            EventPerformer.performMacro(userMacro);
-                            currentState = ACTIVE_STATE.IDLE;
-                            ViewLoader.showPrimaryStage();
                         }
-
+                        ViewLoader.hidePrimaryStage();
+                        EventPerformer.performMacro(userMacro);
+                        currentState = ACTIVE_STATE.IDLE;
+                        ViewLoader.showPrimaryStage();
                     });
                     // After macro has been performed, return to idle state
                     controller.dimCircle();
@@ -203,17 +196,16 @@ public class SpeechCommandHandler {
             if(userMacro != null) {
                 setAndClearDisplayText(speechInput, controller);
                 currentState = ACTIVE_STATE.RUNNING_MACRO;
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
+                Platform.runLater(() -> {
+                    if(ViewLoader.listStageOpen) {
                         ViewLoader.hideCommandList();
-                        ViewLoader.hidePrimaryStage();
-                        EventPerformer.performMacro(userMacro);
-                        currentState = ACTIVE_STATE.CONTINUOUS_MODE;
-                        ViewLoader.showPrimaryStage();
-                        ViewLoader.displayCommandList();
                     }
-
+                    ViewLoader.hidePrimaryStage();
+                    EventPerformer.performMacro(userMacro);
+                    currentState = ACTIVE_STATE.CONTINUOUS_MODE;
+                    ViewLoader.showPrimaryStage();
+                    // redisplay commands list if user had it open
+                    ViewLoader.showCommandList();
                 });
             }
             else
@@ -319,16 +311,16 @@ public class SpeechCommandHandler {
         BufferedReader grammarReader = new BufferedReader(new InputStreamReader(SpeechCommandHandler.class
                 .getClassLoader().getResourceAsStream("grammars/PAMM.gram")));
         List<String> lines = new ArrayList<>();
-        String newCommandGrammarList = COMMANDLINE;
+        StringBuilder newCommandGrammarList = new StringBuilder(COMMANDLINE);
         if(commandNames.isEmpty()){
-            newCommandGrammarList += "<VOID> );";
+            newCommandGrammarList.append("<VOID> );");
         }
         else {
             for (int i = 0; i < commandNames.size(); i++) {
                 if (i != commandNames.size() - 1) {
-                    newCommandGrammarList += commandNames.get(i).toLowerCase() + " | ";
+                    newCommandGrammarList.append(commandNames.get(i).toLowerCase()).append(" | ");
                 } else {
-                    newCommandGrammarList += commandNames.get(i).toLowerCase() + ");";
+                    newCommandGrammarList.append(commandNames.get(i).toLowerCase()).append(");");
                 }
             }
         }
@@ -345,7 +337,7 @@ public class SpeechCommandHandler {
             position++;
         }
         // overwrite commands with updated list
-        lines.set(position, newCommandGrammarList);
+        lines.set(position, newCommandGrammarList.toString());
         // update the grammar file
         System.out.println(URLDecoder.decode(GRAMMAR_PATH, "UTF-8"));
         PrintWriter out = new PrintWriter(URLDecoder.decode(GRAMMAR_PATH, "UTF-8"));

@@ -108,25 +108,15 @@ public class ViewLoader {
 
     public static void displayCommandList() {
 
+        // only have one stage open at a time
         if(!listStageOpen) {
-            //load list view
-            FXMLLoader listLoader = new FXMLLoader(ViewLoader.class.getClassLoader().getResource("showCommandsView.fxml"));
-            Parent root = null;
-            try {
-                root = listLoader.load();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
-            listStage = new Stage();
+            listStage = generateDialog("showCommandsView.fxml");
 
-            Scene scene = new Scene(root);
-            scene.getStylesheets().add(ViewLoader.class.getClassLoader().getResource("PammStyle.css").toExternalForm());
-            listStage.setScene(scene);
             //get commands from db
             List commands = SQLiteDbFacade.getMacroNames();
             // populate list with commands
-            ListView commandList = (ListView) scene.lookup("#showCommandListView");
+            ListView commandList = (ListView) listStage.getScene().lookup("#showCommandListView");
             commandList.getItems().addAll(commands);
             // prevent user from being able to click on it
             commandList.setMouseTransparent(true);
@@ -162,9 +152,14 @@ public class ViewLoader {
     }
 
     public static void hideCommandList(){
-        if(listStageOpen) {
+        if(listStage.isShowing()) {
             listStage.hide();
-            listStageOpen = false;
+        }
+    }
+
+    public static void showCommandList() {
+        if(listStageOpen && !listStage.isShowing()) {
+            listStage.show();
         }
     }
 }
