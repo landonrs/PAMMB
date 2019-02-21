@@ -27,6 +27,8 @@ public class EventPerformer {
     private static boolean macroMouseVisible;
     // sets delay between clicking events
     private static int macroSecondDelay;
+    // set to true if user cancels macro while it is running
+    private static volatile boolean macroCancelled = false;
 
     private static Robot robot;
 
@@ -38,7 +40,7 @@ public class EventPerformer {
         }
     }
 
-    public static boolean performMacro(Macro userMacro) {
+    public static void performMacro(Macro userMacro) {
         macroMouseVisible = userMacro.isMouseIsVisible();
         macroSecondDelay = userMacro.getSecondDelay();
 
@@ -50,6 +52,12 @@ public class EventPerformer {
         previousPoint = new Point(MouseInfo.getPointerInfo().getLocation());
 
         for(Step macroStep: userMacro.getSteps()) {
+            // check to see if user has cancelled macro
+            if(macroCancelled) {
+                // reset value and exit
+                macroCancelled = false;
+                return;
+            }
             switch (macroStep.getType()) {
 
                 case EventTypes.LEFT_CLICK:
@@ -138,7 +146,7 @@ public class EventPerformer {
             }
         }
 
-        return true;
+        return;
 
     }
 
@@ -261,4 +269,7 @@ public class EventPerformer {
         previousPoint = new Point(clickX, clickY);
     }
 
+    public static void stopMacro() {
+        macroCancelled = true;
+    }
 }

@@ -47,6 +47,7 @@ public class SpeechCommandHandler {
     private static final String NEVER_MIND_PHRASE = "never mind";
     private static final String CONTINUOUS_PHRASE = "turn on continuous mode";
     private static final String RETURN_PHRASE = "return to menu";
+    private static final String CANCEL_PHRASE = "cancel command";
 
     // commands used when creating macros
     private static final String STOP_RECORDING_PHRASE = "finish recording";
@@ -124,10 +125,15 @@ public class SpeechCommandHandler {
 
     public void handleAssistantCommand(String speechInput, AssistantModeController controller) {
 
-        if(speechInput.equals(RETURN_PHRASE)){
+        if(speechInput.equals(RETURN_PHRASE) && currentState != ACTIVE_STATE.RUNNING_MACRO){
             runningAssistantMode = false;
             controller.loadHomeView();
             return;
+        }
+
+        //cancel commands if running
+        if (speechInput.equals(CANCEL_PHRASE) && currentState == ACTIVE_STATE.RUNNING_MACRO) {
+            EventPerformer.stopMacro();
         }
 
         // activate PAMM
