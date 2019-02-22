@@ -11,7 +11,7 @@
 }
 
 .label {
-    -fx-text-alignment: center;
+    /*-fx-text-alignment: center;*/
 }
 
 #userSpeechDisplay {

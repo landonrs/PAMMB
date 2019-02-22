@@ -100,6 +100,7 @@ public class MacroListController implements Initializable {
         });
         ViewLoader.hidePrimaryStage();
         editDialog.show();
+        editDialog.toFront();
 
     }
 }

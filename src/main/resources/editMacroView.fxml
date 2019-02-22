@@ -5,10 +5,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-fx:controller="frontEnd.MacroSetterController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frontEnd.MacroSetterController">
    <children>
       <Button layoutX="40.0" layoutY="326.0" mnemonicParsing="false" onAction="#testEditedMacro" prefHeight="38.0" prefWidth="149.0" text="Test Macro with settings" />
       <Label layoutX="337.0" layoutY="270.0" text="Slow" textFill="WHITE" />
@@ -22,7 +19,7 @@ fx:controller="frontEnd.MacroSetterController">
          </tooltip>
       </CheckBox>
       <Slider fx:id="secondSlider" blockIncrement="1.0" layoutX="40.0" layoutY="230.0" majorTickUnit="1.0" max="8.0" minorTickCount="0" prefHeight="38.0" prefWidth="321.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
-      <Label fx:id="warningLabel" layoutX="56.0" layoutY="147.0" prefHeight="25.0" prefWidth="289.0" text="That name is already being used, please enter another" textFill="#fc0000" visible="false"/>
+      <Label fx:id="warningLabel" alignment="CENTER" layoutX="-1.0" layoutY="147.0" prefHeight="25.0" prefWidth="400.0" text="Macro names cannot have any numbers or special characters" textAlignment="CENTER" textFill="#fc0000" visible="false" />
       <TextField fx:id="editNameField" layoutX="74.0" layoutY="122.0" prefHeight="25.0" prefWidth="253.0" />
       <Label alignment="CENTER" contentDisplay="CENTER" layoutX="74.0" layoutY="14.0" prefHeight="108.0" prefWidth="253.0" text="Enter a name for this macro (must be different than all other macro names):" textFill="WHITE" wrapText="true">
          <font>

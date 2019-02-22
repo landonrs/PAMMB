@@ -73,7 +73,6 @@ public class MacroSetterController implements Initializable {
     }
 
     public void getVariableStepName() {
-        // EventRecorder.stopRecording();
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -97,10 +96,11 @@ public class MacroSetterController implements Initializable {
 
     @FXML
     public void checkMacroName(ActionEvent actionEvent) throws Exception{
-        if(dbFacade.uniqueMacroName(macroName.getText().trim())) {
-            System.out.println("Name is unique: " + macroName.getText());
+        String standardizedMacroName = getStandardizedMacroName(macroName.getText(), true);
+        if(standardizedMacroName != null) {
+            System.out.println("Name is unique: " + standardizedMacroName);
             // trim off any extra whitespace from name
-            MacroSettings.setMacroName(macroName.getText().trim());
+            MacroSettings.setMacroName(standardizedMacroName);
             Stage stage = (Stage) macroName.getScene().getWindow();
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("macroSettingView.fxml"));
             ViewLoader.loadPage(loader);
@@ -182,12 +182,13 @@ public class MacroSetterController implements Initializable {
      * @param actionEvent
      */
     public void updateMacro(ActionEvent actionEvent) throws IOException {
+
+        String macroNameInput = getStandardizedMacroName(editNameField.getText(), false);
         // if name is valid or is same delete old macro and save new one
-        if(dbFacade.uniqueMacroName(editNameField.getText().trim()) ||
-                editNameField.getText().trim().equals(MacroSettings.getMacroName())) {
+        if(macroNameInput != null) {
 
             SQLiteDbFacade.deleteMacro(MacroSettings.getMacroName());
-            MacroSettings.setMacroName(editNameField.getText().trim());
+            MacroSettings.setMacroName(macroNameInput);
             Macro updatedMacro = createMacroWithCurrentSettings();
             boolean saved = dbFacade.saveMacro(updatedMacro);
             if(saved) {
@@ -220,5 +221,45 @@ public class MacroSetterController implements Initializable {
         Stage dialogStage = (Stage) editNameField.getScene().getWindow();
         dialogStage.close();
         ViewLoader.showPrimaryStage();
+    }
+
+    /**
+     * runs the macro name input from user through several checks to verify
+     * it is valid
+     * @param macroName - user created name for macro they recorded
+     *        newMacro - specifies if macro is being created or edited
+     * @return standardized name if checks pass, otherwise null
+     */
+    private String getStandardizedMacroName(String macroName, boolean newMacro){
+        //set warning label to invisible so message is not shown prematurely
+        warningLabel.setVisible(false);
+
+        // trim off whitespace and set to lower for consistency
+        macroName = macroName.trim().toLowerCase();
+
+        // name must not be empty
+        if(macroName.equals("")) {
+            warningLabel.setText("Text field cannot be empty");
+            return null;
+        }
+
+        // names should only have letters and spaces
+        char[] chars = macroName.toCharArray();
+
+        for (char c : chars) {
+            if(!Character.isLetter(c) && !Character.isSpaceChar(c)) {
+                warningLabel.setText("Macro names cannot have any numbers or special characters");
+                return null;
+            }
+        }
+
+        // if creating a new macro, the name must not already exist in db
+        if(newMacro && !dbFacade.uniqueMacroName(macroName)) {
+            warningLabel.setText("That name is already being used, please enter another");
+            return null;
+        }
+
+        // passed checks
+        return macroName;
     }
 }
