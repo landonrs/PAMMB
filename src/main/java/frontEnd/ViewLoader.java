@@ -11,6 +11,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import speechHandling.SpeechCommandHandler;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,13 +31,16 @@ public class ViewLoader {
     private static double HOME_MENU_Y;
     private static boolean initialized = false;
 
+    // used to keep track of which scene we are currently in
+    private static FXMLLoader currentLoader;
+
     public static void setPrimaryStage(Stage stage) {
 
         ViewLoader.primaryStage = stage;
         // this prevents the JavaFX platform thread from terminating when primaryStage is hidden
         Platform.setImplicitExit(false);
         // explicitly end program when user closes primary primaryStage
-        ViewLoader.primaryStage.setOnCloseRequest(event -> Platform.exit());
+        ViewLoader.primaryStage.setOnCloseRequest(event -> checkWindowBeforeExit());
     }
 
     public static void loadPage(FXMLLoader loader) throws Exception{
@@ -45,11 +49,13 @@ public class ViewLoader {
         Scene scene = new Scene(root);
         scene.getStylesheets().add(ViewLoader.class.getClassLoader().getResource("PammStyle.css").toExternalForm());
         primaryStage.setScene(scene);
-        //System.out.println(loader.getController().getClass());
         if((loader.getController() instanceof HomeMenuController) && initialized) {
             primaryStage.setX(HOME_MENU_X);
             primaryStage.setY(HOME_MENU_Y);
         }
+
+        // set the current loader so we can track which scene we are on
+        currentLoader = loader;
 
         primaryStage.show();
     }
@@ -129,6 +135,7 @@ public class ViewLoader {
 
             listStage.setOnCloseRequest(event -> listStageOpen = false);
             listStage.show();
+            listStage.toFront();
             listStageOpen = true;
         }
 
@@ -166,5 +173,27 @@ public class ViewLoader {
         if(listStageOpen && !listStage.isShowing()) {
             listStage.show();
         }
+    }
+
+    /**
+     * This is called whenever the close 'x' button is clicked by the user. If we are in assistant
+     * mode we return to the home menu, otherwise the entire program is closed
+     */
+    private static void checkWindowBeforeExit(){
+        if((currentLoader.getController() instanceof AssistantModeController)) {
+                SpeechCommandHandler.stopAssistantMode();
+                Platform.runLater(() ->
+                {
+                    try {
+                        loadPage(new FXMLLoader(ViewLoader.class.getClassLoader().getResource("HomeView.fxml")));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+        }
+        else {
+            Platform.exit();
+        }
+
     }
 }

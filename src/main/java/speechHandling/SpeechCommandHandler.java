@@ -110,7 +110,7 @@ public class SpeechCommandHandler {
             interpreter.pauseListening();
 
 
-            if(speechInput != null) {
+            if(speechInput != null && runningAssistantMode) {
                 System.out.println("result: " + speechInput + " current state " + currentState);
                 handleAssistantCommand(speechInput, controller);
             }
@@ -127,6 +127,9 @@ public class SpeechCommandHandler {
 
         if(speechInput.equals(RETURN_PHRASE) && currentState == ACTIVE_STATE.ACTIVATED){
             runningAssistantMode = false;
+            if(ViewLoader.listStageOpen) {
+                ViewLoader.hideCommandList();
+            }
             controller.loadHomeView();
             return;
         }
@@ -216,6 +219,10 @@ public class SpeechCommandHandler {
                 setAndClearDisplayText(UNKNOWNREPSONSE, controller);
         }
 
+    }
+
+    public static void stopAssistantMode() {
+        runningAssistantMode = false;
     }
 
 
