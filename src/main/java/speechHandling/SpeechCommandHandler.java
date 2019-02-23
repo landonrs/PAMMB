@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +27,12 @@ public class SpeechCommandHandler {
     private static volatile boolean runningAssistantMode;
     private static volatile boolean runningCreateMode;
     private static volatile boolean startedVariableStep;
+    // this counter is used to track how many unrecognized commands have been heard in a row
+    // if the program fails to process three commands in a row, we display the command list so the user can
+    // run a command manually
+    private static int unrecognizedCount = 0;
+    // the number of errors that can occur in a row before we implement fail safe command display
+    private static final int MAX_ERROR_FAIL_SAFE = 3;
     // singleton instance to ensure that only one microphone is intitialized
     private static SpeechCommandHandler instance = null;
 
@@ -48,6 +55,10 @@ public class SpeechCommandHandler {
     private static final String CONTINUOUS_PHRASE = "turn on continuous mode";
     private static final String RETURN_PHRASE = "return to menu";
     private static final String CANCEL_PHRASE = "cancel command";
+
+    // used to display system commands to user
+    private static final String[] SYSTEM_COMMANDS = {ACTIVATE_PHRASE, SHOW_COMMANDS_PHRASE, STOP_LISTENING, NEVER_MIND_PHRASE,
+    CONTINUOUS_PHRASE, RETURN_PHRASE, CANCEL_PHRASE};
 
     // commands used when creating macros
     private static final String STOP_RECORDING_PHRASE = "finish recording";
@@ -99,6 +110,10 @@ public class SpeechCommandHandler {
         }
     }
 
+    public static List getSystemCommandNames() {
+        return Arrays.asList(SYSTEM_COMMANDS);
+    }
+
     public void runAssistantMode(AssistantModeController controller) {
         // reset our state from last time
         currentState = ACTIVE_STATE.IDLE;
@@ -123,13 +138,14 @@ public class SpeechCommandHandler {
 
     }
 
-    private void handleAssistantCommand(String speechInput, AssistantModeController controller) {
+    public void handleAssistantCommand(String speechInput, AssistantModeController controller) {
 
         if(speechInput.equals(RETURN_PHRASE) && currentState == ACTIVE_STATE.ACTIVATED){
             runningAssistantMode = false;
             if(ViewLoader.listStageOpen) {
-                ViewLoader.hideCommandList();
+                Platform.runLater(() -> ViewLoader.hideCustomCommandList());
             }
+            Platform.runLater(() -> ViewLoader.hideSystemCommands());
             controller.loadHomeView();
             return;
         }
@@ -152,7 +168,7 @@ public class SpeechCommandHandler {
         // show command list
         else if((currentState == ACTIVE_STATE.ACTIVATED || currentState == ACTIVE_STATE.CONTINUOUS_MODE)
         && speechInput.equals(SHOW_COMMANDS_PHRASE)) {
-            Platform.runLater(() -> ViewLoader.displayCommandList());
+            Platform.runLater(() -> ViewLoader.displayCommandList(controller));
         }
 
         else if((currentState == ACTIVE_STATE.ACTIVATED || currentState == ACTIVE_STATE.CONTINUOUS_MODE)
@@ -160,7 +176,14 @@ public class SpeechCommandHandler {
             currentState = ACTIVE_STATE.IDLE;
             controller.dimCircle();
             setAndClearDisplayText(speechInput, controller);
-            Platform.runLater(() -> ViewLoader.minimizePrimaryStage());
+            Platform.runLater(() -> {
+                if(ViewLoader.listStageOpen){
+                    ViewLoader.hideCustomCommandList();
+                }
+                ViewLoader.minimizePrimaryStage();
+                ViewLoader.hideSystemCommands();
+
+            });
 
         }
 
@@ -177,10 +200,13 @@ public class SpeechCommandHandler {
                 if(userMacro != null) {
                     setAndClearDisplayText(speechInput, controller);
                     currentState = ACTIVE_STATE.RUNNING_MACRO;
+                    // we recognized the command, reset error counter
+                    unrecognizedCount = 0;
                     Platform.runLater(() -> {
                         if(ViewLoader.listStageOpen) {
-                            ViewLoader.hideCommandList();
+                            ViewLoader.hideCustomCommandList();
                         }
+                        ViewLoader.hideSystemCommands();
                         ViewLoader.hidePrimaryStage();
                         EventPerformer.performMacro(userMacro);
                         // After macro has been performed, return to idle state and wait
@@ -191,8 +217,9 @@ public class SpeechCommandHandler {
 
                     controller.dimCircle();
                 }
-                else
-                    setAndClearDisplayText(UNKNOWNREPSONSE, controller);
+                else {
+                    checkFailSafe(controller);
+                }
 
             }
         }
@@ -203,22 +230,43 @@ public class SpeechCommandHandler {
             if(userMacro != null) {
                 setAndClearDisplayText(speechInput, controller);
                 currentState = ACTIVE_STATE.RUNNING_MACRO;
+                unrecognizedCount = 0;
                 Platform.runLater(() -> {
                     if(ViewLoader.listStageOpen) {
-                        ViewLoader.hideCommandList();
+                        ViewLoader.hideCustomCommandList();
                     }
+                    // if system commands are visible, hide the dialog
+                    ViewLoader.hideSystemCommands();
+
                     ViewLoader.hidePrimaryStage();
                     EventPerformer.performMacro(userMacro);
                     currentState = ACTIVE_STATE.CONTINUOUS_MODE;
                     ViewLoader.showPrimaryStage();
                     // redisplay commands list if user had it open
-                    ViewLoader.showCommandList();
+                    ViewLoader.showCustomCommandList();
                 });
             }
-            else
-                setAndClearDisplayText(UNKNOWNREPSONSE, controller);
+            else {
+                checkFailSafe(controller);
+            }
         }
 
+    }
+
+    /**
+     * if the program cannot recognize a command a certain number of times
+     * in a row, this command checks to see if the command list needs to
+     * be displayed so the user can select a command manually
+     * @param controller - the controller we pass to the command list so it can process the command
+     */
+    private void checkFailSafe(AssistantModeController controller) {
+        setAndClearDisplayText(UNKNOWNREPSONSE, controller);
+        unrecognizedCount++;
+        System.out.println("checking fail safe, error count is " + unrecognizedCount);
+        if(unrecognizedCount >= MAX_ERROR_FAIL_SAFE){
+            unrecognizedCount = 0;
+            Platform.runLater(() -> ViewLoader.displayCommandList(controller));
+        }
     }
 
     public static void stopAssistantMode() {
@@ -357,6 +405,7 @@ public class SpeechCommandHandler {
         }
         out.close();
     }
+
 
 
 }

@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -23,8 +24,11 @@ public class ViewLoader {
     // used for main views of application
     private static Stage primaryStage;
     // command list window displayed in assistant mode
-    private static Stage listStage;
+    private static Stage customListStage;
     public static boolean listStageOpen = false;
+    // system command list
+    private static Stage systemListStage;
+
     private static final int ASSISTANT_MODE_WIDTH = 200;
     private static final int ASSISTANT_MODE_HEIGHT = 300;
     private static double HOME_MENU_X;
@@ -117,25 +121,40 @@ public class ViewLoader {
         return VarStepController.varStepValue;
     }
 
-    public static void displayCommandList() {
+    /**
+     * Called when the user tells the program to show the command list or when the program
+     * is unable to process 3 commands in a row
+     */
+    public static void displayCommandList(AssistantModeController controller) {
 
         // only have one stage open at a time
         if(!listStageOpen) {
 
-            listStage = generateDialog("showCommandsView.fxml");
+            customListStage = generateDialog("showCommandsView.fxml");
 
             //get commands from db
             List commands = SQLiteDbFacade.getMacroNames();
             // populate list with commands
-            ListView commandList = (ListView) listStage.getScene().lookup("#showCommandListView");
+            ListView commandList = (ListView) customListStage.getScene().lookup("#showCommandListView");
             commandList.getItems().addAll(commands);
-            // prevent user from being able to click on it
-            commandList.setMouseTransparent(true);
-            commandList.setFocusTraversable(false);
 
-            listStage.setOnCloseRequest(event -> listStageOpen = false);
-            listStage.show();
-            listStage.toFront();
+            Label commandListLabel = (Label) customListStage.getScene().lookup("#commandListLabel");
+            commandListLabel.setText("Custom Commands");
+
+            Button commandListButton = (Button) customListStage.getScene().lookup("#commandListButton");
+            commandListButton.setOnAction(event ->
+                SpeechCommandHandler.getInstance()
+                        .handleAssistantCommand((String) commandList.getSelectionModel().getSelectedItem(), controller));
+
+
+            // prevent user from being able to click on it
+//            commandList.setMouseTransparent(true);
+//            commandList.setFocusTraversable(false);
+
+            customListStage.setOnHidden(event -> listStageOpen = false);
+            customListStage.setOnCloseRequest(event -> listStageOpen = false);
+            customListStage.show();
+            customListStage.toFront();
             listStageOpen = true;
         }
 
@@ -163,15 +182,15 @@ public class ViewLoader {
 
     }
 
-    public static void hideCommandList(){
-        if(listStage.isShowing()) {
-            listStage.hide();
+    public static void hideCustomCommandList(){
+        if(customListStage.isShowing()) {
+            customListStage.hide();
         }
     }
 
-    public static void showCommandList() {
-        if(listStageOpen && !listStage.isShowing()) {
-            listStage.show();
+    public static void showCustomCommandList() {
+        if(listStageOpen && !customListStage.isShowing()) {
+            customListStage.show();
         }
     }
 
@@ -184,6 +203,11 @@ public class ViewLoader {
                 SpeechCommandHandler.stopAssistantMode();
                 Platform.runLater(() ->
                 {
+                    if(listStageOpen){
+                        hideCustomCommandList();
+                    }
+                    hideSystemCommands();
+
                     try {
                         loadPage(new FXMLLoader(ViewLoader.class.getClassLoader().getResource("HomeView.fxml")));
                     } catch (Exception e) {
@@ -195,5 +219,33 @@ public class ViewLoader {
             Platform.exit();
         }
 
+    }
+
+    public static void showSystemCommands() {
+        if(systemListStage == null || !systemListStage.isShowing()) {
+            systemListStage = generateDialog("showCommandsView.fxml");
+
+            List systemCommands = SpeechCommandHandler.getSystemCommandNames();
+
+            Label commandListLabel = (Label) systemListStage.getScene().lookup("#commandListLabel");
+            commandListLabel.setText("System Commands");
+
+            // populate list with commands
+            ListView commandList = (ListView) systemListStage.getScene().lookup("#showCommandListView");
+            commandList.getItems().addAll(systemCommands);
+
+            // user cannot run system commands from dialog, so make button invisible
+            Button commandListButton = (Button) systemListStage.getScene().lookup("#commandListButton");
+            commandListButton.setVisible(false);
+
+            systemListStage.show();
+            systemListStage.toFront();
+        }
+    }
+
+    public static void hideSystemCommands() {
+        if(systemListStage != null && systemListStage.isShowing()) {
+            systemListStage.hide();
+        }
     }
 }

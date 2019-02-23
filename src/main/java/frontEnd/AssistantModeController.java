@@ -6,6 +6,8 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
@@ -19,6 +21,7 @@ public class AssistantModeController implements Initializable {
 
     public Circle pammCircle;
     public Label userSpeechDisplay;
+    public Region systemCommandHelp;
     private FillTransition ACTIVATED_TRANSITION;
     private final String ACTIVATED_COLOR = "#44a4ff";
     private final String IDLE_COLOR = "#003261";
@@ -74,6 +77,10 @@ public class AssistantModeController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //set up tooltip and click event handler on system command help region
+        Tooltip systemToolTip = new Tooltip("Click to view list of commands");
+        Tooltip.install(systemCommandHelp, systemToolTip);
+        systemCommandHelp.setOnMouseClicked(event -> ViewLoader.showSystemCommands());
         audioCommands = CompletableFuture.runAsync(() -> {
             speechCommandHandler.runAssistantMode(this);
         });
