@@ -19,4 +19,4 @@ public <assistant_mode> = <activate> | <continuous> | <stop_listening> | <return
 /**
 * this rule must remain at the bottom of the file
 */
-public <command> = [(please | run command)] (test);
+public <command> = [(please | (run command))] (test);

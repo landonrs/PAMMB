@@ -42,7 +42,7 @@ public class SpeechCommandHandler {
     public static final String GRAMMAR_DIR = System.getenv("LOCALAPPDATA") + "\\PAMM\\data";
 
 
-    private static final String COMMANDLINE = "public <command> = [(please | run command)] (";
+    private static final String COMMANDLINE = "public <command> = [(please | (run command))] (";
     private static final String COMMANDPHRASE = "run command";
     private static final String POLITEPHRASE = "please";
     private static final String UNKNOWNREPSONSE = "Command not recognized";
@@ -376,10 +376,11 @@ public class SpeechCommandHandler {
         }
         else {
             for (int i = 0; i < commandNames.size(); i++) {
+                // each command name is surrounded with parentheses to decrease false positives
                 if (i != commandNames.size() - 1) {
-                    newCommandGrammarList.append(commandNames.get(i).toLowerCase()).append(" | ");
+                    newCommandGrammarList.append("(" + commandNames.get(i).toLowerCase()).append(") | ");
                 } else {
-                    newCommandGrammarList.append(commandNames.get(i).toLowerCase()).append(");");
+                    newCommandGrammarList.append("(" + commandNames.get(i).toLowerCase()).append("));");
                 }
             }
         }
@@ -405,7 +406,5 @@ public class SpeechCommandHandler {
         }
         out.close();
     }
-
-
 
 }
