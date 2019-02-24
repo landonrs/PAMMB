@@ -21,6 +21,6 @@
             <Font size="29.0" />
          </font>
       </Text>
-      <Region fx:id="systemCommandHelp" layoutX="6.0" layoutY="261.0" prefHeight="34.0" prefWidth="40.0" />
+      <Region fx:id="systemCommandHelp" layoutX="7.0" layoutY="260.0" prefHeight="34.0" prefWidth="40.0" />
    </children>
 </AnchorPane>

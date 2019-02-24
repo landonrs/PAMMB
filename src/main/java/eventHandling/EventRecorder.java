@@ -1,5 +1,6 @@
 package eventHandling;
 
+import Audio.MediaPlayerUtil;
 import frontEnd.MacroSetterController;
 import macro.Macro;
 import macro.Step;
@@ -59,6 +60,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 e.printStackTrace();
             }
         }
+        MediaPlayerUtil.playSound();
 
     }
 

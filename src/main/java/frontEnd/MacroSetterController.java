@@ -1,6 +1,5 @@
 package frontEnd;
 
-import Audio.MediaPlayerUtil;
 import db.SQLiteDbFacade;
 import eventHandling.EventPerformer;
 import eventHandling.EventRecorder;
@@ -8,7 +7,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -19,13 +17,11 @@ import macro.Step;
 import speechHandling.SpeechCommandHandler;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 
-public class MacroSetterController implements Initializable {
+public class MacroSetterController {
 
     // controls for nameSetter View
     public Label warningLabel;
@@ -42,10 +38,6 @@ public class MacroSetterController implements Initializable {
 
     private SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        MediaPlayerUtil.playSound();
-    }
 
     public void recordUserEvents(Stage stage) {
         SpeechCommandHandler speechCommandHandler = SpeechCommandHandler.getInstance();
@@ -53,6 +45,12 @@ public class MacroSetterController implements Initializable {
         CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
             speechCommandHandler.runCreateMode(this);
         });
+        Stage instructionsStage = ViewLoader.generateDialog("recordingInstructionsView.fxml");
+        // set button event handler to close stage
+        Button recordingButton = (Button) instructionsStage.getScene().lookup("#recordingButton");
+        recordingButton.setOnAction(event -> instructionsStage.hide());
+
+        instructionsStage.showAndWait();
         EventRecorder.startRecordingUserMacro();
 
     }
