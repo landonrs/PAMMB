@@ -71,6 +71,7 @@ public class SQLiteDbFacade implements DbFacade {
 
         Session session = null;
         Transaction tx = null;
+        Macro deletedMacro = getInstance().loadMacro(macroName);
 
         try {
 
@@ -78,11 +79,7 @@ public class SQLiteDbFacade implements DbFacade {
             tx = session.beginTransaction();
 
             // delete selected macro
-            Query query = session.createQuery("delete Macro where name = :NAME");
-            query.setParameter("NAME", macroName);
-
-            int result = query.executeUpdate();
-            System.out.println("Deleted with result: " + result);
+            session.delete(deletedMacro);
 
             // Committing the change in the database.
             session.flush();
@@ -107,10 +104,7 @@ public class SQLiteDbFacade implements DbFacade {
 
             session = sessionFactory.openSession();
             // Fetching saved data
-            List<Macro> results = session.createQuery("from Macro where name = '" + macroName + "'" ).list();
-            if (results.size() != 0) {
-                loadedMacro = results.get(0);
-            }
+            loadedMacro = (Macro) session.get(Macro.class, macroName);
 
         } catch (Exception ex) {
             ex.printStackTrace();
