@@ -27,7 +27,7 @@ public class SpeechCommandHandlerTest {
 
     @Before
     public void setUp() throws Exception {
-        handler = SpeechCommandHandler.getInstance();
+        SpeechCommandHandler.initialize();
     }
 
 

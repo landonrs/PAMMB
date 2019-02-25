@@ -27,14 +27,20 @@ public class SpeechCommandHandler {
     private static volatile boolean runningAssistantMode;
     private static volatile boolean runningCreateMode;
     private static volatile boolean startedVariableStep;
+    //used to determine if fields need to be initialized whenever the grammar is updated
+    private static volatile boolean initialized = false;
+
     // this counter is used to track how many unrecognized commands have been heard in a row
     // if the program fails to process three commands in a row, we display the command list so the user can
     // run a command manually
     private static int unrecognizedCount = 0;
     // the number of errors that can occur in a row before we implement fail safe command display
     private static final int MAX_ERROR_FAIL_SAFE = 3;
-    // singleton instance to ensure that only one microphone is intitialized
-    private static SpeechCommandHandler instance = null;
+    // singleton instance to ensure that only one microphone is intitialized at a time
+//    private static SpeechCommandHandler instance = null;
+
+
+
 
 
     private static final String GRAMMAR_PATH = System.getenv("LOCALAPPDATA") + "\\PAMM\\data\\PAMM.gram";
@@ -65,7 +71,7 @@ public class SpeechCommandHandler {
     private static final String START_VAR_STEP_PHRASE = "start variable step";
     private static final String FINISH_VAR_STEP_PHRASE = "finish variable step";
 
-    private SpeechCommandHandler(SpeechInterpreter someInterpreter) {
+    private static void initializeFields(SpeechInterpreter someInterpreter) {
 
         // make sure directory exists for storing app data
         Path path = Paths.get(GRAMMAR_DIR);
@@ -97,24 +103,50 @@ public class SpeechCommandHandler {
 
 
     // For the Sphinx4 library on Windows OS, an error occurs if more than one
-    // recognizer gets instantiated which breaks the program
+    // recognizer gets instantiated at a time which breaks the program
     // to prevent this, we use a singleton instance of the SpeechCommandHandler
     // which ensures that only one instance will ever be initialized
-    public static SpeechCommandHandler getInstance() {
-        if (instance == null) {
-            instance = new SpeechCommandHandler(new SphinxInterpreter());
-            return instance;
+    public static void initialize() {
+        if (!initialized) {
+            initializeFields(new SphinxInterpreter());
+            initialized = true;
         }
-        else {
-            return instance;
+    }
+
+    /**
+     * reset interpreter, so it can be reinitialized
+     */
+    public static void deinitialize() {
+        interpreter = null;
+        System.gc();
+        initialized = false;
+    }
+
+    /**
+     * sets current interpreter to null and configures new instance
+     *
+     * Whenever the user saves, deletes, or edits a macro name, the grammar
+     * file gets updated {@see #updateGrammar}. In order for the interpreter
+     * to recognize these new names, it must be reconfigured each time the
+     * grammar file is updated.
+     */
+    public void resetInterpreter(){
+        interpreter = null;
+        System.gc();
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+        interpreter = new SphinxInterpreter();
+
     }
 
     public static List getSystemCommandNames() {
         return Arrays.asList(SYSTEM_COMMANDS);
     }
 
-    public void runAssistantMode(AssistantModeController controller) {
+    public static void runAssistantMode(AssistantModeController controller) {
         // reset our state from last time
         currentState = ACTIVE_STATE.IDLE;
         runningAssistantMode = true;
@@ -138,7 +170,7 @@ public class SpeechCommandHandler {
 
     }
 
-    public void handleAssistantCommand(String speechInput, AssistantModeController controller) {
+    public static void handleAssistantCommand(String speechInput, AssistantModeController controller) {
 
         if(speechInput.equals(RETURN_PHRASE) && currentState == ACTIVE_STATE.ACTIVATED){
             runningAssistantMode = false;
@@ -259,7 +291,7 @@ public class SpeechCommandHandler {
      * be displayed so the user can select a command manually
      * @param controller - the controller we pass to the command list so it can process the command
      */
-    private void checkFailSafe(AssistantModeController controller) {
+    private static void checkFailSafe(AssistantModeController controller) {
         setAndClearDisplayText(UNKNOWNREPSONSE, controller);
         unrecognizedCount++;
         System.out.println("checking fail safe, error count is " + unrecognizedCount);
@@ -274,7 +306,7 @@ public class SpeechCommandHandler {
     }
 
 
-    private void setAndClearDisplayText(String speechInput, AssistantModeController controller){
+    private static void setAndClearDisplayText(String speechInput, AssistantModeController controller){
         controller.displaySpeech(speechInput);
         // wait 2 seconds then clear screen
         try {
@@ -287,7 +319,7 @@ public class SpeechCommandHandler {
 
     }
 
-    public void runCreateMode(MacroSetterController controller) {
+    public static void runCreateMode(MacroSetterController controller) {
         runningCreateMode = true;
         interpreter.startListening();
         System.out.println("starting macro create mode");
@@ -311,7 +343,7 @@ public class SpeechCommandHandler {
         interpreter.pauseListening();
     }
 
-    private void handleCreateCommand(String command, MacroSetterController controller) {
+    private static void handleCreateCommand(String command, MacroSetterController controller) {
         switch (command) {
             case STOP_RECORDING_PHRASE:
                 if (!startedVariableStep) {
@@ -347,7 +379,7 @@ public class SpeechCommandHandler {
         return currentState;
     }
 
-    String getCommandFromSpeech(String speechInput) {
+    static String getCommandFromSpeech(String speechInput) {
         String command = "";
         if(speechInput.contains(COMMANDPHRASE)) {
             // the macro name starts after the substr "run command "
@@ -405,6 +437,7 @@ public class SpeechCommandHandler {
             out.println(line);
         }
         out.close();
+
     }
 
 }

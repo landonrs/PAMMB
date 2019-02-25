@@ -143,7 +143,7 @@ public class ViewLoader {
 
             Button commandListButton = (Button) customListStage.getScene().lookup("#commandListButton");
             commandListButton.setOnAction(event ->
-                SpeechCommandHandler.getInstance()
+                SpeechCommandHandler
                         .handleAssistantCommand((String) commandList.getSelectionModel().getSelectedItem(), controller));
 
 
@@ -248,4 +248,5 @@ public class ViewLoader {
             systemListStage.hide();
         }
     }
+
 }

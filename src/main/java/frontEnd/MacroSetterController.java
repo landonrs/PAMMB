@@ -40,10 +40,9 @@ public class MacroSetterController {
 
 
     public void recordUserEvents(Stage stage) {
-        SpeechCommandHandler speechCommandHandler = SpeechCommandHandler.getInstance();
         // set up speech command handling on separate thread
         CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
-            speechCommandHandler.runCreateMode(this);
+            SpeechCommandHandler.runCreateMode(this);
         });
         Stage instructionsStage = ViewLoader.generateDialog("recordingInstructionsView.fxml");
         // set button event handler to close stage

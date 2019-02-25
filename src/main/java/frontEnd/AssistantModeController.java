@@ -25,7 +25,6 @@ public class AssistantModeController implements Initializable {
     private FillTransition ACTIVATED_TRANSITION;
     private final String ACTIVATED_COLOR = "#44a4ff";
     private final String IDLE_COLOR = "#003261";
-    SpeechCommandHandler speechCommandHandler = SpeechCommandHandler.getInstance();
     CompletableFuture audioCommands;
 
 
@@ -82,7 +81,7 @@ public class AssistantModeController implements Initializable {
         Tooltip.install(systemCommandHelp, systemToolTip);
         systemCommandHelp.setOnMouseClicked(event -> ViewLoader.showSystemCommands());
         audioCommands = CompletableFuture.runAsync(() -> {
-            speechCommandHandler.runAssistantMode(this);
+            SpeechCommandHandler.runAssistantMode(this);
         });
     }
 

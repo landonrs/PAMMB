@@ -13,7 +13,6 @@ import speechHandling.SpeechCommandHandler;
 public class HomeMenuController {
 
     public Button createMacro, viewList, assistantMode;
-    SpeechCommandHandler speechCommandHandler = SpeechCommandHandler.getInstance();
     EventRecorder recorder = EventRecorder.getInstance();
 
     @FXML
@@ -44,10 +43,4 @@ public class HomeMenuController {
 
     }
 
-
-    public static String getVariableStepValue(){
-
-        return "testValue";
-
-    }
 }
