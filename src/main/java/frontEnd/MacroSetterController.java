@@ -184,11 +184,15 @@ public class MacroSetterController {
         // if name is valid or is same delete old macro and save new one
         if(macroNameInput != null) {
 
-            SQLiteDbFacade.deleteMacro(MacroSettings.getMacroName());
+            String oldMacroName = MacroSettings.getMacroName();
             MacroSettings.setMacroName(macroNameInput);
             Macro updatedMacro = createMacroWithCurrentSettings();
             boolean saved = dbFacade.saveMacro(updatedMacro);
             if(saved) {
+                if(!oldMacroName.equals(macroNameInput)) {
+                    // erase old macro
+                    SQLiteDbFacade.deleteMacro(oldMacroName);
+                }
                 MacroSettings.resetValues();
                 // update the grammar file with the new command
                 SpeechCommandHandler.updateGrammar();
