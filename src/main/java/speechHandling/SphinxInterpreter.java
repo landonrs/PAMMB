@@ -12,7 +12,7 @@ public class SphinxInterpreter implements SpeechInterpreter {
 
 
     Configuration configuration;
-    LiveSpeechRecognizer recognizer;
+    CustomSpeechRecognizer recognizer;
     private final String GRAMMAR_PATH = "file:"
             + SpeechCommandHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath()
             + "data";
@@ -33,7 +33,7 @@ public class SphinxInterpreter implements SpeechInterpreter {
         configuration.setUseGrammar(true);
 
         try {
-            recognizer = new LiveSpeechRecognizer(configuration);
+            recognizer = new CustomSpeechRecognizer(configuration);
         } catch (IOException e) {
             e.printStackTrace();
         }

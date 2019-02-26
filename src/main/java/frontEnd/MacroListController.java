@@ -57,6 +57,7 @@ public class MacroListController implements Initializable {
         // remove the command from the grammar file for speech recognition
         try {
             SpeechCommandHandler.updateGrammar();
+            SpeechCommandHandler.initialize();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -116,6 +116,7 @@ public class MacroSetterController {
             MacroSettings.resetValues();
             // update the grammar file with the new command
             SpeechCommandHandler.updateGrammar();
+            SpeechCommandHandler.initialize();
         }
         displayHomeView();
 
@@ -196,6 +197,7 @@ public class MacroSetterController {
                 MacroSettings.resetValues();
                 // update the grammar file with the new command
                 SpeechCommandHandler.updateGrammar();
+                SpeechCommandHandler.initialize();
             }
             // now remove the dialog from view
             Stage stage = (Stage) editNameField.getScene().getWindow();

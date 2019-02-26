@@ -28,7 +28,7 @@ public class SpeechCommandHandler {
     private static volatile boolean runningCreateMode;
     private static volatile boolean startedVariableStep;
     //used to determine if fields need to be initialized whenever the grammar is updated
-    private static volatile boolean initialized = false;
+    private static volatile boolean grammarUpdated = false;
 
     // this counter is used to track how many unrecognized commands have been heard in a row
     // if the program fails to process three commands in a row, we display the command list so the user can
@@ -102,44 +102,19 @@ public class SpeechCommandHandler {
     }
 
 
-    // For the Sphinx4 library on Windows OS, an error occurs if more than one
-    // recognizer gets instantiated at a time which breaks the program
-    // to prevent this, we use a singleton instance of the SpeechCommandHandler
-    // which ensures that only one instance will ever be initialized
-    public static void initialize() {
-        if (!initialized) {
-            initializeFields(new SphinxInterpreter());
-            initialized = true;
-        }
-    }
-
     /**
-     * reset interpreter, so it can be reinitialized
-     */
-    public static void deinitialize() {
-        interpreter = null;
-        System.gc();
-        initialized = false;
-    }
-
-    /**
-     * sets current interpreter to null and configures new instance
+     * sets or resets fields and configures new interpreter instance
      *
      * Whenever the user saves, deletes, or edits a macro name, the grammar
      * file gets updated {@see #updateGrammar}. In order for the interpreter
      * to recognize these new names, it must be reconfigured each time the
      * grammar file is updated.
      */
-    public void resetInterpreter(){
-        interpreter = null;
-        System.gc();
-        try {
-            TimeUnit.SECONDS.sleep(5);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public static void initialize() {
+        if (grammarUpdated) {
+            initializeFields(new SphinxInterpreter());
+            grammarUpdated = false;
         }
-        interpreter = new SphinxInterpreter();
-
     }
 
     public static List getSystemCommandNames() {
@@ -437,6 +412,8 @@ public class SpeechCommandHandler {
             out.println(line);
         }
         out.close();
+
+        grammarUpdated = true;
 
     }
 
