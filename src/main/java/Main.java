@@ -13,8 +13,7 @@ public class Main extends Application {
         //initialize db
         SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
         // initialize speech recognition instance and update grammar file for speech recognition
-        SpeechCommandHandler.updateGrammar();
-        SpeechCommandHandler.initialize();
+        SpeechCommandHandler.updateSpeechRecognition();
         //initialize mediaPlayers
         MediaPlayerUtil.initializeMediaFiles();
         // set stage for Viewloader to load pages

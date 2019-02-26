@@ -40,17 +40,19 @@ public class MacroSetterController {
 
 
     public void recordUserEvents(Stage stage) {
-        // set up speech command handling on separate thread
-        CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
-            SpeechCommandHandler.runCreateMode(this);
-        });
+
         Stage instructionsStage = ViewLoader.generateDialog("recordingInstructionsView.fxml");
         // set button event handler to close stage
         Button recordingButton = (Button) instructionsStage.getScene().lookup("#recordingButton");
         recordingButton.setOnAction(event -> instructionsStage.hide());
-
         instructionsStage.showAndWait();
-        EventRecorder.startRecordingUserMacro();
+        if(SpeechCommandHandler.isUpdated()) {
+            // set up speech command handling on separate thread
+            CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
+                SpeechCommandHandler.runCreateMode(this);
+            });
+            EventRecorder.startRecordingUserMacro();
+        }
 
     }
 
@@ -115,8 +117,7 @@ public class MacroSetterController {
         if(saved) {
             MacroSettings.resetValues();
             // update the grammar file with the new command
-            SpeechCommandHandler.updateGrammar();
-            SpeechCommandHandler.initialize();
+            SpeechCommandHandler.updateSpeechRecognition();
         }
         displayHomeView();
 
@@ -192,12 +193,12 @@ public class MacroSetterController {
             if(saved) {
                 if(!oldMacroName.equals(macroNameInput)) {
                     // erase old macro
-                    SQLiteDbFacade.deleteMacro(oldMacroName);
+                    SQLiteDbFacade.getInstance().deleteMacro(oldMacroName);
                 }
                 MacroSettings.resetValues();
                 // update the grammar file with the new command
-                SpeechCommandHandler.updateGrammar();
-                SpeechCommandHandler.initialize();
+                SpeechCommandHandler.updateSpeechRecognition();
+
             }
             // now remove the dialog from view
             Stage stage = (Stage) editNameField.getScene().getWindow();
@@ -265,4 +266,6 @@ public class MacroSetterController {
         // passed checks
         return macroName;
     }
+
+
 }

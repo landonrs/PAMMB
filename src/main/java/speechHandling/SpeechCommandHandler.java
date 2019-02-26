@@ -18,6 +18,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class SpeechCommandHandler {
@@ -29,6 +31,9 @@ public class SpeechCommandHandler {
     private static volatile boolean startedVariableStep;
     //used to determine if fields need to be initialized whenever the grammar is updated
     private static volatile boolean grammarUpdated = false;
+
+    // used to make sure speechRecognition is ready before using it
+    private static CompletableFuture<Boolean> updated = null;
 
     // this counter is used to track how many unrecognized commands have been heard in a row
     // if the program fails to process three commands in a row, we display the command list so the user can
@@ -110,7 +115,7 @@ public class SpeechCommandHandler {
      * to recognize these new names, it must be reconfigured each time the
      * grammar file is updated.
      */
-    public static void initialize() {
+    static void initialize() {
         if (grammarUpdated) {
             initializeFields(new SphinxInterpreter());
             grammarUpdated = false;
@@ -371,7 +376,7 @@ public class SpeechCommandHandler {
             return speechInput;
     }
 
-    public static void updateGrammar() throws IOException {
+    private static void updateGrammar() throws IOException {
         List<String> commandNames = SQLiteDbFacade.getMacroNames();
         //create reader for grammar file
         BufferedReader grammarReader = new BufferedReader(new InputStreamReader(SpeechCommandHandler.class
@@ -415,6 +420,33 @@ public class SpeechCommandHandler {
 
         grammarUpdated = true;
 
+    }
+
+    public static void updateSpeechRecognition(){
+        updated = new CompletableFuture<Boolean>();
+
+        CompletableFuture updating = CompletableFuture.runAsync(() -> {
+            try {
+                SpeechCommandHandler.updateGrammar();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            SpeechCommandHandler.initialize();
+            updated.complete(true);
+        });
+
+    }
+
+    public static boolean isUpdated(){
+        System.out.println("checking if updating is complete");
+        try {
+            return updated.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

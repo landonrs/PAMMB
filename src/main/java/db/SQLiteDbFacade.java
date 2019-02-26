@@ -67,7 +67,7 @@ public class SQLiteDbFacade implements DbFacade {
         return macroNames;
     }
 
-    public static void deleteMacro(String macroName) {
+    public void deleteMacro(String macroName) {
 
         Session session = null;
         Transaction tx = null;
