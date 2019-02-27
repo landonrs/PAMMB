@@ -67,6 +67,8 @@ public class ViewLoader {
     public static void loadAssistantMode(FXMLLoader loader) throws Exception{
         setHomeCoordinates();
 
+        hidePrimaryStage();
+
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
 
         //set Stage boundaries to the lower right corner of the visible bounds of the main screen

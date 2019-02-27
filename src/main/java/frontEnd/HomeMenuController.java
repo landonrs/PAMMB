@@ -1,19 +1,32 @@
 package frontEnd;
 
 import eventHandling.EventRecorder;
+import javafx.animation.Animation;
+import javafx.animation.FillTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import speechHandling.SpeechCommandHandler;
 
-public class HomeMenuController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class HomeMenuController implements Initializable {
 
     public Button createMacro, viewList, assistantMode;
     EventRecorder recorder = EventRecorder.getInstance();
+    public Circle pammCircle;
+
+    private final String ACTIVATED_COLOR = "#44a4ff";
+    private final String IDLE_COLOR = "#003261";
 
     @FXML
     private void handleButtonAction (ActionEvent event) throws Exception {
@@ -45,4 +58,17 @@ public class HomeMenuController {
 
     }
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        playActiviationAnimation();
+
+    }
+
+    public void playActiviationAnimation()  {
+        FillTransition ACTIVATED_TRANSITION = new FillTransition(Duration.millis(1500), pammCircle,
+                Color.valueOf(IDLE_COLOR), Color.valueOf(ACTIVATED_COLOR));
+        ACTIVATED_TRANSITION.setCycleCount(Animation.INDEFINITE);
+        ACTIVATED_TRANSITION.setAutoReverse(true);
+        ACTIVATED_TRANSITION.play();
+    }
 }

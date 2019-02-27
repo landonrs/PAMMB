@@ -10,13 +10,13 @@
    <children>
       <Circle fx:id="pammCircle" fill="#003261" layoutX="100.0" layoutY="193.0" radius="75.0" stroke="WHITE" strokeType="INSIDE" />
       <Circle fill="#2d383a" layoutX="100.0" layoutY="193.0" radius="50.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" />
-      <Label fx:id="userSpeechDisplay" alignment="CENTER" layoutX="10.0" prefHeight="118.0" prefWidth="181.0" text="Activate me with 'hey there pamm'" textAlignment="CENTER" textFill="#6f6969" wrapText="true">
+      <Label fx:id="userSpeechDisplay" alignment="CENTER" layoutX="10.0" prefHeight="118.0" prefWidth="181.0" text="Activate me with 'hey there PAMM'" textAlignment="CENTER" textFill="#6f6969" wrapText="true">
          <font>
             <Font size="26.0" />
          </font>
       </Label>
       <Circle fill="#6f6969" layoutX="27.0" layoutY="278.0" radius="17.0" stroke="BLACK" strokeType="INSIDE" />
-      <Text fill="#003261" layoutX="21.0" layoutY="289.0" strokeType="OUTSIDE" strokeWidth="0.0" text="?">
+      <Text fill="WHITE" layoutX="21.0" layoutY="289.0" strokeType="OUTSIDE" strokeWidth="0.0" text="?">
          <font>
             <Font size="29.0" />
          </font>

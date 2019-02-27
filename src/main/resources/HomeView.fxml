@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.shape.*?>
+<?import java.lang.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="400.0" stylesheets="@PammStyle.css" xmlns="http://javafx.com/javafx/8"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="frontEnd.HomeMenuController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" stylesheets="@PammStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frontEnd.HomeMenuController">
    <children>
-      <Label contentDisplay="CENTER" layoutX="90.0" layoutY="14.0" prefHeight="151.0" prefWidth="233.0" text="PAMM" textAlignment="CENTER" textFill="#0000007c">
+      <Button fx:id="createMacro" layoutY="238.0" mnemonicParsing="false" onAction="#handleButtonAction" prefHeight="69.0" prefWidth="207.0" text="Create macro" />
+      <Button fx:id="viewList" layoutX="199.0" layoutY="238.0" mnemonicParsing="false" onAction="#handleButtonAction" prefHeight="69.0" prefWidth="201.0" text="View macro List" />
+      <Button fx:id="assistantMode" layoutY="307.0" mnemonicParsing="false" onAction="#handleButtonAction" prefHeight="97.0" prefWidth="400.0" text="Activate Assistant Mode" />
+      <Circle fx:id="pammCircle" fill="#003261" layoutX="199.0" layoutY="119.0" radius="111.0" stroke="WHITE" strokeType="INSIDE" />
+      <Circle fill="#2d383a" layoutX="199.0" layoutY="119.0" radius="75.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="91.0" layoutX="-5.0" layoutY="89.0" opacity="0.32" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="407.0" />
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="91.0" layoutY="44.0" prefHeight="151.0" prefWidth="222.0" text="PAMM" textAlignment="CENTER" textFill="WHITE">
          <font>
-            <Font name="Lucida Bright Regular" size="76.0" />
+            <Font name="AR DESTINE" size="72.0" />
          </font>
       </Label>
-      <Button fx:id="createMacro" onAction="#handleButtonAction" layoutX="-2.0" layoutY="182.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="208.0" text="Create macro" />
-      <Button fx:id="viewList" onAction="#handleButtonAction" layoutX="198.0" layoutY="182.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="202.0" text="View macro List" />
-      <Button fx:id="assistantMode" onAction="#handleButtonAction" layoutY="247.0" mnemonicParsing="false" prefHeight="151.0" prefWidth="400.0" text="Activate Assistant Mode" />
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="88.0" layoutY="44.0" prefHeight="151.0" prefWidth="222.0" text="PAMM" textAlignment="CENTER">
+         <font>
+            <Font name="AR DESTINE" size="72.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" layoutX="28.0" layoutY="151.0" prefHeight="29.0" prefWidth="341.0" text="Personal Assistant Macro Maker">
+         <font>
+            <Font name="AR DESTINE" size="21.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
