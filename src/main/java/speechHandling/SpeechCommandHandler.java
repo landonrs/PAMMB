@@ -66,10 +66,15 @@ public class SpeechCommandHandler {
     private static final String CONTINUOUS_PHRASE = "turn on continuous mode";
     private static final String RETURN_PHRASE = "return to menu";
     private static final String CANCEL_PHRASE = "cancel command";
+    private static final String COMMAND_PHRASE = "(optional: [please] or [run command]) <macro name>";
+
+    // text to notify user when to start speaking
+    private static final String READY_PHRASE = "speak command now";
+    private static final String ACTIVATE_INSTRUCTION = "Activate me with 'hey there PAMM'";
 
     // used to display system commands to user
     private static final String[] SYSTEM_COMMANDS = {ACTIVATE_PHRASE, SHOW_COMMANDS_PHRASE, STOP_LISTENING, NEVER_MIND_PHRASE,
-    CONTINUOUS_PHRASE, RETURN_PHRASE, CANCEL_PHRASE};
+    CONTINUOUS_PHRASE, RETURN_PHRASE, CANCEL_PHRASE, COMMAND_PHRASE};
 
     // commands used when creating macros
     private static final String STOP_RECORDING_PHRASE = "finish recording";
@@ -152,7 +157,8 @@ public class SpeechCommandHandler {
 
     public static void handleAssistantCommand(String speechInput, AssistantModeController controller) {
 
-        if(speechInput.equals(RETURN_PHRASE) && currentState == ACTIVE_STATE.ACTIVATED){
+        if(speechInput.equals(RETURN_PHRASE) &&
+                (currentState == ACTIVE_STATE.ACTIVATED || currentState == ACTIVE_STATE.CONTINUOUS_MODE)){
             runningAssistantMode = false;
             if(ViewLoader.listStageOpen) {
                 Platform.runLater(() -> ViewLoader.hideCustomCommandList());
@@ -173,7 +179,8 @@ public class SpeechCommandHandler {
             MediaPlayerUtil.playSound();
             controller.playActiviationAnimation();
             Platform.runLater(() -> ViewLoader.showPrimaryStage());
-            setAndClearDisplayText(speechInput, controller);
+            setAndClearDisplayText("hey there PAMM", controller);
+            setDisplayText(READY_PHRASE, controller);
 
         }
 
@@ -204,6 +211,7 @@ public class SpeechCommandHandler {
                 currentState = ACTIVE_STATE.CONTINUOUS_MODE;
                 controller.lightUpCircle();
                 setAndClearDisplayText(speechInput, controller);
+                setDisplayText(READY_PHRASE, controller);
 
             }
             else {
@@ -224,13 +232,16 @@ public class SpeechCommandHandler {
                         // After macro has been performed, return to idle state and wait
                         currentState = ACTIVE_STATE.IDLE;
                         ViewLoader.showPrimaryStage();
-                        ViewLoader.minimizePrimaryStage();
+                        controller.displaySpeechOnPlatThread(ACTIVATE_INSTRUCTION);
                     });
 
+                    // set look of view for when the macro is completed in the other thread
                     controller.dimCircle();
+
                 }
                 else {
                     checkFailSafe(controller);
+                    setDisplayText(READY_PHRASE, controller);
                 }
 
             }
@@ -254,16 +265,27 @@ public class SpeechCommandHandler {
                     EventPerformer.performMacro(userMacro);
                     currentState = ACTIVE_STATE.CONTINUOUS_MODE;
                     ViewLoader.showPrimaryStage();
+                    controller.displaySpeechOnPlatThread("Macro complete");
                     // redisplay commands list if user had it open
                     ViewLoader.showCustomCommandList();
+                    // give user time to read message
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    controller.displaySpeechOnPlatThread(READY_PHRASE);
                 });
             }
             else {
                 checkFailSafe(controller);
+                setDisplayText(READY_PHRASE, controller);
             }
         }
 
     }
+
+
 
     /**
      * if the program cannot recognize a command a certain number of times
@@ -285,6 +307,11 @@ public class SpeechCommandHandler {
         runningAssistantMode = false;
     }
 
+
+    private static void setDisplayText(String message, AssistantModeController controller) {
+
+        controller.displaySpeech(message);
+    }
 
     private static void setAndClearDisplayText(String speechInput, AssistantModeController controller){
         controller.displaySpeech(speechInput);

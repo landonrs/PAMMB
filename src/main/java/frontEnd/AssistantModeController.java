@@ -16,6 +16,7 @@ import speechHandling.SpeechCommandHandler;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class AssistantModeController implements Initializable {
 
@@ -74,6 +75,15 @@ public class AssistantModeController implements Initializable {
         });
     }
 
+    // for use when called from within Platform thread
+    public void displaySpeechOnPlatThread(String message) {
+        userSpeechDisplay.setText(message);
+    }
+
+    public void clearViewTextOnPlatThread() {
+        userSpeechDisplay.setText("");
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //set up tooltip and click event handler on system command help region
@@ -88,6 +98,12 @@ public class AssistantModeController implements Initializable {
     public void loadHomeView() {
         System.out.println("turning off assistant mode");
         displaySpeech("Closing assistant mode");
+        // give user time to see message
+        try {
+            TimeUnit.MILLISECONDS.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -100,4 +116,6 @@ public class AssistantModeController implements Initializable {
             }
         });
     }
+
+
 }
