@@ -20,6 +20,9 @@ public class EventPerformer {
     private static final int KEYPRESS_DELAY = 50;
     private static final int KEY_MODIFIER_DELAY = 200;
     private static final int CLICK_MODIFIER_DELAY = 100;
+    // delay used every time a key typing event occurs with modifiers to give system time to process
+    private static final int COMBO_TYPE_DELAY = 300;
+
     // determines how quickly the mouse moves from one point to the next
     private static final double MOUSE_MOVE_STEPS = 1000;
     private static Point previousPoint;
@@ -151,7 +154,6 @@ public class EventPerformer {
     }
 
     private static void insertVarStepValue(String variableStepValue) {
-        //store previous clipboard contents
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable previousContents = clipboard.getContents(null);
 
@@ -159,10 +161,14 @@ public class EventPerformer {
 
         clipboard.setContents(variableStepSelection, variableStepSelection);
 
+        robot.delay(100);
         robot.keyPress(KeyEvent.VK_CONTROL);
         robot.keyPress(KeyEvent.VK_V);
+        robot.delay(100);
         robot.keyRelease(KeyEvent.VK_V);
         robot.keyRelease(KeyEvent.VK_CONTROL);
+        // let contents be pasted before resetting clipboard contents
+        robot.delay(200);
 
         StringSelection stringSelection = new StringSelection(variableStepValue);
         // now reset clipboard contents to previous value
@@ -198,6 +204,8 @@ public class EventPerformer {
         for(int modifier: modifiers) {
             robot.keyRelease(modifier);
         }
+        // give system time to process command
+        robot.delay(COMBO_TYPE_DELAY);
 
     }
 
