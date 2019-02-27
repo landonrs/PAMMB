@@ -51,6 +51,11 @@ public class HomeMenuController implements Initializable {
         }
         if(event.getSource() == assistantMode){
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("AssistantModeView.fxml"));
+            Stage assistantInstructions = ViewLoader.generateDialog("AssistantInstructions.fxml");
+            ViewLoader.hidePrimaryStage();
+            Button startButton = (Button) assistantInstructions.getScene().lookup("#startButton");
+            startButton.setOnAction(actionEvent -> assistantInstructions.hide());
+            assistantInstructions.showAndWait();
             if(SpeechCommandHandler.isUpdated()) {
                 ViewLoader.loadAssistantMode(loader);
             }
@@ -65,7 +70,7 @@ public class HomeMenuController implements Initializable {
     }
 
     public void playActiviationAnimation()  {
-        FillTransition ACTIVATED_TRANSITION = new FillTransition(Duration.millis(1500), pammCircle,
+        FillTransition ACTIVATED_TRANSITION = new FillTransition(Duration.millis(2000), pammCircle,
                 Color.valueOf(IDLE_COLOR), Color.valueOf(ACTIVATED_COLOR));
         ACTIVATED_TRANSITION.setCycleCount(Animation.INDEFINITE);
         ACTIVATED_TRANSITION.setAutoReverse(true);

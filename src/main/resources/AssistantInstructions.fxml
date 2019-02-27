@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label alignment="CENTER" layoutX="64.0" layoutY="-6.0" prefHeight="74.0" prefWidth="491.0" text="Assistant Mode Instructions" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" layoutX="22.0" layoutY="57.0" prefHeight="55.0" prefWidth="556.0" text="While running assistant mode, PAMM responds to verbal commands and executes any matches that are found." textFill="WHITE" wrapText="true">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+      <Label layoutX="29.0" layoutY="331.0" prefHeight="46.0" prefWidth="475.0" text="'Hey there PAMM' - Activates the program to listen for commands" textFill="WHITE" wrapText="true">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Circle fill="WHITE" layoutX="18.0" layoutY="356.0" radius="3.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle fill="WHITE" layoutX="18.0" layoutY="376.0" radius="3.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle fill="WHITE" layoutX="17.0" layoutY="426.0" radius="3.0" stroke="BLACK" strokeType="INSIDE" />
+      <Label layoutX="29.0" layoutY="360.0" prefHeight="55.0" prefWidth="523.0" text="'Stop Listening' or 'Never Mind' - Program becomes deactivated and the window is minimized  " textFill="WHITE" wrapText="true">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Label layoutX="28.0" layoutY="400.0" prefHeight="46.0" prefWidth="447.0" text="'Show my commands' - opens list of your created macros" textFill="WHITE" wrapText="true">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Label layoutX="25.0" layoutY="433.0" prefHeight="55.0" prefWidth="562.0" text="'Turn on continuous mode' - PAMM continually listens for macro commands without needing to be reactivated each time" textFill="WHITE" wrapText="true">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Circle fill="WHITE" layoutX="17.0" layoutY="447.0" radius="3.0" stroke="BLACK" strokeType="INSIDE" />
+      <Button fx:id="startButton" layoutX="184.0" layoutY="545.0" mnemonicParsing="false" text="Start Assistant Mode">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Button>
+      <Label alignment="CENTER" layoutX="24.0" layoutY="108.0" prefHeight="165.0" prefWidth="570.0" text="To run a command, simply say the name of the macro you created. By default, PAMM will immediately perform any task that it hears. If you want PAMM to confirm with you before performing any macros, you can select the toggle switch in the bottom right corner. When the switch is toggled, PAMM will display macro names it hears followed by a '?'. You can then say 'yes' or 'no' if you want the macro performed." textFill="WHITE" wrapText="true">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" layoutX="20.0" layoutY="269.0" prefHeight="62.0" prefWidth="457.0" text="Along with your custom commands, PAMM recognizes the following phrases:" textFill="WHITE" wrapText="true">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+      <Circle fill="WHITE" layoutX="17.0" layoutY="522.0" radius="3.0" stroke="BLACK" strokeType="INSIDE" />
+      <Label layoutX="28.0" layoutY="508.0" prefHeight="26.0" prefWidth="562.0" text="'Return to menu' - returns to the home menu" textFill="WHITE" wrapText="true">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Label layoutX="28.0" layoutY="475.0" prefHeight="46.0" prefWidth="447.0" text="'Cancel command' - will stop a macro while it is running" textFill="WHITE" wrapText="true">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Circle fill="WHITE" layoutX="17.0" layoutY="501.0" radius="3.0" stroke="BLACK" strokeType="INSIDE" />
+   </children>
+</AnchorPane>
