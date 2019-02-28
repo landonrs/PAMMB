@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
@@ -23,7 +24,9 @@ public class AssistantModeController implements Initializable {
     public Circle pammCircle;
     public Label userSpeechDisplay;
     public Region systemCommandHelp;
+    public ToggleButton confirmModeButton;
     private FillTransition ACTIVATED_TRANSITION;
+    // for circle animation
     private final String ACTIVATED_COLOR = "#44a4ff";
     private final String IDLE_COLOR = "#003261";
     CompletableFuture audioCommands;
@@ -90,6 +93,8 @@ public class AssistantModeController implements Initializable {
         Tooltip systemToolTip = new Tooltip("Click to view list of commands");
         Tooltip.install(systemCommandHelp, systemToolTip);
         systemCommandHelp.setOnMouseClicked(event -> ViewLoader.showSystemCommands());
+        // set up toggle button handler
+        confirmModeButton.setOnAction(event -> setConfirmMode());
         audioCommands = CompletableFuture.runAsync(() -> {
             SpeechCommandHandler.runAssistantMode(this);
         });
@@ -115,6 +120,17 @@ public class AssistantModeController implements Initializable {
                 }
             }
         });
+    }
+
+    private void setConfirmMode() {
+        String style = "-fx-background-color: #003261";
+
+        if (confirmModeButton.isSelected()) {
+            style = "-fx-background-color: #44a4ff";
+        }
+
+        confirmModeButton.setStyle(style);
+        SpeechCommandHandler.setConfirmationMode(confirmModeButton.isSelected());
     }
 
 

@@ -29,7 +29,9 @@ public class SpeechCommandHandler {
     private static volatile boolean runningAssistantMode;
     private static volatile boolean runningCreateMode;
     private static volatile boolean startedVariableStep;
-    //used to determine if fields need to be initialized whenever the grammar is updated
+    // when set to true, PAMM asks for confirmation before running macros
+    private static volatile boolean confirmationMode;
+    // used to determine if fields need to be reinitialized whenever the grammar is updated
     private static volatile boolean grammarUpdated = false;
 
     // used to make sure speechRecognition is ready before using it
@@ -66,6 +68,8 @@ public class SpeechCommandHandler {
     private static final String CONTINUOUS_PHRASE = "turn on continuous mode";
     private static final String RETURN_PHRASE = "return to menu";
     private static final String CANCEL_PHRASE = "cancel command";
+    private static final String CONFIRM_PHRASE = "yes";
+    private static final String DENY_PHRASE = "no";
     private static final String COMMAND_PHRASE = "(optional: [please] or [run command]) <macro name>";
 
     // text to notify user when to start speaking
@@ -144,7 +148,7 @@ public class SpeechCommandHandler {
 
             if(speechInput != null && runningAssistantMode) {
                 System.out.println("result: " + speechInput + " current state " + currentState);
-                handleAssistantCommand(speechInput, controller);
+                handleAssistantCommand(speechInput, controller, false);
             }
 
             interpreter.resumeListening();
@@ -155,7 +159,7 @@ public class SpeechCommandHandler {
 
     }
 
-    public static void handleAssistantCommand(String speechInput, AssistantModeController controller) {
+    public static void handleAssistantCommand(String speechInput, AssistantModeController controller, boolean manualMode) {
 
         if(speechInput.equals(RETURN_PHRASE) &&
                 (currentState == ACTIVE_STATE.ACTIVATED || currentState == ACTIVE_STATE.CONTINUOUS_MODE)){
@@ -212,12 +216,18 @@ public class SpeechCommandHandler {
                 controller.lightUpCircle();
                 setAndClearDisplayText(speechInput, controller);
                 setDisplayText(READY_PHRASE, controller);
-
             }
             else {
                 String macroName = getCommandFromSpeech(speechInput);
                 Macro userMacro = SQLiteDbFacade.getInstance().loadMacro(macroName);
                 if(userMacro != null) {
+                    if(confirmationMode && !manualMode) {
+                        setAndClearDisplayText(macroName + "?", controller);
+                        // if user says no, leave without performing command
+                        if(!runConfirmationMode(controller)){
+                            return;
+                        }
+                    }
                     setAndClearDisplayText(speechInput, controller);
                     currentState = ACTIVE_STATE.RUNNING_MACRO;
                     // we recognized the command, reset error counter
@@ -251,6 +261,13 @@ public class SpeechCommandHandler {
             String macroName = getCommandFromSpeech(speechInput);
             Macro userMacro = SQLiteDbFacade.getInstance().loadMacro(macroName);
             if(userMacro != null) {
+                if(confirmationMode && !manualMode) {
+                    setAndClearDisplayText(macroName + "?", controller);
+                    // if user says no, leave without performing command
+                    if(!runConfirmationMode(controller)){
+                        return;
+                    }
+                }
                 setAndClearDisplayText(speechInput, controller);
                 currentState = ACTIVE_STATE.RUNNING_MACRO;
                 unrecognizedCount = 0;
@@ -285,6 +302,26 @@ public class SpeechCommandHandler {
 
     }
 
+    private static boolean runConfirmationMode(AssistantModeController controller){
+        interpreter.resumeListening();
+        String response = "";
+        do {
+            setDisplayText("yes or no", controller);
+            response = interpreter.getTextFromSpeech();
+            if(response.equals(DENY_PHRASE)) {
+                interpreter.pauseListening();
+                setAndClearDisplayText(response, controller);
+                return false;
+            }
+            else if(response.equals(CONFIRM_PHRASE)) {
+                interpreter.pauseListening();
+                setAndClearDisplayText(response, controller);
+                return true;
+            }
+        } while(!response.equals(CONFIRM_PHRASE) && !response.equals(DENY_PHRASE));
+
+        return false;
+    }
 
 
     /**
@@ -372,6 +409,14 @@ public class SpeechCommandHandler {
                 }
                 break;
         }
+    }
+
+    /**
+     * determines whether PAMM will ask for confirmation before running macros
+     * @param selected
+     */
+    public static void setConfirmationMode(boolean selected) {
+        confirmationMode = selected;
     }
 
 

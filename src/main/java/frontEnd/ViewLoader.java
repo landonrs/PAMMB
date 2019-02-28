@@ -146,7 +146,7 @@ public class ViewLoader {
             Button commandListButton = (Button) customListStage.getScene().lookup("#commandListButton");
             commandListButton.setOnAction(event ->
                 SpeechCommandHandler
-                        .handleAssistantCommand((String) commandList.getSelectionModel().getSelectedItem(), controller));
+                        .handleAssistantCommand((String) commandList.getSelectionModel().getSelectedItem(), controller, true));
 
 
             // prevent user from being able to click on it

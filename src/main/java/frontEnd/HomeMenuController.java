@@ -70,7 +70,7 @@ public class HomeMenuController implements Initializable {
     }
 
     public void playActiviationAnimation()  {
-        FillTransition ACTIVATED_TRANSITION = new FillTransition(Duration.millis(2000), pammCircle,
+        FillTransition ACTIVATED_TRANSITION = new FillTransition(Duration.millis(2500), pammCircle,
                 Color.valueOf(IDLE_COLOR), Color.valueOf(ACTIVATED_COLOR));
         ACTIVATED_TRANSITION.setCycleCount(Animation.INDEFINITE);
         ACTIVATED_TRANSITION.setAutoReverse(true);

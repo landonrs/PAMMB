@@ -22,5 +22,11 @@
          </font>
       </Text>
       <Region fx:id="systemCommandHelp" layoutX="7.0" layoutY="260.0" prefHeight="34.0" prefWidth="40.0" />
+      <ToggleButton disable="true" layoutX="151.0" layoutY="257.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" rotate="45.0" style="-fx-background-color: white;" />
+      <ToggleButton fx:id="confirmModeButton" layoutX="156.0" layoutY="262.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="25.0" rotate="45.0" style="-fx-background-color: #003261;">
+         <tooltip>
+            <Tooltip text="When selected, PAMM will ask for confirmation before running any macros" />
+         </tooltip>
+      </ToggleButton>
    </children>
 </AnchorPane>

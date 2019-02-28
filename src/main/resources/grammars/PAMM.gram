@@ -8,6 +8,7 @@ public <show_commands> = (show my commands);
 public <continuous> = (turn on continuous mode);
 public <return> = (return to menu);
 public <cancel> = (cancel command);
+public <confirm> = (yes) | (no);
 
 public <stop_recording> = (finish recording);
 public <start_variable> = (start variable step);
