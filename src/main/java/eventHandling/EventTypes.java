@@ -16,6 +16,9 @@ class EventTypes {
     static final String SHIFT_RIGHT_CLICK = "SHIFT_RIGHT_CLICK";
     static final String CTRL_SHIFT_RIGHT_CLICK = "CTRL_SHIFT_RIGHT_CLICK";
     static final String CTRL_ALT_RIGHT_CLICK = "CTRL_ALT_RIGHT_CLICK";
+    // Dragging Events
+    static final String DRAG_START = "DRAG_START";
+    static final String DRAG_FINISH = "DRAG_FINISH";
     // Typing events
     static final String CTRL_ALT_TYPE = "CTRL_ALT_TYPE";
     static final String CTRL_SHIFT_TYPE = "CTRL_SHIFT_TYPE";

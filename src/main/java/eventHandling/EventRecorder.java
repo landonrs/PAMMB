@@ -19,6 +19,9 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
     private static volatile boolean recordingMacro;
     // this is set to true whenever the user makes a command that uses the meta or alt key with another action
     private static boolean usingCombinationCommand;
+    // used to track when user is dragging mouse
+    private static boolean dragging;
+
     private static EventRecorder instance = null;
     // this is where we store the user actions each time they record a new macro
     private static Macro currentUserMacro = null;
@@ -28,8 +31,10 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
     private EventRecorder(){
         recordingMacro = false;
         usingCombinationCommand = false;
+        dragging = false;
         addNativeKeyListener(this);
         addNativeMouseListener(this);
+        addNativeMouseMotionListener(this);
 
         keyCodeAdapter = new JavaKeyCodeAdapter();
 
@@ -291,7 +296,13 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
     }
 
     @Override
-    public void nativeMouseReleased(NativeMouseEvent nativeMouseEvent) {
+    public void nativeMouseReleased(NativeMouseEvent e) {
+        if(dragging) {
+            System.out.println("MOUSE FINISHED DRAGGING AT COORDINATES: X" + e.getX() + " Y" + e.getY());
+            Step userStep = new Step(EventTypes.DRAG_FINISH, e.getX(), e.getY());
+            currentUserMacro.getSteps().add(userStep);
+            dragging = false;
+        }
 
     }
 
@@ -301,7 +312,16 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
     }
 
     @Override
-    public void nativeMouseDragged(NativeMouseEvent nativeMouseEvent) {
+    public void nativeMouseDragged(NativeMouseEvent e) {
+        if(recordingMacro){
+            // add new step when user first starts dragging
+            if (!dragging) {
+                System.out.println("MOUSE STARTED DRAGGING AT COORDINATES: X" + e.getX() + " Y" + e.getY());
+                Step userStep = new Step(EventTypes.DRAG_START, e.getX(), e.getY());
+                currentUserMacro.getSteps().add(userStep);
+                dragging = true;
+            }
+        }
 
     }
 }

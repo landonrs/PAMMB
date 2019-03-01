@@ -145,11 +145,18 @@ public class EventPerformer {
 
                 case EventTypes.VAR_STEP:
                     insertVarStepValue(macroStep.getVariableStepValue());
+                    break;
+
+                case EventTypes.DRAG_START:
+                    startDraggingEvent(macroStep.getClickX(), macroStep.getClickY());
+                    break;
+
+                case EventTypes.DRAG_FINISH:
+                    completeDraggingEvent(macroStep.getClickX(), macroStep.getClickY());
+                    break;
 
             }
         }
-
-        return;
 
     }
 
@@ -218,19 +225,7 @@ public class EventPerformer {
 
 
     private static void leftClick(int clickX, int clickY, int... modifiers) {
-       // wait for set delay time
-        try {
-            TimeUnit.SECONDS.sleep(macroSecondDelay);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        //if mouse is visible, first glide the mouse over to the position
-        if(macroMouseVisible){
-            glideMouse(clickX, clickY);
-        }
-
-        robot.mouseMove(clickX, clickY);
+       moveMouseToPosition(clickX, clickY);
         for(int modifier: modifiers) {
             robot.keyPress(modifier);
         }
@@ -244,19 +239,7 @@ public class EventPerformer {
     }
 
     private static void rightClick(int clickX, int clickY, int... modifiers) {
-        // wait for set delay time
-        try {
-            TimeUnit.SECONDS.sleep(macroSecondDelay);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        //if mouse is visible, first glide the mouse over to the position
-        if(macroMouseVisible){
-            glideMouse(clickX, clickY);
-        }
-
-        robot.mouseMove(clickX, clickY);
+        moveMouseToPosition(clickX, clickY);
         for(int modifier: modifiers) {
             robot.keyPress(modifier);
         }
@@ -278,8 +261,31 @@ public class EventPerformer {
                     (int) (previousPoint.getY() + dy * step));
         }
 
-        // now set previousPoint to currentLocation
+        // now set previousPoint to current location
         previousPoint = new Point(clickX, clickY);
+    }
+
+    private static void startDraggingEvent(int clickX, int clickY) {
+        moveMouseToPosition(clickX, clickY);
+        robot.mousePress(InputEvent.BUTTON1_MASK);
+    }
+
+    private static void completeDraggingEvent(int xCoord, int yCoord) {
+        moveMouseToPosition(xCoord, yCoord);
+        robot.mouseRelease(InputEvent.BUTTON1_MASK);
+    }
+
+    private static void moveMouseToPosition(int clickX, int clickY) {
+        try {
+            TimeUnit.SECONDS.sleep(macroSecondDelay);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //if mouse is visible, first glide the mouse over to the position
+        if(macroMouseVisible){
+            glideMouse(clickX, clickY);
+        }
+        robot.mouseMove(clickX, clickY);
     }
 
     public static void stopMacro() {
