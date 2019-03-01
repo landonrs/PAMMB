@@ -197,7 +197,7 @@ public class ViewLoader {
     }
 
     /**
-     * This is called whenever the close 'x' button is clicked by the user. If we are in assistant
+     * This is called whenever the close 'x' button is clicked by the user on the primary stage. If we are in assistant
      * mode we return to the home menu, otherwise the entire program is closed
      */
     private static void checkWindowBeforeExit(){
