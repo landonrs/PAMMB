@@ -21,6 +21,9 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
     private static boolean usingCombinationCommand;
     // used to track when user is dragging mouse
     private static boolean dragging;
+    // used to play sound when event is recognized by program
+    private static boolean eventRegistered;
+    private static boolean playingEventSound;
 
     private static EventRecorder instance = null;
     // this is where we store the user actions each time they record a new macro
@@ -28,10 +31,12 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
 
     private static JavaKeyCodeAdapter keyCodeAdapter;
 
+
     private EventRecorder(){
         recordingMacro = false;
         usingCombinationCommand = false;
         dragging = false;
+        eventRegistered = false;
         addNativeKeyListener(this);
         addNativeMouseListener(this);
         addNativeMouseMotionListener(this);
@@ -65,7 +70,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 e.printStackTrace();
             }
         }
-        MediaPlayerUtil.playSound();
+        MediaPlayerUtil.playActivationSound();
 
     }
 
@@ -78,6 +83,8 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 e.printStackTrace();
             }
         }
+
+        playingEventSound = false;
 
         return currentUserMacro;
     }
@@ -103,6 +110,10 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
         recordingMacro = false;
     }
 
+    public static void setEventSound(boolean selected) {
+        playingEventSound = selected;
+    }
+
     @Override
     public void nativeKeyTyped(NativeKeyEvent e) {
     }
@@ -122,6 +133,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 Step userStep = new Step(EventTypes.CTRL_SHIFT_TYPE, keyCodeAdapter.getJavaKeyCode(e));
                 currentUserMacro.getSteps().add(userStep);
                 usingCombinationCommand = true;
+                eventRegistered = true;
             }
             // ctrl + alt command
             else if (((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0) &&
@@ -130,6 +142,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 Step userStep = new Step(EventTypes.CTRL_ALT_TYPE, keyCodeAdapter.getJavaKeyCode(e));
                 currentUserMacro.getSteps().add(userStep);
                 usingCombinationCommand = true;
+                eventRegistered = true;
 
             }
             // ctrl + meta command
@@ -139,6 +152,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 Step userStep = new Step(EventTypes.CTRL_META_TYPE, keyCodeAdapter.getJavaKeyCode(e));
                 currentUserMacro.getSteps().add(userStep);
                 usingCombinationCommand = true;
+                eventRegistered = true;
 
             }
             // shift + alt command
@@ -148,6 +162,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 Step userStep = new Step(EventTypes.SHIFT_ALT_TYPE, keyCodeAdapter.getJavaKeyCode(e));
                 currentUserMacro.getSteps().add(userStep);
                 usingCombinationCommand = true;
+                eventRegistered = true;
 
             }
             // shift + meta command
@@ -157,6 +172,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 Step userStep = new Step(EventTypes.SHIFT_META_TYPE, keyCodeAdapter.getJavaKeyCode(e));
                 currentUserMacro.getSteps().add(userStep);
                 usingCombinationCommand = true;
+                eventRegistered = true;
 
             }
             // ctrl + key
@@ -165,6 +181,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 System.out.println("Ctrl + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
                 Step userStep = new Step(EventTypes.CTRL_TYPE, keyCodeAdapter.getJavaKeyCode(e));
                 currentUserMacro.getSteps().add(userStep);
+                eventRegistered = true;
             }
             // shift + key
             else if (((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0) && e.getKeyCode() != NativeKeyEvent.VC_ALT
@@ -172,6 +189,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 System.out.println("Shift + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
                 Step userStep = new Step(EventTypes.SHIFT_TYPE, keyCodeAdapter.getJavaKeyCode(e));
                 currentUserMacro.getSteps().add(userStep);
+                eventRegistered = true;
             }
             // alt + key
             else if (((e.getModifiers() & NativeKeyEvent.ALT_MASK) != 0) &&
@@ -180,6 +198,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 Step userStep = new Step(EventTypes.ALT_TYPE, keyCodeAdapter.getJavaKeyCode(e));
                 currentUserMacro.getSteps().add(userStep);
                 usingCombinationCommand = true;
+                eventRegistered = true;
             }
             // meta + key
             else if ((((e.getModifiers() & NativeKeyEvent.META_MASK) != 0))) {
@@ -187,6 +206,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 Step userStep = new Step(EventTypes.META_TYPE, keyCodeAdapter.getJavaKeyCode(e));
                 currentUserMacro.getSteps().add(userStep);
                 usingCombinationCommand = true;
+                eventRegistered = true;
             }
             // key typed without modifiers
             else if (e.getKeyCode() != NativeKeyEvent.VC_CONTROL && e.getKeyCode() != NativeKeyEvent.VC_SHIFT
@@ -199,8 +219,13 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                     System.out.println("User typed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
                     Step userStep = new Step(EventTypes.TYPE, keyCodeAdapter.getJavaKeyCode(e));
                     currentUserMacro.getSteps().add(userStep);
+                    eventRegistered = true;
                 }
 
+            }
+            if(eventRegistered && playingEventSound) {
+                MediaPlayerUtil.playEventRegisterSound();
+                eventRegistered = false;
             }
         }
 
@@ -221,6 +246,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 System.out.println("CTRL + SHIFT + LEFT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
                 Step userStep = new Step(EventTypes.CTRL_SHIFT_LEFT_CLICK, e.getX(), e.getY());
                 currentUserMacro.getSteps().add(userStep);
+                eventRegistered = true;
             }
             // ctrl + alt left click
             else if ((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0 &&
@@ -229,6 +255,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 Step userStep = new Step(EventTypes.CTRL_ALT_LEFT_CLICK, e.getX(), e.getY());
                 currentUserMacro.getSteps().add(userStep);
                 usingCombinationCommand = true;
+                eventRegistered = true;
             }
             // ctrl + shift right click
             else if ((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0 && (e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0 &&
@@ -236,6 +263,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 System.out.println("CTRL + SHIFT + RIGHT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
                 Step userStep = new Step(EventTypes.CTRL_SHIFT_RIGHT_CLICK, e.getX(), e.getY());
                 currentUserMacro.getSteps().add(userStep);
+                eventRegistered = true;
             }
             // ctrl + alt right click
             else if ((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0 &&
@@ -245,18 +273,21 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 Step userStep = new Step(EventTypes.CTRL_ALT_RIGHT_CLICK, e.getX(), e.getY());
                 currentUserMacro.getSteps().add(userStep);
                 usingCombinationCommand = true;
+                eventRegistered = true;
             }
             // ctrl + left click
             else if ((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0 && (e.getButton() == NativeMouseEvent.BUTTON1)) {
                 System.out.println("CTRL + LEFT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
                 Step userStep = new Step(EventTypes.CTRL_LEFT_CLICK, e.getX(), e.getY());
                 currentUserMacro.getSteps().add(userStep);
+                eventRegistered = true;
             }
             // shift + left click
             else if ((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0 && (e.getButton() == NativeMouseEvent.BUTTON1)) {
                 System.out.println("SHIFT + LEFT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
                 Step userStep = new Step(EventTypes.SHIFT_LEFT_CLICK, e.getX(), e.getY());
                 currentUserMacro.getSteps().add(userStep);
+                eventRegistered = true;
             }
             // ctrl + right click
             else if ((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0
@@ -264,6 +295,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 System.out.println("CTRL + RIGHT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
                 Step userStep = new Step(EventTypes.CTRL_RIGHT_CLICK, e.getX(), e.getY());
                 currentUserMacro.getSteps().add(userStep);
+                eventRegistered = true;
             }
             // shift + right click
             else if ((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0
@@ -271,12 +303,14 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 System.out.println("SHIFT + RIGHT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
                 Step userStep = new Step(EventTypes.SHIFT_RIGHT_CLICK, e.getX(), e.getY());
                 currentUserMacro.getSteps().add(userStep);
+                eventRegistered = true;
             }
             // left click
             else if (e.getButton() == NativeMouseEvent.BUTTON1) {
                 System.out.println("MOUSE LEFT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
                 Step userStep = new Step(EventTypes.LEFT_CLICK, e.getX(), e.getY());
                 currentUserMacro.getSteps().add(userStep);
+                eventRegistered = true;
 
             }
             // right click
@@ -284,6 +318,12 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 System.out.println("MOUSE RIGHT CLICKED AT COORDINATES: X" + e.getX() + " Y" + e.getY());
                 Step userStep = new Step(EventTypes.RIGHT_CLICK, e.getX(), e.getY());
                 currentUserMacro.getSteps().add(userStep);
+                eventRegistered = true;
+            }
+
+            if(eventRegistered && playingEventSound) {
+                MediaPlayerUtil.playEventRegisterSound();
+                eventRegistered = false;
             }
         }
 
@@ -320,6 +360,9 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 Step userStep = new Step(EventTypes.DRAG_START, e.getX(), e.getY());
                 currentUserMacro.getSteps().add(userStep);
                 dragging = true;
+                if(playingEventSound) {
+                    MediaPlayerUtil.playEventRegisterSound();
+                }
             }
         }
 

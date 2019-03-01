@@ -45,6 +45,8 @@ public class MacroSetterController {
         // set button event handler to close stage
         Button recordingButton = (Button) instructionsStage.getScene().lookup("#recordingButton");
         recordingButton.setOnAction(event -> instructionsStage.hide());
+        CheckBox eventSoundCheckBox = (CheckBox) instructionsStage.getScene().lookup("#eventSoundCheckBox");
+        eventSoundCheckBox.setOnMouseClicked(event -> EventRecorder.setEventSound(eventSoundCheckBox.isSelected()));
         instructionsStage.showAndWait();
         if(SpeechCommandHandler.isUpdated()) {
             // set up speech command handling on separate thread

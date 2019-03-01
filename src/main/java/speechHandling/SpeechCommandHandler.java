@@ -180,7 +180,7 @@ public class SpeechCommandHandler {
         // activate PAMM
         if(currentState == ACTIVE_STATE.IDLE && speechInput.equals(ACTIVATE_PHRASE)) {
             currentState = ACTIVE_STATE.ACTIVATED;
-            MediaPlayerUtil.playSound();
+            MediaPlayerUtil.playActivationSound();
             controller.playActiviationAnimation();
             Platform.runLater(() -> ViewLoader.showPrimaryStage());
             setAndClearDisplayText("hey there PAMM", controller);
@@ -397,7 +397,7 @@ public class SpeechCommandHandler {
                 break;
             case START_VAR_STEP_PHRASE:
                 if (!startedVariableStep) {
-                    MediaPlayerUtil.playSound();
+                    MediaPlayerUtil.playActivationSound();
                     EventRecorder.ignoreInput();
                     startedVariableStep = true;
                 }
