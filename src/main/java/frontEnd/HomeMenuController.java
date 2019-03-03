@@ -57,6 +57,11 @@ public class HomeMenuController implements Initializable {
             startButton.setOnAction(actionEvent -> assistantInstructions.hide());
             assistantInstructions.showAndWait();
             if(SpeechCommandHandler.isUpdated()) {
+                // make sure microphone is not being used from previous assistant mode session
+                if(SpeechCommandHandler.runningAssistantMode()) {
+                    // if it is, we need the user to make a noise
+                    SpeechCommandHandler.runMicrophoneTest();
+                }
                 ViewLoader.loadAssistantMode(loader);
             }
         }

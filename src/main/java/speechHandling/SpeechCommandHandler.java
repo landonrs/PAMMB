@@ -144,6 +144,8 @@ public class SpeechCommandHandler {
     public static void runAssistantMode(AssistantModeController controller) {
         // reset our state from previous session
         currentState = ACTIVE_STATE.IDLE;
+        unrecognizedCount = 0;
+        confirmationMode = false;
         runningAssistantMode = true;
         assistantModeFinished = new CompletableFuture<>();
 
