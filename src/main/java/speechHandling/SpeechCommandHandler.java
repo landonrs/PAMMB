@@ -8,6 +8,8 @@ import frontEnd.AssistantModeController;
 import frontEnd.MacroSetterController;
 import frontEnd.ViewLoader;
 import javafx.application.Platform;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import macro.Macro;
 
 import java.io.*;
@@ -34,8 +36,16 @@ public class SpeechCommandHandler {
     // used to determine if fields need to be reinitialized whenever the grammar is updated
     private static volatile boolean grammarUpdated = false;
 
-    // used to make sure speechRecognition is ready before using it
+    // used to make sure speechRecognition has updated grammar before using it
     private static CompletableFuture<Boolean> updated = null;
+    // verifies that microphone has finished listening in assistant mode
+    private static CompletableFuture<Boolean> assistantModeFinished = null;
+    // this stage is used to prompt the user to speak if the microphone is still being used in
+    // assistant mode
+    private static Stage microphoneTestStage = ViewLoader.generateDialog("microphoneTestView.fxml");
+    static {
+        microphoneTestStage.initStyle(StageStyle.UNDECORATED);
+    }
 
     // this counter is used to track how many unrecognized commands have been heard in a row
     // if the program fails to process three commands in a row, we display the command list so the user can
@@ -43,11 +53,6 @@ public class SpeechCommandHandler {
     private static int unrecognizedCount = 0;
     // the number of errors that can occur in a row before we implement fail safe command display
     private static final int MAX_ERROR_FAIL_SAFE = 3;
-    // singleton instance to ensure that only one microphone is intitialized at a time
-//    private static SpeechCommandHandler instance = null;
-
-
-
 
 
     private static final String GRAMMAR_PATH = System.getenv("LOCALAPPDATA") + "\\PAMM\\data\\PAMM.gram";
@@ -55,6 +60,7 @@ public class SpeechCommandHandler {
     public static final String GRAMMAR_DIR = System.getenv("LOCALAPPDATA") + "\\PAMM\\data";
 
 
+    // used to find commands when grammar file is updated
     private static final String COMMANDLINE = "public <command> = [(please | (run command))] (";
     private static final String COMMANDPHRASE = "run command";
     private static final String POLITEPHRASE = "please";
@@ -136,9 +142,11 @@ public class SpeechCommandHandler {
     }
 
     public static void runAssistantMode(AssistantModeController controller) {
-        // reset our state from last time
+        // reset our state from previous session
         currentState = ACTIVE_STATE.IDLE;
         runningAssistantMode = true;
+        assistantModeFinished = new CompletableFuture<>();
+
         interpreter.startListening();
         System.out.println("starting assistant mode");
         while(runningAssistantMode) {
@@ -156,6 +164,8 @@ public class SpeechCommandHandler {
 
         System.out.println("Stopping assistant mode");
         interpreter.pauseListening();
+        assistantModeFinished.complete(true);
+        Platform.runLater(() -> microphoneTestStage.hide());
 
     }
 
@@ -342,6 +352,7 @@ public class SpeechCommandHandler {
 
     public static void stopAssistantMode() {
         runningAssistantMode = false;
+        currentState = ACTIVE_STATE.STOPPED;
     }
 
 
@@ -424,7 +435,8 @@ public class SpeechCommandHandler {
         IDLE,
         ACTIVATED,
         CONTINUOUS_MODE,
-        RUNNING_MACRO
+        RUNNING_MACRO,
+        STOPPED
     }
 
     ACTIVE_STATE getCurrentState() {
@@ -519,6 +531,30 @@ public class SpeechCommandHandler {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * This function is used to verify that the speech recognition is not being used
+     * for assistant mode.
+     *
+     * Because the microphone cannot be interrupted when in use, there is a possibility that
+     * the assistant mode can be closed with the microphone running. If this happens the user
+     * must clear the microphone by making an utterance before using the microphone on another
+     * thread.
+     * @return
+     */
+    public static boolean runningAssistantMode() {
+        // if user runs create mode before assistant mode
+        if(assistantModeFinished == null){
+            return false;
+        }
+
+        return !assistantModeFinished.isDone();
+    }
+
+    public static void runMicrophoneTest(){
+        // wait until microphone is cleared
+        microphoneTestStage.showAndWait();
     }
 
 }

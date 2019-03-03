@@ -49,6 +49,11 @@ public class MacroSetterController {
         eventSoundCheckBox.setOnMouseClicked(event -> EventRecorder.setEventSound(eventSoundCheckBox.isSelected()));
         instructionsStage.showAndWait();
         if(SpeechCommandHandler.isUpdated()) {
+            // make sure microphone is not being used in assistant mode
+            if(SpeechCommandHandler.runningAssistantMode()) {
+                // if it is, we need the user to make a noise
+                SpeechCommandHandler.runMicrophoneTest();
+            }
             // set up speech command handling on separate thread
             CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
                 SpeechCommandHandler.runCreateMode(this);
