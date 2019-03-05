@@ -55,9 +55,14 @@ public class SpeechCommandHandler {
     private static final int MAX_ERROR_FAIL_SAFE = 3;
 
 
-    private static final String GRAMMAR_PATH = System.getenv("LOCALAPPDATA") + "\\PAMM\\data\\PAMM.gram";
+//    private static final String GRAMMAR_PATH = System.getenv("LOCALAPPDATA") + "\\PAMM\\data\\PAMM.gram";
+//    // used to locate grammar file used by sphinx interpreter
+//    public static final String GRAMMAR_DIR = System.getenv("LOCALAPPDATA") + "\\PAMM\\data";
+
+
+    private static final String GRAMMAR_PATH = (new File(".").getAbsolutePath()) + "/PAMM.gram";
     // used to locate grammar file used by sphinx interpreter
-    public static final String GRAMMAR_DIR = System.getenv("LOCALAPPDATA") + "\\PAMM\\data";
+    public static final String GRAMMAR_DIR = (new File(".").getAbsolutePath());
 
 
     // used to find commands when grammar file is updated

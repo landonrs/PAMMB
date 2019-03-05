@@ -13,9 +13,6 @@ public class SphinxInterpreter implements SpeechInterpreter {
 
     Configuration configuration;
     CustomSpeechRecognizer recognizer;
-    private final String GRAMMAR_PATH = "file:"
-            + SpeechCommandHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath()
-            + "data";
 
     public SphinxInterpreter() {
         configuration = new Configuration();
