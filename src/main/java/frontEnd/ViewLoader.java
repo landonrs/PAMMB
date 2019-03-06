@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import speechHandling.SpeechCommandHandler;
@@ -31,6 +32,8 @@ public class ViewLoader {
 
     private static final int ASSISTANT_MODE_WIDTH = 200;
     private static final int ASSISTANT_MODE_HEIGHT = 300;
+    private static final Image ICON = new Image(ViewLoader.class
+            .getClassLoader().getResourceAsStream("images/PAMM.png"));
     private static double HOME_MENU_X;
     private static double HOME_MENU_Y;
     private static boolean initialized = false;
@@ -43,6 +46,7 @@ public class ViewLoader {
         ViewLoader.primaryStage = stage;
         // this prevents the JavaFX platform thread from terminating when primaryStage is hidden
         Platform.setImplicitExit(false);
+        ViewLoader.primaryStage.getIcons().add(ICON);
         // explicitly end program when user closes primary primaryStage
         ViewLoader.primaryStage.setOnCloseRequest(event -> checkWindowBeforeExit());
     }
@@ -179,6 +183,7 @@ public class ViewLoader {
 
         scene.getStylesheets().add(ViewLoader.class.getClassLoader().getResource("PammStyle.css").toExternalForm());
         dialogWindow.setScene(scene);
+        dialogWindow.getIcons().add(ICON);
 
         return dialogWindow;
 
