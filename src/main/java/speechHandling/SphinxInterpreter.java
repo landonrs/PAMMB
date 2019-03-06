@@ -1,18 +1,22 @@
 package speechHandling;
 
 import edu.cmu.sphinx.api.Configuration;
-import edu.cmu.sphinx.api.LiveSpeechRecognizer;
 import edu.cmu.sphinx.api.SpeechResult;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.HashSet;
 
 public class SphinxInterpreter implements SpeechInterpreter {
 
 
     Configuration configuration;
     CustomSpeechRecognizer recognizer;
+    // holds all words in program dictionary for checking against macro names
+    private static HashSet<String> dictionary = new HashSet<>();
 
     public SphinxInterpreter() {
         configuration = new Configuration();
@@ -54,5 +58,22 @@ public class SphinxInterpreter implements SpeechInterpreter {
 
     public void resumeListening() {
         recognizer.startRecognition(false);
+    }
+
+    public static void generateDictionaryHashMap() throws IOException {
+        BufferedReader dictionaryReader = new BufferedReader(new InputStreamReader(SpeechCommandHandler.class
+                .getClassLoader().getResourceAsStream("edu/cmu/sphinx/models/en-us/cmudict-en-us.dict")));
+        while(dictionaryReader.ready()) {
+            String line = dictionaryReader.readLine();
+            // extract word from line and add to dictionary
+            String word = line.substring(0,line.indexOf(" "));
+            //System.out.println(word);
+            dictionary.add(word);
+        }
+
+    }
+
+    public static boolean isInDictionary(String word) {
+        return dictionary.contains(word);
     }
 }

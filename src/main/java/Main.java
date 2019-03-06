@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import speechHandling.SpeechCommandHandler;
+import speechHandling.SphinxInterpreter;
 
 public class Main extends Application {
 
@@ -14,6 +15,8 @@ public class Main extends Application {
         SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
         // initialize speech recognition instance and update grammar file for speech recognition
         SpeechCommandHandler.updateSpeechRecognition();
+        //generate dictionary used to check for valid macro names
+        SphinxInterpreter.generateDictionaryHashMap();
         //initialize mediaPlayers
         MediaPlayerUtil.initializeMediaFiles();
         // set stage for Viewloader to load pages

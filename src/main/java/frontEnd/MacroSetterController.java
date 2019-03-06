@@ -15,8 +15,10 @@ import macro.Macro;
 import macro.MacroSettings;
 import macro.Step;
 import speechHandling.SpeechCommandHandler;
+import speechHandling.SphinxInterpreter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +36,10 @@ public class MacroSetterController {
     public Button varStepNameCancel;
     // controls for editMacro view
     public TextField editNameField;
+    // used to display words that do not exist in dictionary
+    private Stage dictionaryCheck = null;
+    // this tracks words that do not exist in dictionary
+    private ArrayList<String> missingWords = new ArrayList<>();
 
 
     private SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
@@ -270,7 +276,52 @@ public class MacroSetterController {
             return null;
         }
 
+        // each word must exist in speech recognition dictionary
+        String[] words = macroName.split(" ");
+        // remove words from any previous checks
+        missingWords.clear();
+        for(String word: words) {
+            //System.out.println(word);
+            if(!SphinxInterpreter.isInDictionary(word)){
+                //System.out.println(" is not in the dictionary");
+                missingWords.add(word);
+            }
+        }
+
+        if (!missingWords.isEmpty()) {
+            // display which words do not exist in dictionary to user
+            if(dictionaryCheck == null) {
+                dictionaryCheck = ViewLoader.generateDialog("dictionaryCheckView.fxml");
+                dictionaryCheck.setAlwaysOnTop(true);
+                dictionaryCheck.setOnCloseRequest(event -> dictionaryCheck = null);
+
+                Button closeButton = (Button) dictionaryCheck.getScene().lookup("#dictionaryCheckButton");
+                closeButton.setOnAction(event -> {
+                    dictionaryCheck.hide();
+                    dictionaryCheck = null;
+                });
+//                // populate list with words
+//                ListView missingWordsList = (ListView) dictionaryCheck.getScene().lookup("#missingWordsList");
+//                missingWordsList.getItems().addAll(missingWords);
+                dictionaryCheck.show();
+            }
+            // populate list with most recent missing words
+            ListView missingWordsList = (ListView) dictionaryCheck.getScene().lookup("#missingWordsList");
+            // clear any previous words
+            missingWordsList.getItems().clear();
+            missingWordsList.getItems().addAll(missingWords);
+
+
+            warningLabel.setText("Words must exist in program dictionary");
+            return null;
+        }
+
         // passed checks
+        // hide window if showing
+        if(dictionaryCheck != null){
+            dictionaryCheck.hide();
+            dictionaryCheck = null;
+        }
         return macroName;
     }
 
