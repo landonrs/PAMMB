@@ -124,11 +124,11 @@
             <version>5prealpha-SNAPSHOT</version>
         </dependency>
         <!-- dictionary and language models for speech interpreter -->
-        <dependency>
-            <groupId>edu.cmu.sphinx</groupId>
-            <artifactId>sphinx4-data</artifactId>
-            <version>5prealpha-SNAPSHOT</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>edu.cmu.sphinx</groupId>-->
+            <!--<artifactId>sphinx4-data</artifactId>-->
+            <!--<version>5prealpha-SNAPSHOT</version>-->
+        <!--</dependency>-->
 
         <!-- https://mvnrepository.com/artifact/com.1stleg/jnativehook -->
         <dependency>
