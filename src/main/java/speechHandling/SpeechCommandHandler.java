@@ -92,7 +92,7 @@ public class SpeechCommandHandler {
     CONTINUOUS_PHRASE, RETURN_PHRASE, CANCEL_PHRASE, COMMAND_PHRASE};
 
     // commands used when creating macros
-    private static final String STOP_RECORDING_PHRASE = "finish recording";
+    public static final String STOP_RECORDING_PHRASE = "finish recording";
     private static final String START_VAR_STEP_PHRASE = "start variable step";
     private static final String FINISH_VAR_STEP_PHRASE = "finish variable step";
 
@@ -405,7 +405,7 @@ public class SpeechCommandHandler {
         interpreter.pauseListening();
     }
 
-    private static void handleCreateCommand(String command, MacroSetterController controller) {
+    public static void handleCreateCommand(String command, MacroSetterController controller) {
         switch (command) {
             case STOP_RECORDING_PHRASE:
                 if (!startedVariableStep) {

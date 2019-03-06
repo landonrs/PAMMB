@@ -12,7 +12,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         //initialize db
-        SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
+        SQLiteDbFacade.getInstance();
         // initialize speech recognition instance and update grammar file for speech recognition
         SpeechCommandHandler.updateSpeechRecognition();
         //generate dictionary used to check for valid macro names

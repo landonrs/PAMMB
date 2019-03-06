@@ -185,16 +185,12 @@ public class EventPerformer {
     private static void setVarStepValues(Macro userMacro) {
         for (Step userStep: userMacro.getSteps()) {
             if (userStep.getType().equals(EventTypes.VAR_STEP)) {
-                try {
-                    userStep.setVariableStepValue(ViewLoader.displayVarStepValueView(userStep.getVariableStepName()));
-                    System.out.println("set value to " + userStep.getVariableStepValue());
-                    // check if user cancelled macro
-                    if(macroCancelled) {
-                        // exit so calling function will also exit without performing macro
-                        return;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                userStep.setVariableStepValue(ViewLoader.displayVarStepValueView(userStep.getVariableStepName()));
+                System.out.println("set value to " + userStep.getVariableStepValue());
+                // check if user cancelled macro
+                if(macroCancelled) {
+                    // exit so calling function will also exit without performing macro
+                    return;
                 }
             }
         }

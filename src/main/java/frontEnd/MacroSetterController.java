@@ -7,8 +7,11 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import macro.Macro;
 import macro.MacroSettings;
 import macro.Step;
@@ -39,6 +42,9 @@ public class MacroSetterController {
     // this tracks words that do not exist in dictionary
     private ArrayList<String> missingWords = new ArrayList<>();
 
+    //create an invisible stage that will allow the user to kill the create mode manually by closing it
+    private static Stage invisibleStage = null;
+
 
     private SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
 
@@ -62,6 +68,9 @@ public class MacroSetterController {
             CompletableFuture recordingCommands = CompletableFuture.runAsync(() -> {
                 SpeechCommandHandler.runCreateMode(this);
             });
+
+            setUpKillSwitch();
+
             EventRecorder.startRecordingUserMacro();
         }
 
@@ -73,9 +82,14 @@ public class MacroSetterController {
         for(Step step: MacroSettings.currentMacro.getSteps()) {
             System.out.println(step.getType());
         }
+
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                // remove invisible stage
+                if(invisibleStage.isShowing()) {
+                    invisibleStage.hide();
+                }
                 ViewLoader.showPrimaryStage();
             }
         });
@@ -308,6 +322,26 @@ public class MacroSetterController {
             dictionaryCheck = null;
         }
         return macroName;
+    }
+
+    private void setUpKillSwitch(){
+        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+        //presents the user with manual kill switch
+        invisibleStage = ViewLoader.generateDialog("views/invisibleView.fxml");
+        invisibleStage.initStyle(StageStyle.UNDECORATED);
+        Button stopButton = (Button) invisibleStage.getScene().lookup("#stopButton");
+        stopButton.setOnAction(event -> {
+            SpeechCommandHandler.handleCreateCommand(SpeechCommandHandler.STOP_RECORDING_PHRASE, this);
+        });
+        // place button in left center of screen
+        invisibleStage.setX(primaryScreenBounds.getMinX() + stopButton.getWidth());
+        invisibleStage.setY((primaryScreenBounds.getMinY() + primaryScreenBounds.getMaxY()) / 2);
+        invisibleStage.setAlwaysOnTop(true);
+
+        // prevent recorder from registering events inside killswitch area
+        //EventRecorder.setKillSwitchBounds
+
+        invisibleStage.show();
     }
 
 
