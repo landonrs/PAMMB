@@ -7,8 +7,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import macro.Macro;
@@ -47,7 +45,7 @@ public class MacroSetterController {
 
     public void recordUserEvents(Stage stage) {
 
-        Stage instructionsStage = ViewLoader.generateDialog("recordingInstructionsView.fxml");
+        Stage instructionsStage = ViewLoader.generateDialog("views/recordingInstructionsView.fxml");
         // set button event handler to close stage
         Button recordingButton = (Button) instructionsStage.getScene().lookup("#recordingButton");
         recordingButton.setOnAction(event -> instructionsStage.hide());
@@ -88,17 +86,7 @@ public class MacroSetterController {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                Stage stage = new Stage();
-                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("VarStepNameView.fxml"));
-                Parent root = null;
-                try {
-                    root = loader.load();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Scene scene = new Scene(root);
-                scene.getStylesheets().add(ViewLoader.class.getClassLoader().getResource("PammStyle.css").toExternalForm());
-                stage.setScene(scene);
+                Stage stage = ViewLoader.generateDialog("views/VarStepNameView.fxml");
                 stage.show();
                 stage.toFront();
             }
@@ -114,7 +102,7 @@ public class MacroSetterController {
             // trim off any extra whitespace from name
             MacroSettings.setMacroName(standardizedMacroName);
             Stage stage = (Stage) macroName.getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("macroSettingView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("views/macroSettingView.fxml"));
             ViewLoader.loadPage(loader);
         }
         else{
@@ -143,7 +131,7 @@ public class MacroSetterController {
     }
 
     private void displayHomeView() throws Exception{
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HomeView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("views/HomeView.fxml"));
         ViewLoader.loadPage(loader);
     }
 
@@ -291,7 +279,7 @@ public class MacroSetterController {
         if (!missingWords.isEmpty()) {
             // display which words do not exist in dictionary to user
             if(dictionaryCheck == null) {
-                dictionaryCheck = ViewLoader.generateDialog("dictionaryCheckView.fxml");
+                dictionaryCheck = ViewLoader.generateDialog("views/dictionaryCheckView.fxml");
                 dictionaryCheck.setAlwaysOnTop(true);
                 dictionaryCheck.setOnCloseRequest(event -> dictionaryCheck = null);
 
@@ -300,9 +288,6 @@ public class MacroSetterController {
                     dictionaryCheck.hide();
                     dictionaryCheck = null;
                 });
-//                // populate list with words
-//                ListView missingWordsList = (ListView) dictionaryCheck.getScene().lookup("#missingWordsList");
-//                missingWordsList.getItems().addAll(missingWords);
                 dictionaryCheck.show();
             }
             // populate list with most recent missing words

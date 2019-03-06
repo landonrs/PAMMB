@@ -13,7 +13,7 @@ import org.hibernate.service.ServiceRegistryBuilder;
 import java.util.List;
 import java.util.Properties;
 
-public class SQLiteDbFacade implements DbFacade {
+public class SQLiteDbFacade {
 
     private static SessionFactory sessionFactory = null;
     private static ServiceRegistry serviceRegistry = null;
@@ -94,7 +94,6 @@ public class SQLiteDbFacade implements DbFacade {
         }
     }
 
-    @Override
     public Macro loadMacro(String macroName) {
 
         Session session = null;
@@ -117,7 +116,6 @@ public class SQLiteDbFacade implements DbFacade {
         return loadedMacro;
     }
 
-    @Override
     public boolean saveMacro(Macro userMacro) {
 
         Session session = null;

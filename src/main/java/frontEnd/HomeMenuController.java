@@ -37,7 +37,7 @@ public class HomeMenuController implements Initializable {
             stage = (Stage) createMacro.getScene().getWindow();
             stage.toBack();
             stage.hide();
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("macroNameSetterView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("views/macroNameSetterView.fxml"));
             root = loader.load();
             Scene scene = new Scene(root);
             scene.getStylesheets().add(getClass().getClassLoader().getResource("PammStyle.css").toExternalForm());
@@ -46,12 +46,12 @@ public class HomeMenuController implements Initializable {
             macroSetterController.recordUserEvents(stage);
         }
         if(event.getSource() == viewList){
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("macroListView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("views/macroListView.fxml"));
             ViewLoader.loadPage(loader);
         }
         if(event.getSource() == assistantMode){
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("AssistantModeView.fxml"));
-            Stage assistantInstructions = ViewLoader.generateDialog("AssistantInstructions.fxml");
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("views/AssistantModeView.fxml"));
+            Stage assistantInstructions = ViewLoader.generateDialog("views/AssistantInstructions.fxml");
             ViewLoader.hidePrimaryStage();
             Button startButton = (Button) assistantInstructions.getScene().lookup("#startButton");
             startButton.setOnAction(actionEvent -> assistantInstructions.hide());

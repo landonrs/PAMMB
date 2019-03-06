@@ -112,7 +112,7 @@ public class AssistantModeController implements Initializable {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HomeView.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("views/HomeView.fxml"));
                 try {
                     ViewLoader.loadPage(loader);
                 } catch (Exception e) {

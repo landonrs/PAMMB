@@ -34,6 +34,7 @@ public class ViewLoader {
     private static final int ASSISTANT_MODE_HEIGHT = 300;
     private static final Image ICON = new Image(ViewLoader.class
             .getClassLoader().getResourceAsStream("images/PAMM.png"));
+    private static final String STYLESHEET = "PammStyle.css";
     private static double HOME_MENU_X;
     private static double HOME_MENU_Y;
     private static boolean initialized = false;
@@ -55,7 +56,7 @@ public class ViewLoader {
 
         Parent root = loader.load();
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(ViewLoader.class.getClassLoader().getResource("PammStyle.css").toExternalForm());
+        scene.getStylesheets().add(ViewLoader.class.getClassLoader().getResource(STYLESHEET).toExternalForm());
         primaryStage.setScene(scene);
         if((loader.getController() instanceof HomeMenuController) && initialized) {
             primaryStage.setX(HOME_MENU_X);
@@ -108,18 +109,14 @@ public class ViewLoader {
         primaryStage.hide();
     }
 
-    public static String displayVarStepValueView(String varStepName) throws IOException {
+    public static String displayVarStepValueView(String varStepName) {
 
-        FXMLLoader loader = new FXMLLoader(ViewLoader.class.getClassLoader().getResource("VarStepValueView.fxml"));
-        Stage stage = new Stage();
-        Scene scene = new Scene(loader.load());
-        scene.getStylesheets().add(ViewLoader.class.getClassLoader().getResource("PammStyle.css").toExternalForm());
-        stage.setScene(scene);
+        Stage stage = generateDialog("views/VarStepValueView.fxml");
         // set focus on textField
-        TextField varValueField = (TextField) scene.lookup("#varStepValueField");
+        TextField varValueField = (TextField) stage.getScene().lookup("#varStepValueField");
         varValueField.requestFocus();
         // insert var step name into label
-        Label varNameLabel = (Label) scene.lookup("#varStepName");
+        Label varNameLabel = (Label) stage.getScene().lookup("#varStepName");
         varNameLabel.setText("Enter the value for the " + varStepName);
         stage.toFront();
         stage.showAndWait();
@@ -136,7 +133,7 @@ public class ViewLoader {
         // only have one stage open at a time
         if(!listStageOpen) {
 
-            customListStage = generateDialog("showCommandsView.fxml");
+            customListStage = generateDialog("views/showCommandsView.fxml");
 
             //get commands from db
             List commands = SQLiteDbFacade.getMacroNames();
@@ -152,11 +149,6 @@ public class ViewLoader {
                 SpeechCommandHandler
                         .handleAssistantCommand((String) commandList.getSelectionModel().getSelectedItem(), controller, true));
 
-
-            // prevent user from being able to click on it
-//            commandList.setMouseTransparent(true);
-//            commandList.setFocusTraversable(false);
-
             customListStage.setOnHidden(event -> listStageOpen = false);
             customListStage.setOnCloseRequest(event -> listStageOpen = false);
             customListStage.show();
@@ -168,7 +160,7 @@ public class ViewLoader {
 
     /**
      * generate a dialog stage window with the view loaded and returns the stage
-     * @param dialogFileName
+     * @param dialogFileName - name of fxml file in resources folder
      * @return
      */
     public static Stage generateDialog(String dialogFileName) {
@@ -181,7 +173,7 @@ public class ViewLoader {
             e.printStackTrace();
         }
 
-        scene.getStylesheets().add(ViewLoader.class.getClassLoader().getResource("PammStyle.css").toExternalForm());
+        scene.getStylesheets().add(ViewLoader.class.getClassLoader().getResource(STYLESHEET).toExternalForm());
         dialogWindow.setScene(scene);
         dialogWindow.getIcons().add(ICON);
 
@@ -216,7 +208,7 @@ public class ViewLoader {
                     hideSystemCommands();
 
                     try {
-                        loadPage(new FXMLLoader(ViewLoader.class.getClassLoader().getResource("HomeView.fxml")));
+                        loadPage(new FXMLLoader(ViewLoader.class.getClassLoader().getResource("views/HomeView.fxml")));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -230,7 +222,7 @@ public class ViewLoader {
 
     public static void showSystemCommands() {
         if(systemListStage == null || !systemListStage.isShowing()) {
-            systemListStage = generateDialog("showCommandsView.fxml");
+            systemListStage = generateDialog("views/showCommandsView.fxml");
 
             List systemCommands = SpeechCommandHandler.getSystemCommandNames();
 

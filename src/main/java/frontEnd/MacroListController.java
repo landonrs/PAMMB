@@ -14,7 +14,6 @@ import macro.Macro;
 import macro.MacroSettings;
 import speechHandling.SpeechCommandHandler;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -60,11 +59,11 @@ public class MacroListController implements Initializable {
     }
 
     public void displayHomeMenu(ActionEvent actionEvent) throws Exception{
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HomeView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("views/HomeView.fxml"));
         ViewLoader.loadPage(loader);
     }
 
-    public void updateList(){
+    private void updateList(){
         macroNames = SQLiteDbFacade.getMacroNames();
         macroList.getItems().clear();
         macroList.getItems().addAll(macroNames);
@@ -82,7 +81,7 @@ public class MacroListController implements Initializable {
         MacroSettings.currentMacro = selectedMacro;
         MacroSettings.setMacroName(selectedName);
         // create edit dialog window
-        Stage editDialog = ViewLoader.generateDialog("editMacroView.fxml");
+        Stage editDialog = ViewLoader.generateDialog("views/editMacroView.fxml");
         //set controls to current settings
         TextField nameField = (TextField) editDialog.getScene().lookup("#editNameField");
         nameField.setText(selectedMacro.getName());

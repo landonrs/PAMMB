@@ -42,7 +42,7 @@ public class SpeechCommandHandler {
     private static CompletableFuture<Boolean> assistantModeFinished = null;
     // this stage is used to prompt the user to speak if the microphone is still being used in
     // assistant mode
-    private static Stage microphoneTestStage = ViewLoader.generateDialog("microphoneTestView.fxml");
+    private static Stage microphoneTestStage = ViewLoader.generateDialog("views/microphoneTestView.fxml");
     static {
         microphoneTestStage.initStyle(StageStyle.UNDECORATED);
     }
@@ -444,10 +444,6 @@ public class SpeechCommandHandler {
         CONTINUOUS_MODE,
         RUNNING_MACRO,
         STOPPED
-    }
-
-    ACTIVE_STATE getCurrentState() {
-        return currentState;
     }
 
     static String getCommandFromSpeech(String speechInput) {

@@ -22,7 +22,7 @@ public class Main extends Application {
         // set stage for Viewloader to load pages
         ViewLoader.setPrimaryStage(primaryStage);
         primaryStage.setTitle("PAMM");
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HomeView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("views/HomeView.fxml"));
         ViewLoader.loadPage(loader);
         ViewLoader.setHomeCoordinates();
         ViewLoader.setInitialized(true);
