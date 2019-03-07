@@ -44,6 +44,8 @@ public class MacroSetterController {
 
     //create an invisible stage that will allow the user to kill the create mode manually by closing it
     private static Stage invisibleStage = null;
+    // set to true when user manually ends macro recording with button click
+    private boolean trimButtonClick = false;
 
 
     private SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
@@ -82,6 +84,12 @@ public class MacroSetterController {
         for(Step step: MacroSettings.currentMacro.getSteps()) {
             System.out.println(step.getType());
         }
+        //if user manually stopped recording, remove step that was recorded for clicking the button
+        if(trimButtonClick){
+            int buttonClickStepIndex = MacroSettings.currentMacro.getSteps().size() - 1;
+            MacroSettings.currentMacro.getSteps().remove(buttonClickStepIndex);
+        }
+
 
         Platform.runLater(new Runnable() {
             @Override
@@ -327,19 +335,18 @@ public class MacroSetterController {
     private void setUpKillSwitch(){
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         //presents the user with manual kill switch
-        invisibleStage = ViewLoader.generateDialog("views/invisibleView.fxml");
+        invisibleStage = ViewLoader.generateDialog("views/killSwitchButton.fxml");
         invisibleStage.initStyle(StageStyle.UNDECORATED);
         Button stopButton = (Button) invisibleStage.getScene().lookup("#stopButton");
         stopButton.setOnAction(event -> {
+            // this will cause the last click step to be removed from the macro
+            trimButtonClick = true;
             SpeechCommandHandler.handleCreateCommand(SpeechCommandHandler.STOP_RECORDING_PHRASE, this);
         });
         // place button in left center of screen
         invisibleStage.setX(primaryScreenBounds.getMinX() + stopButton.getWidth());
         invisibleStage.setY((primaryScreenBounds.getMinY() + primaryScreenBounds.getMaxY()) / 2);
         invisibleStage.setAlwaysOnTop(true);
-
-        // prevent recorder from registering events inside killswitch area
-        //EventRecorder.setKillSwitchBounds
 
         invisibleStage.show();
     }
