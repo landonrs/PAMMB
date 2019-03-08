@@ -361,9 +361,9 @@ public class MacroSetterController {
             trimButtonClick = true;
             SpeechCommandHandler.handleCreateCommand(SpeechCommandHandler.STOP_RECORDING_PHRASE, this);
         });
-        // place button in left center of screen
-        invisibleStage.setX(primaryScreenBounds.getMinX() + stopButton.getWidth());
-        invisibleStage.setY((primaryScreenBounds.getMinY() + primaryScreenBounds.getMaxY()) / 2);
+        // place button in top center of screen
+        invisibleStage.setX(primaryScreenBounds.getMinX() + primaryScreenBounds.getMaxX() / 2);
+        invisibleStage.setY(primaryScreenBounds.getMinY() + stopButton.getHeight());
         invisibleStage.setAlwaysOnTop(true);
 
         invisibleStage.show();
