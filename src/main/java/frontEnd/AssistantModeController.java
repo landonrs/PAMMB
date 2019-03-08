@@ -37,6 +37,9 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * handles events from the assistantModeView
+ */
 public class AssistantModeController implements Initializable {
 
     public Circle pammCircle;

@@ -36,6 +36,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * This controller handles events that take place in the macroListView
+ */
 public class MacroListController implements Initializable {
 
     private List macroNames = SQLiteDbFacade.getMacroNames();

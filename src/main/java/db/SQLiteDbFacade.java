@@ -31,6 +31,9 @@ import org.hibernate.service.ServiceRegistryBuilder;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * Handles requests made to program's SQLite db file
+ */
 public class SQLiteDbFacade {
 
     private static SessionFactory sessionFactory = null;

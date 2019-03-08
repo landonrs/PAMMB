@@ -42,6 +42,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 
+/**
+ * Handles the recording and creating of new macros
+ */
 public class MacroSetterController {
 
     // controls for nameSetter View
@@ -69,7 +72,7 @@ public class MacroSetterController {
     private SQLiteDbFacade dbFacade = SQLiteDbFacade.getInstance();
 
 
-    public void recordUserEvents(Stage stage) {
+    public void recordUserEvents() {
 
         Stage instructionsStage = ViewLoader.generateDialog("views/recordingInstructionsView.fxml");
         // set button event handler to close stage

@@ -18,6 +18,9 @@
 
 package speechHandling;
 
+/**
+ * Interface used by current and any future speech recognition api's for project
+ */
 public interface SpeechInterpreter {
 
     String getTextFromSpeech();

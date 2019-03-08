@@ -186,6 +186,11 @@ public class EventPerformer {
 
     }
 
+    /**
+     * uses the system clipboard to insert user's variable step value into the macro
+     *
+     * @param variableStepValue
+     */
     private static void insertVarStepValue(String variableStepValue) {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable previousContents = clipboard.getContents(null);
@@ -208,6 +213,11 @@ public class EventPerformer {
         clipboard.setContents(previousContents, stringSelection);
     }
 
+    /**
+     * gets the values for each variable step in the macro from the user
+     *
+     * @param userMacro
+     */
     private static void setVarStepValues(Macro userMacro) {
         for (Step userStep: userMacro.getSteps()) {
             if (userStep.getType().equals(EventTypes.VAR_STEP)) {
@@ -274,6 +284,12 @@ public class EventPerformer {
         }
     }
 
+    /**
+     * smoothly moves the mouse cursor from one position to another
+     *
+     * @param clickX the x coordinate the mouse is moving to
+     * @param clickY the y coordinate the mouse is moving to
+     */
     private static void glideMouse(int clickX, int clickY) {
         double dx = (clickX - previousPoint.getX()) / MOUSE_MOVE_STEPS;
         double dy = (clickY - previousPoint.getY()) / MOUSE_MOVE_STEPS;

@@ -37,14 +37,16 @@ import speechHandling.SpeechCommandHandler;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Handles events that take place from the home menu
+ */
 public class HomeMenuController implements Initializable {
 
     public Button createMacro, viewList, assistantMode, licenseButton;
-    EventRecorder recorder = EventRecorder.getInstance();
     public Circle pammCircle;
 
     //stage to show license terms and conditions
-    Stage licenseNotice = null;
+    static Stage licenseNotice = null;
 
     private final String ACTIVATED_COLOR = "#44a4ff";
     private final String IDLE_COLOR = "#003261";
@@ -64,7 +66,7 @@ public class HomeMenuController implements Initializable {
             scene.getStylesheets().add(getClass().getClassLoader().getResource("PammStyle.css").toExternalForm());
             stage.setScene(scene);
             MacroSetterController macroSetterController = loader.getController();
-            macroSetterController.recordUserEvents(stage);
+            macroSetterController.recordUserEvents();
         }
         if(event.getSource() == viewList){
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("views/macroListView.fxml"));
@@ -90,6 +92,7 @@ public class HomeMenuController implements Initializable {
         if(event.getSource() == licenseButton) {
             if(licenseNotice == null || !licenseNotice.isShowing()) {
                 licenseNotice = ViewLoader.generateDialog("views/licenseTermsView.fxml");
+                licenseNotice.setAlwaysOnTop(true);
                 licenseNotice.show();
                 licenseNotice.toFront();
             }

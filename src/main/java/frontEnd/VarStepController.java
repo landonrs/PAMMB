@@ -24,6 +24,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+/**
+ * gets values from user for variable steps in macros
+ */
 public class VarStepController {
 
 

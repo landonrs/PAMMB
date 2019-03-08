@@ -30,6 +30,9 @@ import javafx.scene.media.MediaPlayer;
 
 import java.net.URISyntaxException;
 
+/**
+ * Util class used to play sounds during certain events
+ */
 public class MediaPlayerUtil {
     private static Media recordSound;
     private static Media eventRegisterSound;

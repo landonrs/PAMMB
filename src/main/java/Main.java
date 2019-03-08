@@ -18,6 +18,7 @@
 
 import Audio.MediaPlayerUtil;
 import db.SQLiteDbFacade;
+import eventHandling.EventRecorder;
 import frontEnd.ViewLoader;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -25,12 +26,17 @@ import javafx.stage.Stage;
 import speechHandling.SpeechCommandHandler;
 import speechHandling.SphinxInterpreter;
 
+/**
+ * Starts the application
+ */
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         //initialize db
         SQLiteDbFacade.getInstance();
+        //initialize EventRecorder
+        EventRecorder.getInstance();
         // initialize speech recognition instance and update grammar file for speech recognition
         SpeechCommandHandler.updateSpeechRecognition();
         //generate dictionary used to check for valid macro names

@@ -28,6 +28,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashSet;
 
+/**
+ * Uses the Sphinx4 speech recognition library to convert speech to text
+ */
 public class SphinxInterpreter implements SpeechInterpreter {
 
 

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 package eventHandling;
 
 import Audio.MediaPlayerUtil;
@@ -32,6 +33,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
+/**
+ * Records user events using the JNativeHook library and stores them as steps in macros
+ *
+ * see JNativeHook library for more information about registering native events in Java:
+ * https://github.com/kwhat/jnativehook
+ */
 public class EventRecorder extends GlobalScreen implements NativeKeyListener, NativeMouseInputListener {
 
     private static volatile boolean recordingMacro;
@@ -93,14 +100,12 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
     }
 
     public static Macro finishRecordingUserMacro(){
-        // TODO remove check after testing on Ubuntu
-        if(!System.getProperty("os.name").equals("Linux")) {
+
             try {
                 unregisterNativeHook();
             } catch (NativeHookException e) {
                 e.printStackTrace();
             }
-        }
 
         playingEventSound = false;
 
@@ -128,6 +133,11 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
         recordingMacro = false;
     }
 
+    /**
+     * if set to true, the program will emit a beep sound each time an event is
+     * registered and recorded
+     * @param selected the state of the checkbox in the recordingInstructionsView
+     */
     public static void setEventSound(boolean selected) {
         playingEventSound = selected;
     }
@@ -229,8 +239,9 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
             // key typed without modifiers
             else if (e.getKeyCode() != NativeKeyEvent.VC_CONTROL && e.getKeyCode() != NativeKeyEvent.VC_SHIFT
                     && e.getKeyCode() != 0xe36) {
-                // if the user has just pressed a combination of keys(ex meta + r) we don't want the meta or alt key firing
-                // as a separate event, so we first verify that the user has not just performed a combo command
+                // if the user has just pressed a combination of keys(ex meta + r) we don't want the meta or alt
+                // key firing as a separate event, so we first verify that the user has not just performed a combo
+                // command
                 if (usingCombinationCommand) {
                     usingCombinationCommand = false;
                 } else {

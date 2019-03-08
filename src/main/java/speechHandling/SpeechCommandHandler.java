@@ -42,6 +42,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This class holds all logic related to handling speech requests from the user
+ */
 public class SpeechCommandHandler {
 
     private static SpeechInterpreter interpreter;
@@ -456,26 +459,28 @@ public class SpeechCommandHandler {
     }
 
     public static void handleCreateCommand(String command, MacroSetterController controller) {
-        switch (command) {
-            case STOP_RECORDING_PHRASE:
-                if (!startedVariableStep) {
-                    controller.finishRecording();
-                    runningCreateMode = false;
-                }
-                break;
-            case START_VAR_STEP_PHRASE:
-                if (!startedVariableStep) {
-                    MediaPlayerUtil.playActivationSound();
-                    EventRecorder.ignoreInput();
-                    startedVariableStep = true;
-                }
-                break;
-            case FINISH_VAR_STEP_PHRASE:
-                if (startedVariableStep) {
-                    startedVariableStep = false;
-                    controller.getVariableStepName();
-                }
-                break;
+        if(runningCreateMode) {
+            switch (command) {
+                case STOP_RECORDING_PHRASE:
+                    if (!startedVariableStep) {
+                        controller.finishRecording();
+                        runningCreateMode = false;
+                    }
+                    break;
+                case START_VAR_STEP_PHRASE:
+                    if (!startedVariableStep) {
+                        MediaPlayerUtil.playActivationSound();
+                        EventRecorder.ignoreInput();
+                        startedVariableStep = true;
+                    }
+                    break;
+                case FINISH_VAR_STEP_PHRASE:
+                    if (startedVariableStep) {
+                        startedVariableStep = false;
+                        controller.getVariableStepName();
+                    }
+                    break;
+            }
         }
     }
 
