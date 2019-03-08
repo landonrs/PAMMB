@@ -39,9 +39,12 @@ import java.util.ResourceBundle;
 
 public class HomeMenuController implements Initializable {
 
-    public Button createMacro, viewList, assistantMode;
+    public Button createMacro, viewList, assistantMode, licenseButton;
     EventRecorder recorder = EventRecorder.getInstance();
     public Circle pammCircle;
+
+    //stage to show license terms and conditions
+    Stage licenseNotice = null;
 
     private final String ACTIVATED_COLOR = "#44a4ff";
     private final String IDLE_COLOR = "#003261";
@@ -81,6 +84,14 @@ public class HomeMenuController implements Initializable {
                     SpeechCommandHandler.runMicrophoneTest();
                 }
                 ViewLoader.loadAssistantMode(loader);
+            }
+        }
+
+        if(event.getSource() == licenseButton) {
+            if(licenseNotice == null || !licenseNotice.isShowing()) {
+                licenseNotice = ViewLoader.generateDialog("views/licenseTermsView.fxml");
+                licenseNotice.show();
+                licenseNotice.toFront();
             }
         }
 
