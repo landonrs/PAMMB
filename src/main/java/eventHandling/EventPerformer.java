@@ -44,6 +44,9 @@ public class EventPerformer {
     // determines how quickly the mouse moves from one point to the next
     private static final double MOUSE_MOVE_STEPS = 1000;
     private static Point previousPoint;
+
+    //used to return mouse to user's starting location after performing macro
+    private static Point startingPoint;
     // determines if we show the mouse moving when performing macro
     private static boolean macroMouseVisible;
     // sets delay between clicking events
@@ -69,7 +72,9 @@ public class EventPerformer {
         if (userMacro.getVarStep()) {
             setVarStepValues(userMacro);
         }
-        //start previousPoint at current location
+        //set starting point so we can return after macro is completed
+        startingPoint = new Point(MouseInfo.getPointerInfo().getLocation());
+        //start previousPoint at current location for mouse gliding animation
         previousPoint = new Point(MouseInfo.getPointerInfo().getLocation());
 
         for(Step macroStep: userMacro.getSteps()) {
@@ -175,6 +180,9 @@ public class EventPerformer {
 
             }
         }
+
+        // return mouse to user's starting point
+        robot.mouseMove((int) startingPoint.getX(), (int) startingPoint.getY());
 
     }
 
