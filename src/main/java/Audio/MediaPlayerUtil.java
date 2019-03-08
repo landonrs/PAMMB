@@ -16,6 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* sound effect attribution:
+*    Title: "Robot Blip"
+*    Author: Marianne Gagnon
+*    Link: http://soundbible.com/1682-Robot-Blip.html#Robot%20Blip%20Sound
+*    Used under the Attribution 3.0 license: https://creativecommons.org/licenses/by/3.0/us/
+*/
+
 package Audio;
 
 import javafx.scene.media.Media;
