@@ -164,6 +164,11 @@ public class SpeechCommandHandler {
         return Arrays.asList(SYSTEM_COMMANDS);
     }
 
+    /**
+     * This method runs while the user is in the Assistant mode view
+     *
+     * @param controller - the controller used to display info to the user
+     */
     public static void runAssistantMode(AssistantModeController controller) {
         // reset our state from previous session
         currentState = ACTIVE_STATE.IDLE;
@@ -194,6 +199,14 @@ public class SpeechCommandHandler {
 
     }
 
+    /**
+     * This method tracks the state of the assistant mode and handles valid speech requests from
+     * the user.
+     *
+     * @param speechInput - the speech request that was captured by the interpreter
+     * @param controller - the assistant mode controller, used to display speech requests back to user
+     * @param manualMode set to true if user is invoking this command by selecting a button through the GUI
+     */
     public static void handleAssistantCommand(String speechInput, AssistantModeController controller, boolean manualMode) {
 
         if(speechInput.equals(RETURN_PHRASE) &&
@@ -337,6 +350,17 @@ public class SpeechCommandHandler {
 
     }
 
+    /**
+     * confirms with the user before running any macros
+     *
+     * if the user's microphone does not handle background noise well, the
+     * program will pick up false positives and run unwanted macros, to help
+     * minimize this risk, the confirmation mode has PAMM first confirm with
+     * the user that the macro name was heard correctly
+     *
+     * @param controller
+     * @return true is user says yes, false if no
+     */
     private static boolean runConfirmationMode(AssistantModeController controller){
         interpreter.resumeListening();
         String response = "";
@@ -360,9 +384,12 @@ public class SpeechCommandHandler {
 
 
     /**
+     * Provides the user with a fail safe option for running macros in assistant mode
+     *
      * if the program cannot recognize a command a certain number of times
      * in a row, this command checks to see if the command list needs to
-     * be displayed so the user can select a command manually
+     * be displayed so the user can select a command manually.
+     *
      * @param controller - the controller we pass to the command list so it can process the command
      */
     private static void checkFailSafe(AssistantModeController controller) {
@@ -399,6 +426,11 @@ public class SpeechCommandHandler {
 
     }
 
+    /**
+     * This method runs whenever the user is recording new macros
+     *
+     * @param controller - the controller that is used to create the recorded macros
+     */
     public static void runCreateMode(MacroSetterController controller) {
         runningCreateMode = true;
         interpreter.startListening();
@@ -449,7 +481,8 @@ public class SpeechCommandHandler {
 
     /**
      * determines whether PAMM will ask for confirmation before running macros
-     * @param selected
+     *
+     * @param selected - the state of the checkbox in the assistant mode view
      */
     public static void setConfirmationMode(boolean selected) {
         confirmationMode = selected;
@@ -481,6 +514,11 @@ public class SpeechCommandHandler {
             return speechInput;
     }
 
+    /**
+     * rewrites the grammar file with updated macro names
+     *
+     * @throws IOException
+     */
     private static void updateGrammar() throws IOException {
         List<String> commandNames = SQLiteDbFacade.getMacroNames();
         //create reader for grammar file
@@ -527,6 +565,12 @@ public class SpeechCommandHandler {
 
     }
 
+    /**
+     * this method is called whenever the user makes a change to the list of created macros
+     *
+     * The interpreter is reconfigured with the new grammar file so it will be
+     * able to recognize new command phrases.
+     */
     public static void updateSpeechRecognition(){
         updated = new CompletableFuture<Boolean>();
 
@@ -542,6 +586,13 @@ public class SpeechCommandHandler {
 
     }
 
+    /**
+     * makes sure speech recogniion is up to date and ready to be used.
+     *
+     * Program will hang until the completableFuture is finished
+     *
+     * @return true once the update is complete
+     */
     public static boolean isUpdated(){
         System.out.println("checking if updating is complete");
         try {
