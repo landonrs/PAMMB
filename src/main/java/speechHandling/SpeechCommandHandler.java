@@ -234,7 +234,6 @@ public class SpeechCommandHandler {
             MediaPlayerUtil.playActivationSound();
             controller.playActiviationAnimation();
             Platform.runLater(() -> ViewLoader.showPrimaryStage());
-            setAndClearDisplayText("hey there PAMM", controller);
             setDisplayText(READY_PHRASE, controller);
 
         }
