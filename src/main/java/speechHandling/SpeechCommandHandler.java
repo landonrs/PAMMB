@@ -234,6 +234,12 @@ public class SpeechCommandHandler {
             MediaPlayerUtil.playActivationSound();
             controller.playActiviationAnimation();
             Platform.runLater(() -> ViewLoader.showPrimaryStage());
+            //wait for speech input buffer to clear
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             setDisplayText(READY_PHRASE, controller);
 
         }
@@ -293,6 +299,9 @@ public class SpeechCommandHandler {
                         currentState = ACTIVE_STATE.IDLE;
                         ViewLoader.showPrimaryStage();
                         controller.displaySpeechOnPlatThread(ACTIVATE_INSTRUCTION);
+                        // hide stage until user activates again
+                        ViewLoader.minimizePrimaryStage();
+
                     });
 
                     // set look of view for when the macro is completed in the other thread
@@ -332,7 +341,6 @@ public class SpeechCommandHandler {
                     EventPerformer.performMacro(userMacro);
                     currentState = ACTIVE_STATE.CONTINUOUS_MODE;
                     ViewLoader.showPrimaryStage();
-                    controller.displaySpeechOnPlatThread("Macro complete");
                     // redisplay commands list if user had it open
                     ViewLoader.showCustomCommandList();
                     // give user time to read message
