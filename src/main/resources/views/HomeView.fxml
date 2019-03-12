@@ -29,6 +29,7 @@
             <Font name="AR DESTINE" size="21.0" />
          </font>
       </Label>
-      <Button fx:id="licenseButton" onAction="#handleButtonAction" layoutX="312.0" layoutY="421.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="88.0" text="About" />
+      <Button fx:id="licenseButton" layoutX="312.0" layoutY="421.0" mnemonicParsing="false" onAction="#handleButtonAction" prefHeight="29.0" prefWidth="88.0" text="About" />
+      <Button fx:id="tutorialButton" layoutY="421.0" mnemonicParsing="false" onAction="#openTutorial" prefHeight="29.0" prefWidth="88.0" text="Tutorial" />
    </children>
 </AnchorPane>

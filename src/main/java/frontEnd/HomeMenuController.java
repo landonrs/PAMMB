@@ -27,13 +27,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import speechHandling.SpeechCommandHandler;
 
+import java.awt.*;
+import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -50,6 +54,8 @@ public class HomeMenuController implements Initializable {
 
     private final String ACTIVATED_COLOR = "#44a4ff";
     private final String IDLE_COLOR = "#003261";
+    //TODO replace placeholder URI with actual tutorial playlist
+    private final URI TUTORIAL_URI = URI.create("https://www.youtube.com/watch?v=orLTcNPnmW0&list=PL84FpCusm1XMv9NFAfNGU7Yl9vSRoXLFK&index=2&t=0s");
 
     @FXML
     private void handleButtonAction (ActionEvent event) throws Exception {
@@ -100,13 +106,32 @@ public class HomeMenuController implements Initializable {
 
     }
 
+    @FXML
+    private void openTutorial() {
+        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                desktop.browse(TUTORIAL_URI);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR, "PAMM could not open your web browser", ButtonType.OK);
+                alert.showAndWait();
+            }
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "PAMM could not open your web browser", ButtonType.OK);
+            alert.showAndWait();
+        }
+
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         playActiviationAnimation();
 
     }
 
-    public void playActiviationAnimation()  {
+    private void playActiviationAnimation()  {
         FillTransition ACTIVATED_TRANSITION = new FillTransition(Duration.millis(2500), pammCircle,
                 Color.valueOf(IDLE_COLOR), Color.valueOf(ACTIVATED_COLOR));
         ACTIVATED_TRANSITION.setCycleCount(Animation.INDEFINITE);
