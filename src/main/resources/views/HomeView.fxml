@@ -14,12 +14,12 @@
       <Circle fx:id="pammCircle" fill="#003261" layoutX="199.0" layoutY="119.0" radius="111.0" stroke="WHITE" strokeType="INSIDE" />
       <Circle fill="#2d383a" layoutX="199.0" layoutY="119.0" radius="75.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="91.0" layoutX="-5.0" layoutY="89.0" opacity="0.32" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="407.0" />
-      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="70.0" layoutY="44.0" prefHeight="151.0" prefWidth="277.0" text="P.A.M.M." textAlignment="CENTER" textFill="WHITE">
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="36.0" layoutY="44.0" prefHeight="151.0" prefWidth="350.0" styleClass="homeTitle" text="P.A.M.M." textAlignment="CENTER" textFill="WHITE">
          <font>
             <Font name="AR DESTINE" size="72.0" />
          </font>
       </Label>
-      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="67.0" layoutY="44.0" prefHeight="151.0" prefWidth="277.0" text="P.A.M.M." textAlignment="CENTER">
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="33.0" layoutY="44.0" prefHeight="151.0" prefWidth="350.0" styleClass="homeTitle" text="P.A.M.M." textAlignment="CENTER">
          <font>
             <Font name="AR DESTINE" size="72.0" />
          </font>
