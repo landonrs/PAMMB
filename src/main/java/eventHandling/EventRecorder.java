@@ -20,6 +20,9 @@
 package eventHandling;
 
 import Audio.MediaPlayerUtil;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import macro.Macro;
 import macro.Step;
 import org.jnativehook.GlobalScreen;
@@ -29,6 +32,7 @@ import org.jnativehook.keyboard.NativeKeyListener;
 import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
 
+import java.awt.event.KeyEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -156,7 +160,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
         if(recordingMacro) {
             // ctrl + shift command
             if (((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0) &&
-                    ((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0)) {
+                    ((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0) && keyCodeAdapter.getJavaKeyCode(e) != KeyEvent.VK_UNDEFINED) {
                 System.out.println("Ctrl + Shift + __" + NativeKeyEvent.getKeyText(e.getKeyCode()) + "__");
                 Step userStep = new Step(EventTypes.CTRL_SHIFT_TYPE, keyCodeAdapter.getJavaKeyCode(e));
                 currentUserMacro.getSteps().add(userStep);
@@ -238,7 +242,7 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
             }
             // key typed without modifiers
             else if (e.getKeyCode() != NativeKeyEvent.VC_CONTROL && e.getKeyCode() != NativeKeyEvent.VC_SHIFT
-                    && e.getKeyCode() != 0xe36) {
+                    && e.getKeyCode() != 0xe36 && keyCodeAdapter.getJavaKeyCode(e) != KeyEvent.VK_UNDEFINED) {
                 // if the user has just pressed a combination of keys(ex meta + r) we don't want the meta or alt
                 // key firing as a separate event, so we first verify that the user has not just performed a combo
                 // command
@@ -252,6 +256,18 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
                 }
 
             }
+            else if(keyCodeAdapter.getJavaKeyCode(e) == KeyEvent.VK_UNDEFINED){
+                // the key event was not recognized, pause recording and alert the user
+                recordingMacro = false;
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "That action is invalid and cannot be recorded", ButtonType.OK);
+                    alert.showAndWait();
+                    recordingMacro = true;
+                });
+
+            }
+
+
             if(eventRegistered && playingEventSound) {
                 MediaPlayerUtil.playEventRegisterSound();
                 eventRegistered = false;
@@ -395,5 +411,9 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
             }
         }
 
+    }
+
+    public static boolean isRecordingMacro(){
+        return recordingMacro;
     }
 }

@@ -446,19 +446,19 @@ public class SpeechCommandHandler {
         interpreter.startListening();
         System.out.println("starting macro create mode");
         while(runningCreateMode) {
-            String speechInput = interpreter.getTextFromSpeech();
-            interpreter.pauseListening();
+                String speechInput = interpreter.getTextFromSpeech();
+                interpreter.pauseListening();
 
-            if(speechInput != null) {
-                System.out.println("result: " + speechInput);
-                handleCreateCommand(speechInput, controller);
-                if(!runningCreateMode) {
-                    System.out.println("Stopping create mode");
-                    return;
+                if (speechInput != null) {
+                    System.out.println("result: " + speechInput);
+                    handleCreateCommand(speechInput, controller);
+                    if (!runningCreateMode) {
+                        System.out.println("Stopping create mode");
+                        return;
+                    }
                 }
-            }
 
-            interpreter.resumeListening();
+                interpreter.resumeListening();
         }
 
         System.out.println("Stopping create mode");
@@ -466,7 +466,7 @@ public class SpeechCommandHandler {
     }
 
     public static void handleCreateCommand(String command, MacroSetterController controller) {
-        if(runningCreateMode) {
+        if(runningCreateMode && (EventRecorder.isRecordingMacro() || startedVariableStep)) {
             switch (command) {
                 case STOP_RECORDING_PHRASE:
                     if (!startedVariableStep) {
