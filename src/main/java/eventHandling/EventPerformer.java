@@ -19,6 +19,8 @@
 package eventHandling;
 
 import frontEnd.ViewLoader;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import macro.Macro;
 import macro.Step;
 
@@ -26,7 +28,6 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -236,15 +237,35 @@ public class EventPerformer {
         for(int modifier: modifiers) {
             robot.keyPress(modifier);
         }
-        robot.delay(KEY_MODIFIER_DELAY);
-        robot.keyPress(keyCode);
-        robot.keyRelease(keyCode);
-        robot.delay(KEY_MODIFIER_DELAY);
-        for(int modifier: modifiers) {
-            robot.keyRelease(modifier);
+        try {
+            robot.delay(KEY_MODIFIER_DELAY);
+            robot.keyPress(keyCode);
+            robot.keyRelease(keyCode);
+            robot.delay(KEY_MODIFIER_DELAY);
         }
-        // give system time to process command
-        robot.delay(COMBO_TYPE_DELAY);
+        catch (Exception e){
+            e.printStackTrace();
+            for(int modifier: modifiers) {
+                robot.keyRelease(modifier);
+            }
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR,
+                    "An error occured while running this macro and was unable to finish", ButtonType.OK);
+            macroCancelled = true;
+            errorAlert.showAndWait();
+            ViewLoader.showPrimaryStage();
+        }
+        finally {
+            for(int modifier: modifiers) {
+                robot.keyRelease(modifier);
+            }
+
+            // give system time to process command
+            robot.delay(COMBO_TYPE_DELAY);
+
+        }
+
+
+
 
     }
 
