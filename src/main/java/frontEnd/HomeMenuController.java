@@ -54,8 +54,8 @@ public class HomeMenuController implements Initializable {
 
     private final String ACTIVATED_COLOR = "#44a4ff";
     private final String IDLE_COLOR = "#003261";
-    //TODO replace placeholder URI with actual tutorial playlist
-    private final URI TUTORIAL_URI = URI.create("https://www.youtube.com/watch?v=orLTcNPnmW0&list=PL84FpCusm1XMv9NFAfNGU7Yl9vSRoXLFK&index=2&t=0s");
+    // This link sends the user to the PAMM tutorial playlist
+    private final URI TUTORIAL_URI = URI.create("https://www.youtube.com/watch?v=LVvMyLyMXeQ&list=PL84FpCusm1XN05kxA59hioVxxz2l6Tyev");
 
     @FXML
     private void handleButtonAction (ActionEvent event) throws Exception {
