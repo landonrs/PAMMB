@@ -83,7 +83,7 @@ public class MacroSetterController {
         instructionsStage.showAndWait();
         if(SpeechCommandHandler.isUpdated()) {
             // make sure microphone is not being used in assistant mode
-            if(SpeechCommandHandler.runningAssistantMode()) {
+            if(SpeechCommandHandler.runningMicrophone()) {
                 // if it is, we need the user to make a noise
                 SpeechCommandHandler.runMicrophoneTest();
             }

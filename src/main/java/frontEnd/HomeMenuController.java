@@ -18,7 +18,6 @@
 
 package frontEnd;
 
-import eventHandling.EventRecorder;
 import javafx.animation.Animation;
 import javafx.animation.FillTransition;
 import javafx.event.ActionEvent;
@@ -86,8 +85,8 @@ public class HomeMenuController implements Initializable {
             startButton.setOnAction(actionEvent -> assistantInstructions.hide());
             assistantInstructions.showAndWait();
             if(SpeechCommandHandler.isUpdated()) {
-                // make sure microphone is not being used from previous assistant mode session
-                if(SpeechCommandHandler.runningAssistantMode()) {
+                // make sure microphone is not being used from previous speech session
+                if(SpeechCommandHandler.runningMicrophone()) {
                     // if it is, we need the user to make a noise
                     SpeechCommandHandler.runMicrophoneTest();
                 }

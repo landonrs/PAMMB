@@ -59,10 +59,10 @@ public class SpeechCommandHandler {
 
     // used to make sure speechRecognition has updated grammar before using it
     private static CompletableFuture<Boolean> updated = null;
-    // verifies that microphone has finished listening in assistant mode
-    private static CompletableFuture<Boolean> assistantModeFinished = null;
+    // verifies that microphone has finished listening in either assistant or create mode
+    private static CompletableFuture<Boolean> microphoneFinished = null;
     // this stage is used to prompt the user to speak if the microphone is still being used in
-    // assistant mode
+    // either assistant mode or create mode
     private static Stage microphoneTestStage = ViewLoader.generateDialog("views/microphoneTestView.fxml");
     static {
         microphoneTestStage.initStyle(StageStyle.UNDECORATED);
@@ -178,7 +178,8 @@ public class SpeechCommandHandler {
         unrecognizedCount = 0;
         confirmationMode = false;
         runningAssistantMode = true;
-        assistantModeFinished = new CompletableFuture<>();
+        microphoneFinished = new CompletableFuture<>();
+        microphoneFinished.whenComplete(((result, ex) -> hideMicrophoneTest()));
 
         interpreter.startListening();
         System.out.println("starting assistant mode");
@@ -197,8 +198,7 @@ public class SpeechCommandHandler {
 
         System.out.println("Stopping assistant mode");
         interpreter.pauseListening();
-        assistantModeFinished.complete(true);
-        Platform.runLater(() -> microphoneTestStage.hide());
+        microphoneFinished.complete(true);
 
     }
 
@@ -443,6 +443,8 @@ public class SpeechCommandHandler {
      */
     public static void runCreateMode(MacroSetterController controller) {
         runningCreateMode = true;
+        microphoneFinished = new CompletableFuture<>();
+        microphoneFinished.whenComplete(((result, ex) -> hideMicrophoneTest()));
         interpreter.startListening();
         System.out.println("starting macro create mode");
         while(runningCreateMode) {
@@ -452,10 +454,6 @@ public class SpeechCommandHandler {
                 if (speechInput != null) {
                     System.out.println("result: " + speechInput);
                     handleCreateCommand(speechInput, controller);
-                    if (!runningCreateMode) {
-                        System.out.println("Stopping create mode");
-                        return;
-                    }
                 }
 
                 interpreter.resumeListening();
@@ -463,6 +461,7 @@ public class SpeechCommandHandler {
 
         System.out.println("Stopping create mode");
         interpreter.pauseListening();
+        microphoneFinished.complete(true);
     }
 
     public static void handleCreateCommand(String command, MacroSetterController controller) {
@@ -619,26 +618,33 @@ public class SpeechCommandHandler {
 
     /**
      * This function is used to verify that the speech recognition is not being used
-     * for assistant mode.
+     * for assistant mode or create mode.
      *
      * Because the microphone cannot be interrupted when in use, there is a possibility that
-     * the assistant mode can be closed with the microphone running. If this happens the user
+     * the assistant or create mode can be closed with the microphone running. If this happens the user
      * must clear the microphone by making an utterance before using the microphone on another
      * thread.
      * @return
      */
-    public static boolean runningAssistantMode() {
-        // if user runs create mode before assistant mode
-        if(assistantModeFinished == null){
+    public static boolean runningMicrophone() {
+        // the first time the user runs create mode or assistant mode
+        if(microphoneFinished == null){
             return false;
         }
 
-        return !assistantModeFinished.isDone();
+        return !microphoneFinished.isDone();
     }
 
     public static void runMicrophoneTest(){
         // wait until microphone is cleared
         microphoneTestStage.showAndWait();
+    }
+
+    private static void hideMicrophoneTest() {
+        System.out.println("closing microphone stage");
+        if(microphoneTestStage.isShowing()) {
+            Platform.runLater(() -> microphoneTestStage.hide());
+        }
     }
 
 }
