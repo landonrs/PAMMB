@@ -40,7 +40,7 @@ public class EventPerformer {
     private static final int KEY_MODIFIER_DELAY = 200;
     private static final int CLICK_MODIFIER_DELAY = 100;
     // delay used every time a key typing event occurs with modifiers to give system time to process
-    private static final int COMBO_TYPE_DELAY = 300;
+    private static final int COMBO_TYPE_DELAY = 250;
 
     // determines how quickly the mouse moves from one point to the next
     private static final double MOUSE_MOVE_STEPS = 1000;
@@ -270,10 +270,24 @@ public class EventPerformer {
     }
 
     private static void typeKeyCommand(int keyCode) {
-        robot.keyPress(keyCode);
-        robot.delay(KEYPRESS_DELAY);
-        robot.keyRelease(keyCode);
-        robot.delay(KEYPRESS_DELAY);
+        try {
+            robot.keyPress(keyCode);
+            robot.delay(KEYPRESS_DELAY);
+            robot.keyRelease(keyCode);
+            robot.delay(KEYPRESS_DELAY);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR,
+                    "An error occured while running this macro and was unable to finish", ButtonType.OK);
+            macroCancelled = true;
+            errorAlert.showAndWait();
+            ViewLoader.showPrimaryStage();
+        }
+        finally {
+            robot.keyRelease(keyCode);
+        }
+
     }
 
 

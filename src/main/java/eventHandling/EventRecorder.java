@@ -59,6 +59,8 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
     private static Macro currentUserMacro = null;
 
     private static JavaKeyCodeAdapter keyCodeAdapter;
+    // This value is sent by clicking the right shift button and breaks stuff for some reason
+    private static final int RIGHT_SHIFT_BUTTON = 0xe36;
 
 
     private EventRecorder(){
@@ -169,110 +171,122 @@ public class EventRecorder extends GlobalScreen implements NativeKeyListener, Na
             }
             // ctrl + alt command
             else if (((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0) &&
-                    ((e.getModifiers() & NativeKeyEvent.ALT_MASK) != 0)) {
+                    ((e.getModifiers() & NativeKeyEvent.ALT_MASK) != 0) && keyCodeAdapter.getJavaKeyCode(e) != KeyEvent.VK_UNDEFINED) {
                 System.out.println("Ctrl + Alt + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
                 Step userStep = new Step(EventTypes.CTRL_ALT_TYPE, keyCodeAdapter.getJavaKeyCode(e));
                 currentUserMacro.getSteps().add(userStep);
                 usingCombinationCommand = true;
                 eventRegistered = true;
 
-            }
-            // ctrl + meta command
-            else if (((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0) &&
-                    ((e.getModifiers() & NativeKeyEvent.META_MASK) != 0)) {
-                System.out.println("Ctrl + Alt + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
-                Step userStep = new Step(EventTypes.CTRL_META_TYPE, keyCodeAdapter.getJavaKeyCode(e));
-                currentUserMacro.getSteps().add(userStep);
-                usingCombinationCommand = true;
-                eventRegistered = true;
+                }
+                // ctrl + meta command
+                else if (((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0) &&
+                        ((e.getModifiers() & NativeKeyEvent.META_MASK) != 0) && keyCodeAdapter.getJavaKeyCode(e) != KeyEvent.VK_UNDEFINED) {
+                    System.out.println("Ctrl + Alt + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+                    Step userStep = new Step(EventTypes.CTRL_META_TYPE, keyCodeAdapter.getJavaKeyCode(e));
+                    currentUserMacro.getSteps().add(userStep);
+                    usingCombinationCommand = true;
+                    eventRegistered = true;
 
-            }
-            // shift + alt command
-            else if (((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0) &&
-                    ((e.getModifiers() & NativeKeyEvent.ALT_MASK) != 0)) {
-                System.out.println("Shift + Alt + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
-                Step userStep = new Step(EventTypes.SHIFT_ALT_TYPE, keyCodeAdapter.getJavaKeyCode(e));
-                currentUserMacro.getSteps().add(userStep);
-                usingCombinationCommand = true;
-                eventRegistered = true;
+                }
+                // shift + alt command
+                else if (((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0) &&
+                        ((e.getModifiers() & NativeKeyEvent.ALT_MASK) != 0) && keyCodeAdapter.getJavaKeyCode(e) != KeyEvent.VK_UNDEFINED) {
+                    System.out.println("Shift + Alt + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+                    Step userStep = new Step(EventTypes.SHIFT_ALT_TYPE, keyCodeAdapter.getJavaKeyCode(e));
+                    currentUserMacro.getSteps().add(userStep);
+                    usingCombinationCommand = true;
+                    eventRegistered = true;
 
-            }
-            // shift + meta command
-            else if (((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0) &&
-                    ((e.getModifiers() & NativeKeyEvent.META_MASK) != 0)) {
-                System.out.println("Shift + Alt + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
-                Step userStep = new Step(EventTypes.SHIFT_META_TYPE, keyCodeAdapter.getJavaKeyCode(e));
-                currentUserMacro.getSteps().add(userStep);
-                usingCombinationCommand = true;
-                eventRegistered = true;
+                }
+                // shift + meta command
+                else if (((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0) &&
+                        ((e.getModifiers() & NativeKeyEvent.META_MASK) != 0) && keyCodeAdapter.getJavaKeyCode(e) != KeyEvent.VK_UNDEFINED) {
+                    System.out.println("Shift + Alt + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+                    Step userStep = new Step(EventTypes.SHIFT_META_TYPE, keyCodeAdapter.getJavaKeyCode(e));
+                    currentUserMacro.getSteps().add(userStep);
+                    usingCombinationCommand = true;
+                    eventRegistered = true;
 
-            }
-            // ctrl + key
-            else if (((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0) && e.getKeyCode() != NativeKeyEvent.VC_SHIFT
-                    && e.getKeyCode() != NativeKeyEvent.VC_ALT && e.getKeyCode() != NativeKeyEvent.VC_META) {
-                System.out.println("Ctrl + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
-                Step userStep = new Step(EventTypes.CTRL_TYPE, keyCodeAdapter.getJavaKeyCode(e));
-                currentUserMacro.getSteps().add(userStep);
-                eventRegistered = true;
-            }
-            // shift + key
-            else if (((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0) && e.getKeyCode() != NativeKeyEvent.VC_ALT
-                    && e.getKeyCode() != NativeKeyEvent.VC_META && e.getKeyCode() != NativeKeyEvent.VC_CONTROL) {
-                System.out.println("Shift + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
-                Step userStep = new Step(EventTypes.SHIFT_TYPE, keyCodeAdapter.getJavaKeyCode(e));
-                currentUserMacro.getSteps().add(userStep);
-                eventRegistered = true;
-            }
-            // alt + key
-            else if (((e.getModifiers() & NativeKeyEvent.ALT_MASK) != 0) &&
-                    e.getKeyCode() != NativeKeyEvent.VC_CONTROL && e.getKeyCode() != NativeKeyEvent.VC_SHIFT) {
-                System.out.println("Alt + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
-                Step userStep = new Step(EventTypes.ALT_TYPE, keyCodeAdapter.getJavaKeyCode(e));
-                currentUserMacro.getSteps().add(userStep);
-                usingCombinationCommand = true;
-                eventRegistered = true;
-            }
-            // meta + key
-            else if ((((e.getModifiers() & NativeKeyEvent.META_MASK) != 0))) {
-                System.out.println("Meta + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
-                Step userStep = new Step(EventTypes.META_TYPE, keyCodeAdapter.getJavaKeyCode(e));
-                currentUserMacro.getSteps().add(userStep);
-                usingCombinationCommand = true;
-                eventRegistered = true;
-            }
-            // key typed without modifiers
-            else if (e.getKeyCode() != NativeKeyEvent.VC_CONTROL && e.getKeyCode() != NativeKeyEvent.VC_SHIFT
-                    && e.getKeyCode() != 0xe36 && keyCodeAdapter.getJavaKeyCode(e) != KeyEvent.VK_UNDEFINED) {
-                // if the user has just pressed a combination of keys(ex meta + r) we don't want the meta or alt
-                // key firing as a separate event, so we first verify that the user has not just performed a combo
-                // command
-                if (usingCombinationCommand) {
-                    usingCombinationCommand = false;
-                } else {
-                    System.out.println("User typed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
-                    Step userStep = new Step(EventTypes.TYPE, keyCodeAdapter.getJavaKeyCode(e));
+                }
+                // ctrl + key
+                else if (((e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0) && e.getKeyCode() != NativeKeyEvent.VC_SHIFT
+                        && e.getKeyCode() != NativeKeyEvent.VC_ALT && e.getKeyCode() != NativeKeyEvent.VC_META
+                    && keyCodeAdapter.getJavaKeyCode(e) != KeyEvent.VK_UNDEFINED) {
+                    System.out.println("Ctrl + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+                    Step userStep = new Step(EventTypes.CTRL_TYPE, keyCodeAdapter.getJavaKeyCode(e));
                     currentUserMacro.getSteps().add(userStep);
                     eventRegistered = true;
                 }
+                // shift + key
+                else if (((e.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0) && e.getKeyCode() != NativeKeyEvent.VC_ALT
+                        && e.getKeyCode() != NativeKeyEvent.VC_META && e.getKeyCode() != NativeKeyEvent.VC_CONTROL
+                    && keyCodeAdapter.getJavaKeyCode(e) != KeyEvent.VK_UNDEFINED) {
+                    System.out.println("Shift + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+                    Step userStep = new Step(EventTypes.SHIFT_TYPE, keyCodeAdapter.getJavaKeyCode(e));
+                    currentUserMacro.getSteps().add(userStep);
+                    eventRegistered = true;
+                }
+                // alt + key
+                else if (((e.getModifiers() & NativeKeyEvent.ALT_MASK) != 0) &&
+                        e.getKeyCode() != NativeKeyEvent.VC_CONTROL && e.getKeyCode() != NativeKeyEvent.VC_SHIFT
+                    && keyCodeAdapter.getJavaKeyCode(e) != KeyEvent.VK_UNDEFINED) {
+                    System.out.println("Alt + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+                    Step userStep = new Step(EventTypes.ALT_TYPE, keyCodeAdapter.getJavaKeyCode(e));
+                    currentUserMacro.getSteps().add(userStep);
+                    usingCombinationCommand = true;
+                    eventRegistered = true;
+                }
+                // meta + key
+                else if ((((e.getModifiers() & NativeKeyEvent.META_MASK) != 0))
+                    && keyCodeAdapter.getJavaKeyCode(e) != KeyEvent.VK_UNDEFINED) {
+                    System.out.println("Meta + " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+                    Step userStep = new Step(EventTypes.META_TYPE, keyCodeAdapter.getJavaKeyCode(e));
+                    currentUserMacro.getSteps().add(userStep);
+                    usingCombinationCommand = true;
+                    eventRegistered = true;
+                }
+                // key typed without modifiers
+                // the right shift button breaks stuff for some reason, so we have to filter it out
+                else if (e.getKeyCode() != NativeKeyEvent.VC_CONTROL && e.getKeyCode() != NativeKeyEvent.VC_SHIFT
+                        && e.getKeyCode() != RIGHT_SHIFT_BUTTON && keyCodeAdapter.getJavaKeyCode(e) != KeyEvent.VK_UNDEFINED) {
+                    // if the user has just pressed a combination of keys(ex meta + r) we don't want the meta or alt
+                    // key firing as a separate event, so we first verify that the user has not just performed a combo
+                    // command
+                    if (usingCombinationCommand) {
+                        usingCombinationCommand = false;
+                    } else {
+                        System.out.println("User typed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+                        Step userStep = new Step(EventTypes.TYPE, keyCodeAdapter.getJavaKeyCode(e));
+                        currentUserMacro.getSteps().add(userStep);
+                        eventRegistered = true;
+                    }
+
+                }
+
+                else if(keyCodeAdapter.getJavaKeyCode(e) == KeyEvent.VK_UNDEFINED
+                    && e.getKeyCode() != RIGHT_SHIFT_BUTTON){
+                    // the key event was not recognized, pause recording and alert the user
+                    recordingMacro = false;
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.ERROR,
+                                "The key '" + NativeKeyEvent.getKeyText(e.getKeyCode())
+                                + "' is invalid and cannot be recorded", ButtonType.OK);
+                        alert.showAndWait();
+                        recordingMacro = true;
+                    });
+
+                }
+
+                if(eventRegistered && playingEventSound) {
+                    MediaPlayerUtil.playEventRegisterSound();
+                    eventRegistered = false;
+                }
 
             }
-            else if(keyCodeAdapter.getJavaKeyCode(e) == KeyEvent.VK_UNDEFINED){
-                // the key event was not recognized, pause recording and alert the user
-                recordingMacro = false;
-                Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.ERROR, "That action is invalid and cannot be recorded", ButtonType.OK);
-                    alert.showAndWait();
-                    recordingMacro = true;
-                });
-
-            }
 
 
-            if(eventRegistered && playingEventSound) {
-                MediaPlayerUtil.playEventRegisterSound();
-                eventRegistered = false;
-            }
-        }
+
 
     }
 
