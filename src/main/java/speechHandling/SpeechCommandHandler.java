@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -584,6 +583,7 @@ public class SpeechCommandHandler {
      */
     public static void updateSpeechRecognition(){
         updated = new CompletableFuture<Boolean>();
+        updated.whenComplete((result, res) -> ViewLoader.closeLoadingScreen());
 
         CompletableFuture updating = CompletableFuture.runAsync(() -> {
             try {
@@ -600,20 +600,17 @@ public class SpeechCommandHandler {
     /**
      * makes sure speech recogniion is up to date and ready to be used.
      *
-     * Program will hang until the completableFuture is finished
+     * Program will show loading screen until the completableFuture is finished
      *
      * @return true once the update is complete
      */
     public static boolean isUpdated(){
         System.out.println("checking if updating is complete");
-        try {
-            return updated.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        if(!updated.isDone()){
+            ViewLoader.displayLoadingScreenAndWait();
         }
-        return false;
+
+        return true;
     }
 
     /**

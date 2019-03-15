@@ -31,6 +31,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import speechHandling.SpeechCommandHandler;
 
 import java.io.IOException;
@@ -56,6 +57,12 @@ public class ViewLoader {
     private static double HOME_MENU_X;
     private static double HOME_MENU_Y;
     private static boolean initialized = false;
+
+    // this stage is displayed whenever the program is not finished updating
+    private static final Stage loadingView = generateDialog("views/loadingView.fxml");
+    static {
+        loadingView.initStyle(StageStyle.UNDECORATED);
+    }
 
     // used to keep track of which scene we are currently in
     private static FXMLLoader currentLoader;
@@ -263,6 +270,16 @@ public class ViewLoader {
     public static void hideSystemCommands() {
         if(systemListStage != null && systemListStage.isShowing()) {
             systemListStage.hide();
+        }
+    }
+
+    public static void displayLoadingScreenAndWait() {
+        loadingView.showAndWait();
+    }
+
+    public static void closeLoadingScreen() {
+        if (loadingView.isShowing()) {
+            Platform.runLater(() -> loadingView.hide());
         }
     }
 
