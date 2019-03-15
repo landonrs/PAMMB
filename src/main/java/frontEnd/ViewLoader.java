@@ -255,6 +255,8 @@ public class ViewLoader {
             Optional<ButtonType> result = closeAlert.showAndWait();
             if (result.get() == ButtonType.YES){
                 Platform.exit();
+                // in case there is some random thread still running...
+                System.exit(0);
             }
             else{
                 event.consume();

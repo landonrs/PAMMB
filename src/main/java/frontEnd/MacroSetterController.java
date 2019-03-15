@@ -361,6 +361,22 @@ public class MacroSetterController {
         //presents the user with manual kill switch
         invisibleStage = ViewLoader.generateDialog("views/killSwitchButton.fxml");
         invisibleStage.initStyle(StageStyle.UNDECORATED);
+        //if user tries to close window, stop recording and display main menu
+        invisibleStage.setOnCloseRequest(event -> {
+            SpeechCommandHandler.stopCreateMode();
+            EventRecorder.finishRecordingUserMacro();
+            try {
+                Alert errorNotice = new Alert(Alert.AlertType.ERROR,
+                        "Window was closed unexpectedly, returning to main menu",
+                        ButtonType.OK);
+                errorNotice.showAndWait();
+                displayHomeView();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+        });
         Button stopButton = (Button) invisibleStage.getScene().lookup("#stopButton");
         stopButton.setOnAction(event -> {
             // this will cause the last click step to be removed from the macro

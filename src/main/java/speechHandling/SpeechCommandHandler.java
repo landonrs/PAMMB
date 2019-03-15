@@ -491,6 +491,10 @@ public class SpeechCommandHandler {
         }
     }
 
+    public static void stopCreateMode() {
+        runningCreateMode = false;
+    }
+
     /**
      * determines whether PAMM will ask for confirmation before running macros
      *
