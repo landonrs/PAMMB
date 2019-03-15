@@ -414,6 +414,8 @@ public class SpeechCommandHandler {
     public static void stopAssistantMode() {
         runningAssistantMode = false;
         currentState = ACTIVE_STATE.STOPPED;
+        // the assistant mode sets this to true, so we reset this value
+        ViewLoader.setStageAlwaysOnTop(false);
     }
 
 

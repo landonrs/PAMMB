@@ -108,7 +108,10 @@ public class MacroSetterController {
         //if user manually stopped recording, remove step that was recorded for clicking the button
         if(trimButtonClick){
             int buttonClickStepIndex = MacroSettings.currentMacro.getSteps().size() - 1;
-            MacroSettings.currentMacro.getSteps().remove(buttonClickStepIndex);
+            // check index bounds
+            if(buttonClickStepIndex >= 0) {
+                MacroSettings.currentMacro.getSteps().remove(buttonClickStepIndex);
+            }
         }
 
 

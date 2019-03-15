@@ -24,18 +24,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.stage.*;
 import speechHandling.SpeechCommandHandler;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * util class for loading the different views of the app
@@ -74,10 +70,10 @@ public class ViewLoader {
         Platform.setImplicitExit(false);
         ViewLoader.primaryStage.getIcons().add(ICON);
         // explicitly end program when user closes primary primaryStage
-        ViewLoader.primaryStage.setOnCloseRequest(event -> checkWindowBeforeExit());
+        ViewLoader.primaryStage.setOnCloseRequest(event -> checkWindowBeforeExit(event));
     }
 
-    public static void loadPage(FXMLLoader loader) throws Exception{
+    public static void loadPage(FXMLLoader loader, boolean showStage) throws Exception{
 
         Parent root = loader.load();
         Scene scene = new Scene(root);
@@ -91,7 +87,13 @@ public class ViewLoader {
         // set the current loader so we can track which scene we are on
         currentLoader = loader;
 
-        primaryStage.show();
+        if(showStage) {
+            primaryStage.show();
+        }
+    }
+
+    public static void loadPage(FXMLLoader loader) throws Exception {
+        loadPage(loader, true);
     }
 
     public static void loadAssistantMode(FXMLLoader loader) throws Exception{
@@ -107,6 +109,11 @@ public class ViewLoader {
         primaryStage.setAlwaysOnTop(true);
 
         loadPage(loader);
+    }
+
+
+    public static void setStageAlwaysOnTop(boolean onTop){
+        primaryStage.setAlwaysOnTop(onTop);
     }
 
     public static void setInitialized(boolean initialized) {
@@ -220,11 +227,13 @@ public class ViewLoader {
 
     /**
      * This is called whenever the close 'x' button is clicked by the user on the primary stage. If we are in assistant
-     * mode we return to the home menu, otherwise the entire program is closed
+     * mode or macro settings we return to the home menu, otherwise the entire program is closed
      */
-    private static void checkWindowBeforeExit(){
-        if((currentLoader.getController() instanceof AssistantModeController)) {
-                SpeechCommandHandler.stopAssistantMode();
+    private static void checkWindowBeforeExit(WindowEvent event){
+        if((currentLoader.getController() instanceof AssistantModeController)
+                || (currentLoader.getController() instanceof MacroSetterController)) {
+            // stop speech recognition if it is still being used
+            SpeechCommandHandler.stopAssistantMode();
                 Platform.runLater(() ->
                 {
                     if(listStageOpen){
@@ -240,7 +249,17 @@ public class ViewLoader {
                 });
         }
         else {
-            Platform.exit();
+            Alert closeAlert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to exit PAMM?", ButtonType.YES, ButtonType.CANCEL);
+            closeAlert.setHeaderText("Closing PAMM");
+            closeAlert.initModality(Modality.APPLICATION_MODAL);
+            Optional<ButtonType> result = closeAlert.showAndWait();
+            if (result.get() == ButtonType.YES){
+                Platform.exit();
+            }
+            else{
+                event.consume();
+                ViewLoader.showPrimaryStage();
+            }
         }
 
     }

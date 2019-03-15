@@ -62,14 +62,11 @@ public class HomeMenuController implements Initializable {
         Parent root = null;
 
         if(event.getSource() == createMacro) {
-            stage = (Stage) createMacro.getScene().getWindow();
-            stage.toBack();
-            stage.hide();
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("views/macroNameSetterView.fxml"));
-            root = loader.load();
-            Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getClassLoader().getResource("PammStyle.css").toExternalForm());
-            stage.setScene(scene);
+            // hide main menu
+            ViewLoader.hidePrimaryStage();
+            // load scene but don't display yet
+            ViewLoader.loadPage(loader, false);
             MacroSetterController macroSetterController = loader.getController();
             macroSetterController.recordUserEvents();
         }

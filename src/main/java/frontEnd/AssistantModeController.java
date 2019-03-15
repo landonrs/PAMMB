@@ -133,6 +133,8 @@ public class AssistantModeController implements Initializable {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                // the assistant mode sets this to true, so we reset this value
+                ViewLoader.setStageAlwaysOnTop(false);
                 FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("views/HomeView.fxml"));
                 try {
                     ViewLoader.loadPage(loader);
