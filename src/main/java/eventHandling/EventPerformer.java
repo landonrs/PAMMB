@@ -56,6 +56,7 @@ public class EventPerformer {
     private static volatile boolean macroCancelled = false;
 
     private static Robot robot;
+    private static int SYSTEM_META_KEY;
 
     static {
         try {
@@ -63,6 +64,14 @@ public class EventPerformer {
         } catch (AWTException e) {
             e.printStackTrace();
         }
+
+        if(runningWindows()) {
+            SYSTEM_META_KEY = KeyEvent.VK_WINDOWS;
+        }
+        else {
+            SYSTEM_META_KEY = KeyEvent.VK_META;
+        }
+
     }
 
     public static void performMacro(Macro userMacro) {
@@ -124,7 +133,7 @@ public class EventPerformer {
                     break;
 
                 case EventTypes.META_TYPE:
-                    typeKeyWithModifiers(macroStep.getKeyCode(), KeyEvent.VK_WINDOWS);
+                    typeKeyWithModifiers(macroStep.getKeyCode(), SYSTEM_META_KEY);
                     break;
 
                 case EventTypes.CTRL_SHIFT_TYPE:
@@ -156,7 +165,7 @@ public class EventPerformer {
                     break;
 
                 case EventTypes.CTRL_META_TYPE:
-                    typeKeyWithModifiers(macroStep.getKeyCode(), KeyEvent.VK_CONTROL, KeyEvent.VK_WINDOWS);
+                    typeKeyWithModifiers(macroStep.getKeyCode(), KeyEvent.VK_CONTROL, SYSTEM_META_KEY);
                     break;
 
                 case EventTypes.SHIFT_ALT_TYPE:
@@ -164,7 +173,7 @@ public class EventPerformer {
                     break;
 
                 case EventTypes.SHIFT_META_TYPE:
-                    typeKeyWithModifiers(macroStep.getKeyCode(), KeyEvent.VK_SHIFT, KeyEvent.VK_WINDOWS);
+                    typeKeyWithModifiers(macroStep.getKeyCode(), KeyEvent.VK_SHIFT, SYSTEM_META_KEY);
                     break;
 
                 case EventTypes.VAR_STEP:
@@ -185,6 +194,10 @@ public class EventPerformer {
         // return mouse to user's starting point
         robot.mouseMove((int) startingPoint.getX(), (int) startingPoint.getY());
 
+    }
+
+    private static boolean runningWindows() {
+        return System.getProperty("os.name").toLowerCase().startsWith("windows");
     }
 
     /**
@@ -234,40 +247,46 @@ public class EventPerformer {
     }
 
     private static void typeKeyWithModifiers(int keyCode, int... modifiers) {
-        for(int modifier: modifiers) {
-            robot.keyPress(modifier);
+        int modCount = 0;
+        // first try pressing all the mod keys
+        try {
+            for (int modifier : modifiers) {
+                robot.keyPress(modifier);
+                modCount++;
+            }
         }
+        catch (Exception e){
+            e.printStackTrace();
+            //release any valid modifier keys that were pressed
+            for(int i = 0; i < modCount; i++) {
+                robot.keyRelease(modifiers[i]);
+            }
+            showMacroErrorMessage();
+        }
+        // try pressing base key
         try {
             robot.delay(KEY_MODIFIER_DELAY);
             robot.keyPress(keyCode);
             robot.keyRelease(keyCode);
             robot.delay(KEY_MODIFIER_DELAY);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            for(int modifier: modifiers) {
-                robot.keyRelease(modifier);
-            }
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR,
-                    "An error occured while running this macro and was unable to finish", ButtonType.OK);
-            macroCancelled = true;
-            errorAlert.showAndWait();
-            ViewLoader.showPrimaryStage();
-        }
-        finally {
             for(int modifier: modifiers) {
                 robot.keyRelease(modifier);
             }
 
             // give system time to process command
             robot.delay(COMBO_TYPE_DELAY);
-
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            for(int modifier: modifiers) {
+                robot.keyRelease(modifier);
+            }
+            showMacroErrorMessage();
         }
 
 
-
-
     }
+
 
     private static void typeKeyCommand(int keyCode) {
         try {
@@ -278,16 +297,20 @@ public class EventPerformer {
         }
         catch (Exception e){
             e.printStackTrace();
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR,
-                    "An error occured while running this macro and was unable to finish", ButtonType.OK);
-            macroCancelled = true;
-            errorAlert.showAndWait();
-            ViewLoader.showPrimaryStage();
+            showMacroErrorMessage();
         }
         finally {
             robot.keyRelease(keyCode);
         }
 
+    }
+
+    private static void showMacroErrorMessage() {
+        Alert errorAlert = new Alert(Alert.AlertType.ERROR,
+                "An error occured while running this macro and was unable to finish", ButtonType.OK);
+        macroCancelled = true;
+        errorAlert.showAndWait();
+        ViewLoader.showPrimaryStage();
     }
 
 
