@@ -23,6 +23,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import macro.Macro;
 import macro.Step;
+import speechHandling.SpeechCommandHandler;
 
 import java.awt.*;
 import java.awt.datatransfer.*;
@@ -310,6 +311,8 @@ public class EventPerformer {
                 "An error occured while running this macro and was unable to finish", ButtonType.OK);
         macroCancelled = true;
         errorAlert.showAndWait();
+        //in case the error occurred while user was running macro mode, we need to stop the speech recognition thread
+        SpeechCommandHandler.stopAssistantMode();
         ViewLoader.showPrimaryStage();
     }
 
