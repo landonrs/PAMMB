@@ -80,7 +80,7 @@ public class SpeechCommandHandler {
 //    public static final String GRAMMAR_DIR = System.getenv("LOCALAPPDATA") + "\\PAMM\\data";
 
 
-    private static final String GRAMMAR_PATH = (new File(".").getAbsolutePath()) + "/PAMM.gram";
+    private static final String GRAMMAR_PATH = (new File(".").getAbsolutePath()) + "/SPEECH_RULES.gram";
     // used to locate grammar file used by sphinx interpreter
     public static final String GRAMMAR_DIR = (new File(".").getAbsolutePath());
 

@@ -51,7 +51,7 @@ public class SphinxInterpreter implements SpeechInterpreter {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        configuration.setGrammarName("PAMM");
+        configuration.setGrammarName("SPEECH_RULES");
         configuration.setUseGrammar(true);
 
         try {
