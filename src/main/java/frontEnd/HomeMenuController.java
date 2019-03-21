@@ -24,8 +24,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -51,15 +49,11 @@ public class HomeMenuController implements Initializable {
     //stage to show license terms and conditions
     static Stage licenseNotice = null;
 
-    private final String ACTIVATED_COLOR = "#44a4ff";
-    private final String IDLE_COLOR = "#003261";
     // This link sends the user to the PAMM tutorial playlist
     private final URI TUTORIAL_URI = URI.create("https://www.youtube.com/watch?v=LVvMyLyMXeQ&list=PL84FpCusm1XN05kxA59hioVxxz2l6Tyev");
 
     @FXML
     private void handleButtonAction (ActionEvent event) throws Exception {
-        Stage stage = null;
-        Parent root = null;
 
         if(event.getSource() == createMacro) {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("views/macroNameSetterView.fxml"));
@@ -128,6 +122,8 @@ public class HomeMenuController implements Initializable {
     }
 
     private void playActiviationAnimation()  {
+        String ACTIVATED_COLOR = "#44a4ff";
+        String IDLE_COLOR = "#003261";
         FillTransition ACTIVATED_TRANSITION = new FillTransition(Duration.millis(2500), pammCircle,
                 Color.valueOf(IDLE_COLOR), Color.valueOf(ACTIVATED_COLOR));
         ACTIVATED_TRANSITION.setCycleCount(Animation.INDEFINITE);

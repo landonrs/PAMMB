@@ -23,7 +23,7 @@ import edu.cmu.sphinx.frontend.util.StreamDataSource;
 
 import java.io.IOException;
 
-public class CustomSpeechRecognizer extends AbstractSpeechRecognizer {
+class CustomSpeechRecognizer extends AbstractSpeechRecognizer {
     private static Microphone microphone = null;
 
     /**

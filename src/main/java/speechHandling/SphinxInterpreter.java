@@ -65,8 +65,7 @@ public class SphinxInterpreter implements SpeechInterpreter {
 
     public String getTextFromSpeech() {
         SpeechResult result = recognizer.getResult();
-        String text = result.getHypothesis();
-        return text;
+        return result.getHypothesis();
     }
 
     public void startListening() {

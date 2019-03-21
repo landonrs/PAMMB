@@ -63,8 +63,8 @@ public class MacroSetterController {
     // this tracks words that do not exist in dictionary
     private ArrayList<String> missingWords = new ArrayList<>();
 
-    //create an invisible stage that will allow the user to kill the create mode manually by closing it
-    private static Stage invisibleStage = null;
+    // This stage will allow the user to kill the create mode manually by closing it
+    private static Stage killSwitch = null;
     // set to true when user manually ends macro recording with button click
     private boolean trimButtonClick = false;
 
@@ -119,8 +119,8 @@ public class MacroSetterController {
             @Override
             public void run() {
                 // remove invisible stage
-                if(invisibleStage.isShowing()) {
-                    invisibleStage.hide();
+                if(killSwitch.isShowing()) {
+                    killSwitch.hide();
                 }
                 ViewLoader.showPrimaryStage();
             }
@@ -359,10 +359,10 @@ public class MacroSetterController {
     private void setUpKillSwitch(){
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         //presents the user with manual kill switch
-        invisibleStage = ViewLoader.generateDialog("views/killSwitchButton.fxml");
-        invisibleStage.initStyle(StageStyle.UNDECORATED);
+        killSwitch = ViewLoader.generateDialog("views/killSwitchButton.fxml");
+        killSwitch.initStyle(StageStyle.UNDECORATED);
         //if user tries to close window, stop recording and display main menu
-        invisibleStage.setOnCloseRequest(event -> {
+        killSwitch.setOnCloseRequest(event -> {
             SpeechCommandHandler.stopCreateMode();
             EventRecorder.finishRecordingUserMacro();
             try {
@@ -377,18 +377,18 @@ public class MacroSetterController {
 
 
         });
-        Button stopButton = (Button) invisibleStage.getScene().lookup("#stopButton");
+        Button stopButton = (Button) killSwitch.getScene().lookup("#stopButton");
         stopButton.setOnAction(event -> {
             // this will cause the last click step to be removed from the macro
             trimButtonClick = true;
             SpeechCommandHandler.handleCreateCommand(SpeechCommandHandler.STOP_RECORDING_PHRASE, this);
         });
         // place button in top center of screen
-        invisibleStage.setX(primaryScreenBounds.getMinX() + primaryScreenBounds.getMaxX() / 2);
-        invisibleStage.setY(primaryScreenBounds.getMinY() + stopButton.getHeight());
-        invisibleStage.setAlwaysOnTop(true);
+        killSwitch.setX(primaryScreenBounds.getMinX() + primaryScreenBounds.getMaxX() / 2);
+        killSwitch.setY(primaryScreenBounds.getMinY() + stopButton.getHeight());
+        killSwitch.setAlwaysOnTop(true);
 
-        invisibleStage.show();
+        killSwitch.show();
     }
 
 

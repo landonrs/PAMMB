@@ -176,10 +176,6 @@ public class SQLiteDbFacade {
      */
     public boolean uniqueMacroName(String macroName) {
         Macro userMacro = loadMacro(macroName);
-        if(userMacro != null) {
-            return false;
-        }
-
-        return true;
+        return userMacro == null;
     }
 }
