@@ -53,6 +53,8 @@ public class EventPerformer {
     private static boolean macroMouseVisible;
     // sets delay between clicking events
     private static int macroSecondDelay;
+    // used to prevent delay for first clicking action
+    private static boolean firstClickStep;
     // set to true if user cancels macro while it is running
     private static volatile boolean macroCancelled = false;
 
@@ -78,6 +80,8 @@ public class EventPerformer {
     public static void performMacro(Macro userMacro) {
         macroMouseVisible = userMacro.isMouseIsVisible();
         macroSecondDelay = userMacro.getSecondDelay();
+        // set this to true so first click step is not affected by delay
+        firstClickStep = true;
 
         //if the macro has any variable steps, get the values for those steps
         if (userMacro.getVarStep()) {
@@ -375,10 +379,16 @@ public class EventPerformer {
     }
 
     private static void moveMouseToPosition(int clickX, int clickY) {
-        try {
-            TimeUnit.SECONDS.sleep(macroSecondDelay);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if(!firstClickStep){
+            try {
+                TimeUnit.SECONDS.sleep(macroSecondDelay);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        // do not delay with first click step
+        else {
+            firstClickStep = false;
         }
         //if mouse is visible, first glide the mouse over to the position
         if(macroMouseVisible){
