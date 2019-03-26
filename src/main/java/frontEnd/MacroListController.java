@@ -20,15 +20,14 @@ package frontEnd;
 
 import db.SQLiteDbFacade;
 import eventHandling.EventPerformer;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.control.*;
-import javafx.stage.Screen;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import macro.Macro;
 import macro.MacroSettings;
 import speechHandling.SpeechCommandHandler;
@@ -36,8 +35,6 @@ import speechHandling.SpeechCommandHandler;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 /**
  * This controller handles events that take place in the macroListView
@@ -46,7 +43,6 @@ public class MacroListController implements Initializable {
 
     private List macroNames = SQLiteDbFacade.getMacroNames();
     public ListView macroList;
-    private Stage killSwitch;
 
 
     @Override
@@ -54,7 +50,7 @@ public class MacroListController implements Initializable {
         macroList.getItems().addAll(macroNames);
     }
 
-    public void runSelectedMacro(ActionEvent actionEvent) throws ExecutionException, InterruptedException {
+    public void runSelectedMacro(ActionEvent actionEvent) {
         String selectedMacro = (String) macroList.getSelectionModel().getSelectedItem();
         // if user hasn't selected anything, return
         if(selectedMacro == null) {
@@ -62,18 +58,10 @@ public class MacroListController implements Initializable {
         }
         System.out.println("Running macro " + selectedMacro);
         Macro userMacro = SQLiteDbFacade.getInstance().loadMacro(selectedMacro);
-        // hide view while performing macro and display stop button
-        setUpKillSwitch();
+        // hide view while performing macro
         ViewLoader.hidePrimaryStage();
-        // run this on separate thread or the kill switch will not be rendered
-        CompletableFuture perform = CompletableFuture.runAsync(() -> EventPerformer.performMacro(userMacro));
-        perform.whenComplete((res, err) -> {
-            Platform.runLater(() -> {
-                killSwitch.hide();
-                ViewLoader.showPrimaryStage();
-            });
-        });
-
+        EventPerformer.performMacro(userMacro);
+        ViewLoader.showPrimaryStage();
 
     }
 
@@ -132,26 +120,5 @@ public class MacroListController implements Initializable {
         editDialog.show();
         editDialog.toFront();
 
-    }
-
-    private void setUpKillSwitch(){
-        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-        //presents the user with manual kill switch
-        killSwitch = ViewLoader.generateDialog("views/killSwitchButton.fxml");
-        killSwitch.initStyle(StageStyle.UNDECORATED);
-        //if user tries to close window, stop recording and display main menu
-        killSwitch.setOnCloseRequest(event -> {
-            EventPerformer.stopMacro();
-        });
-        Button stopButton = (Button) killSwitch.getScene().lookup("#stopButton");
-        stopButton.setOnAction(event -> {
-            EventPerformer.stopMacro();
-        });
-        // place button in top center of screen
-        killSwitch.setX(primaryScreenBounds.getMinX() + primaryScreenBounds.getMaxX() / 2);
-        killSwitch.setY(primaryScreenBounds.getMinY() + stopButton.getHeight());
-        killSwitch.setAlwaysOnTop(true);
-
-        killSwitch.show();
     }
 }
