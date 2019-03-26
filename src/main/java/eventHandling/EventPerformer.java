@@ -80,8 +80,11 @@ public class EventPerformer {
     public static void performMacro(Macro userMacro) {
         macroMouseVisible = userMacro.isMouseIsVisible();
         macroSecondDelay = userMacro.getSecondDelay();
-        // set this to true so first click step is not affected by delay
-        firstClickStep = true;
+
+        if(userMacro.getSteps().get(0).getType().contains("CLICK")) {
+            // set this to true so first click step is not affected by delay
+            firstClickStep = true;
+        }
 
         //if the macro has any variable steps, get the values for those steps
         if (userMacro.getVarStep()) {
