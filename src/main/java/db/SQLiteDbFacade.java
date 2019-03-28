@@ -147,7 +147,7 @@ public class SQLiteDbFacade {
             tx = session.beginTransaction();
 
 
-            session.save(userMacro);
+            session.saveOrUpdate(userMacro);
 
             // Committing the change in the database.
             session.flush();
