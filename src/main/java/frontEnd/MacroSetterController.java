@@ -378,6 +378,7 @@ public class MacroSetterController {
 
         });
         Button stopButton = (Button) killSwitch.getScene().lookup("#stopButton");
+        stopButton.setFocusTraversable(false);
         stopButton.setOnAction(event -> {
             // this will cause the last click step to be removed from the macro
             trimButtonClick = true;
