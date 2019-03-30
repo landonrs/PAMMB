@@ -12,7 +12,7 @@
             <Font size="16.0" />
          </font>
       </Label>
-      <TextField fx:id="macroName" layoutX="70.0" layoutY="100.0" prefHeight="25.0" prefWidth="253.0" />
+      <TextField fx:id="macroName" layoutX="70.0" layoutY="100.0" prefHeight="25.0" prefWidth="253.0" onAction="#checkMacroName"/>
       <Label fx:id="warningLabel" alignment="CENTER" layoutX="2.0" layoutY="125.0" prefHeight="25.0" prefWidth="400.0" text="That name is already being used, please enter another" textAlignment="CENTER" textFill="#fc0000" visible="false" />
       <Button fx:id="nextButton" layoutX="70.0" layoutY="150.0" mnemonicParsing="false" onAction="#checkMacroName" prefHeight="29.0" prefWidth="91.0" text="Next" />
       <Button layoutX="232.0" layoutY="150.0" mnemonicParsing="false" onAction="#cancelSave" prefHeight="25.0" prefWidth="91.0" text="Don't Save" />
