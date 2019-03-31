@@ -230,6 +230,7 @@ public class MacroSetterController {
     public void updateMacro(ActionEvent actionEvent) throws IOException {
 
         String macroNameInput = getStandardizedMacroName(editNameField.getText(), false);
+        boolean updateGrammar = false;
         // if name is valid or is same delete old macro and save new one
         if(macroNameInput != null) {
 
@@ -243,8 +244,8 @@ public class MacroSetterController {
                     SQLiteDbFacade.getInstance().deleteMacro(oldMacroName);
                 }
                 MacroSettings.resetValues();
-                // update the grammar file with the new command
-                SpeechCommandHandler.updateSpeechRecognition();
+                // set flag to update grammar after the list is displayed to the user
+                updateGrammar = true;
 
             }
             // now remove the dialog from view
@@ -252,6 +253,10 @@ public class MacroSetterController {
             stage.close();
             // show macro list view
             ViewLoader.showPrimaryStage();
+            if(updateGrammar) {
+                // update the grammar file with the new command
+                SpeechCommandHandler.updateSpeechRecognition();
+            }
         }
         else {
             warningLabel.setVisible(true);
