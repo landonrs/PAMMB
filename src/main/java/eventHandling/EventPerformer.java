@@ -377,8 +377,13 @@ public class EventPerformer {
     }
 
     private static void completeDraggingEvent(int xCoord, int yCoord) {
-        moveMouseToPosition(xCoord, yCoord);
+        dragMouseToPosition(xCoord, yCoord);
         robot.mouseRelease(InputEvent.BUTTON1_MASK);
+    }
+
+    private static void dragMouseToPosition(int clickX, int clickY) {
+        glideMouse(clickX, clickY);
+        robot.mouseMove(clickX, clickY);
     }
 
     private static void moveMouseToPosition(int clickX, int clickY) {
