@@ -88,8 +88,6 @@ public class MacroListController implements Initializable {
         macroNames = SQLiteDbFacade.getMacroNames();
         macroList.getItems().clear();
         macroList.getItems().addAll(macroNames);
-        // show stage in case it is hidden
-        ViewLoader.showPrimaryStage();
     }
 
     public void editSelectedMacro(ActionEvent actionEvent) {
@@ -114,7 +112,11 @@ public class MacroListController implements Initializable {
         mouseBox.setSelected(!selectedMacro.isMouseIsVisible());
         // once dialog is closed or hidden, update list
         editDialog.setOnHidden(event -> updateList());
-        editDialog.setOnCloseRequest(event -> updateList());
+        editDialog.setOnCloseRequest(event -> {
+            updateList();
+            // show stage in case it is hidden
+            ViewLoader.showPrimaryStage();
+        });
 
         ViewLoader.hidePrimaryStage();
         editDialog.show();
